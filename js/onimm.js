@@ -54,27 +54,36 @@ function Onimm(id, data_uri) {
 					.style("border", "1px solid black")
 					.attr("id", id + "svg_");
 
-			onimm.job_update = onimm.svgContainer.selectAll("circle").data(tempData);
-			onimm.job_enter = onimm.svgContainer.selectAll("circle").data(tempData).enter().append("svg:circle");
-			onimm.job_exit = onimm.svgContainer.selectAll("circle").data(tempData).exit().append("svg:circle");
+			onimm.job_update = onimm.svgContainer.selectAll("g").data(onimm.settings.data);
+			onimm.job_enter = onimm.svgContainer.selectAll("g").data(onimm.settings.data).enter().append("svg:g");
+			onimm.job_exit = onimm.svgContainer.selectAll("g").data(onimm.settings.data).exit().append("svg:g");
 
-			onimm.circle_attributes = onimm.job_update
+			onimm.circle_update = onimm.job_update.append('svg:circle');
+			onimm.circle_enter = onimm.job_enter.append('svg:circle');
+			onimm.circle_exit = onimm.job_exit.append('svg:circle');
+
+			onimm.circle_attributes = onimm.circle_update
 				.attr("cx", 50)
 				.attr("cy", 50)
 				.attr("r", 15)
 				.style("fill", "#aef221");
 
-			onimm.job_enter_attributes = onimm.job_enter
-				.attr("cx", function(d) {return d*40;})
-				.attr("cy", function(d) {return d*45;})
+			onimm.job_enter_attributes = onimm.circle_enter
+				.attr("cx", function(d,i) {return i*40;})
+				.attr("cy", function(d,i) {return i*45;})
 				.attr("r", 20)
 				.style("fill", "#ff400d");
 
-			onimm.job_exit_attributes = onimm.job_exit
+			onimm.job_exit_attributes = onimm.circle_exit
 				.attr("cx", 50)
 				.attr("cy", 50)
 				.attr("r", 15)
 				.style("fill", "#34bc51");
+
+			onimm.job_update
+				.attr("transform", function(d) {
+					return translate(i*40, i*40);
+				});
 
 			// updating nodes with data
 			onimm.job_update.text(
@@ -83,11 +92,17 @@ function Onimm(id, data_uri) {
 				});
 
 			// adding nodes for new data
-			onimm.job_enter.append("p")
+			onimm.job_enter.append("text")
 					.attr("class", "datas")
+					.attr("x", function(d,i) {
+						return i*40;
+					})
+					.attr("y", function(d,i) {
+						return i*45;
+					})
 					.text(
 						function(d,i) {
-							return d;
+							return d.name;
 						});
 
 			// instruction for nodes removed

@@ -1,64 +1,87 @@
-[{
-    "name": "Architecte",
-    "children": [{
-        "name": "Chef",
-        "children": [{
-            "name": "Chef de chantier",
-            "children": [{
-                "name": "Chef de chantier en installations électriques",
-                "salary": 2500
-            }, {
-                "name": "Chef de chantier eaux",
-                "salary": 2400
-            }]
-        }, {
-            "name": "Chef de projet ",
-            "children": [{
-                "name": "Chef de projet biodiversité",
-                "salary": 2500
-            }, {
-                "name": "Chef de projet démantellement nucléaire",
-                "salary": 2500
-            }]
-        }]
-    }, {
-        "name": "Ingénieur",
-        "children": [{
-            "name": "Ingénieur du BTP",
-            "salary": 2600
-        },{
-            "name": "Ingénieur en génie climatique",
-            "salary": 2200
-        }, {
-            "name": "Ingénieur structures",
-            "salary": 2800
-        }, {
-            "name": "Ingénieur efficacité énergétique du bâtiment",
-            "salary": 2500
-        }]
-    }, {
-        "name": "Technicien",
-        "children": [ {
-            "name": "Technicien thermicien",
-            "children": [{
-                "name": "Plasturgiste",
-                "salary": 1500
-            }, {
-                "name": "Couvreur",
-                "salary": 1500
-            }, {
-                "name": "Chaudronnier",
-                "salary": 1400
-            }]
-        }, {
-            "name": "Technicien électrotechnicien",
-            "children": [{
-                "name": "Electricien",
-                "salary": 1600
-            }, {
-                "name": "Soudeur",
-                "salary": 1500
-            }]
-        }]
-    }]
-}]
+[
+    {
+        "name": "Ingénieur du BTP",
+        "salary": 2600,
+        "specialisation": [
+            "Ingénieur structures"
+        ],
+        "hierachie": [
+            "Chef de chantier"
+        ],
+        "collaboration": [
+            "Architecte",
+            "Ingénieur en génie climatique"
+        ]
+    },
+    {
+        "name": "Ingénieur en génie climatique",
+        "salary": 2200,
+        "specialisation": [
+        ],
+        "hierachie": [
+            "Chef de chantier"
+        ],
+        "collaboration": [
+            "Ingénieur du BTP",
+            "Ingénieur efficacité énergétique du bâtiment"
+        ]
+    },
+    {
+        "name": "Ingénieur structures",
+        "salary": 2800,
+        "specialisation": [
+            "Ingénieur génie urbain",
+            "Ingénieur efficacité énergétique du bâtiment"
+        ],
+        "hierachie": [
+            "Chef de chantier"
+        ],
+        "collaboration": [
+            "Architecte"
+        ]
+    },
+    {
+        "name": "Ingénieur efficacité énergétique du bâtiment",
+        "salary": 2500,
+        "specialisation": [
+            "Ingénieur du BTP",
+            "Ingénieur en génie climatique"
+        ],
+        "hierachie": [
+            "Chef de chantier"
+        ],
+        "collaboration": [
+            "Architecte",
+            "Ingénieur structures"
+        ]
+    },
+    {
+        "name": "Architecte",
+        "salary": 2000,
+        "specialisation": [
+            "Ingénieur du BTP",
+            "Ingénieur méthodes"
+        ],
+        "hierachie": [
+            "Chef de chantier"
+        ],
+        "collaboration": [
+            "Ingénieur efficacité énergétique du bâtiment"
+        ]
+    },
+    {
+        "name": "Chef de chantier",
+        "salary": 2600,
+        "specialisation": [
+        ],
+        "hierachie": [
+        ],
+        "collaboration": [
+            "Architecte",
+            "Ingénieur efficacité énergétique du bâtiment",
+            "Ingénieur du BTP",
+            "Ingénieur structures",
+            "Ingénieur en génie climatique"
+        ]
+    }
+]
