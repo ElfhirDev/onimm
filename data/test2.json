@@ -1,4 +1,4 @@
-{
+[{
     "name": "Architecte",
     "children": [{
         "name": "Chef",
@@ -61,4 +61,4 @@
             }]
         }]
     }]
-}
+}]

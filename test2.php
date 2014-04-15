@@ -49,7 +49,9 @@
     <div class="container">
       <div class="starter-template">
           <h1>D3 Test 2</h1>
-          <p class="lead">Mind mapping</p>
+          <h2 class="lead">Mind mapping</h2>
+          <p></p>
+          <p></p>
           
           <div id="onimm_"></div>
 
