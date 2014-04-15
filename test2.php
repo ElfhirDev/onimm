@@ -50,9 +50,6 @@
       <div class="starter-template">
           <h1>D3 Test 2</h1>
           <h2 class="lead">Mind mapping</h2>
-          <p></p>
-          <p></p>
-          
           <div id="onimm_"></div>
 
       </div>
