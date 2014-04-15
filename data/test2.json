@@ -1,0 +1,64 @@
+{
+    "name": "Architecte",
+    "children": [{
+        "name": "Chef",
+        "children": [{
+            "name": "Chef de chantier",
+            "children": [{
+                "name": "Chef de chantier en installations électriques",
+                "salary": 2500
+            }, {
+                "name": "Chef de chantier eaux",
+                "salary": 2400
+            }]
+        }, {
+            "name": "Chef de projet ",
+            "children": [{
+                "name": "Chef de projet biodiversité",
+                "salary": 2500
+            }, {
+                "name": "Chef de projet démantellement nucléaire",
+                "salary": 2500
+            }]
+        }]
+    }, {
+        "name": "Ingénieur",
+        "children": [{
+            "name": "Ingénieur du BTP",
+            "salary": 2600
+        },{
+            "name": "Ingénieur en génie climatique",
+            "salary": 2200
+        }, {
+            "name": "Ingénieur structures",
+            "salary": 2800
+        }, {
+            "name": "Ingénieur efficacité énergétique du bâtiment",
+            "salary": 2500
+        }]
+    }, {
+        "name": "Technicien",
+        "children": [ {
+            "name": "Technicien thermicien",
+            "children": [{
+                "name": "Plasturgiste",
+                "salary": 1500
+            }, {
+                "name": "Couvreur",
+                "salary": 1500
+            }, {
+                "name": "Chaudronnier",
+                "salary": 1400
+            }]
+        }, {
+            "name": "Technicien électrotechnicien",
+            "children": [{
+                "name": "Electricien",
+                "salary": 1600
+            }, {
+                "name": "Soudeur",
+                "salary": 1500
+            }]
+        }]
+    }]
+}

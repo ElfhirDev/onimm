@@ -1,0 +1,13 @@
+## https://github.com/github/gitignore
+
+# annoying stuff from os
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+
