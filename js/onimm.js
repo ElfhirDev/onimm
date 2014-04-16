@@ -24,10 +24,13 @@ function Onimm(id, data_uri) {
 		id : id,
 		data_uri : data_uri,
 		data : [],
+		margin : {top: -5, right: -5, bottom: -5, left: -5},
 		width : 640,
 		height : 400,
 		background_color : "#eee",
-		stroke_color : "#111"
+		stroke_color : "#111",
+		totalNodes : 0,
+		zoom : null
 	};
 
 	/**
@@ -35,80 +38,102 @@ function Onimm(id, data_uri) {
 	 */
 	onimm.init = function() {
 
+		onimm.settings.zoom = d3.behavior.zoom()
+			.scaleExtent([1, 10])
+			.on("zoom", onimm.zoomed);
+
+		// -------------- When dragging -----
+		onimm.settings.drag = d3.behavior.drag()
+			.origin(function(d) { return d; })
+			.on("dragstart", onimm.dragstarted)
+			.on("drag", onimm.dragged)
+			.on("dragend", onimm.dragended);
+
+		onimm.svg = d3.select(onimm.settings.id).append("svg:svg")
+			.attr("width", onimm.settings.width)
+			.attr("height", onimm.settings.height)
+			.style("border", "1px solid black")
+			.attr("id", id + "svg_")
+		.append("g")
+			.attr("transform", "translate(" + onimm.settings.margin.left + "," + onimm.settings.margin.right + ")")
+			.call(onimm.settings.zoom);
+
+		onimm.rect = onimm.svg.append("svg:rect")
+			.attr("width", onimm.settings.width)
+			.attr("height", onimm.settings.height)
+			.style("fill", "none")
+			.style("pointer-events", "all");
+
+		onimm.container = onimm.svg.append("g")
+
+		onimm.container.append("g")
+			.attr("class", "x axis")
+		  .selectAll("line")
+			.data(d3.range(0, onimm.settings.width, 10))
+		  .enter().append("line")
+			.attr("x1", function(d) { return d; })
+			.attr("y1", 0)
+			.attr("x2", function(d) { return d; })
+			.attr("y2", onimm.settings.height);
+
+		onimm.container.append("g")
+			.attr("class", "y axis")
+		  .selectAll("line")
+			.data(d3.range(0, onimm.settings.height, 10))
+		  .enter().append("line")
+			.attr("x1", 0)
+			.attr("y1", function(d) { return d; })
+			.attr("x2", onimm.settings.width)
+			.attr("y2", function(d) { return d; });
+
+
 		// Load our resources
 		d3.json(data_uri, function(error, json) {
 
 			// DEBUG
 			if (error) return console.warn(error);
 
-			// TODO : Parse, prepare the data in Array for D3
 			onimm.settings.data = json;
 
-			// For testing
-			var tempData = ['1', '2', '3', '4', '5', '6', '7'];
-
-			// TODO : isolate these instructions in appropriate function for a clean code
-			onimm.svgContainer = d3.select(onimm.settings.id).append("svg:svg")
-					.attr("width", onimm.settings.width)
-					.attr("height", onimm.settings.height)
-					.style("border", "1px solid black")
-					.attr("id", id + "svg_");
-
-			onimm.job_update = onimm.svgContainer.selectAll("g").data(onimm.settings.data);
-			onimm.job_enter = onimm.svgContainer.selectAll("g").data(onimm.settings.data).enter().append("svg:g");
-			onimm.job_exit = onimm.svgContainer.selectAll("g").data(onimm.settings.data).exit().append("svg:g");
-
-			onimm.circle_update = onimm.job_update.append('svg:circle');
-			onimm.circle_enter = onimm.job_enter.append('svg:circle');
-			onimm.circle_exit = onimm.job_exit.append('svg:circle');
-
-			onimm.circle_attributes = onimm.circle_update
-				.attr("cx", 50)
-				.attr("cy", 50)
-				.attr("r", 15)
-				.style("fill", "#aef221");
-
-			onimm.job_enter_attributes = onimm.circle_enter
-				.attr("cx", function(d,i) {return i*40;})
-				.attr("cy", function(d,i) {return i*45;})
-				.attr("r", 20)
-				.style("fill", "#ff400d");
-
-			onimm.job_exit_attributes = onimm.circle_exit
-				.attr("cx", 50)
-				.attr("cy", 50)
-				.attr("r", 15)
-				.style("fill", "#34bc51");
-
-			onimm.job_update
-				.attr("transform", function(d) {
-					return translate(i*40, i*40);
-				});
-
-			// updating nodes with data
-			onimm.job_update.text(
-				function(d,i) {
-					return d;
-				});
-
-			// adding nodes for new data
-			onimm.job_enter.append("text")
-					.attr("class", "datas")
-					.attr("x", function(d,i) {
-						return i*40;
-					})
-					.attr("y", function(d,i) {
-						return i*45;
-					})
-					.text(
-						function(d,i) {
-							return d.name;
-						});
-
-			// instruction for nodes removed
-			// onimm.exit
-
+			onimm.dot = onimm.container.append("g")
+				.attr("class", "dot")
+			  .selectAll("circle")
+				.data(onimm.settings.data)
+			  .enter().append("svg:circle")
+			  	.attr("r", 20)
+			  	.style("fill", "#eee")
+				.style("stroke", "#ff400d")
+				.style("stroke-width", "1.5px")
+				.attr("cx", function(d,i) {return d.x;})
+				.attr("cy", function(d,i) {return d.y;})
+				.call(onimm.settings.drag);
+		
 		}); // End d3.json(uri,function)
+	};
+
+	onimm.dottype = function(d) {
+		d.x = +d.x;
+		d.y = +d.y;
+		return d;
+	};
+
+	onimm.zoomed = function() {
+		onimm.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+	};
+
+	onimm.dragstarted = function(d) {
+		d3.event.sourceEvent.stopPropagation();
+		d3.select(this).classed("dragging", true);
+	};
+
+	// Admitted the dragged element is a circle
+	onimm.dragged = function(d) {
+		d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+		//d3.select(this).attr("transfom", "translate("+ d3.event.translate + ")");
+	};
+
+	onimm.dragended = function(d) {
+		d3.select(this).classed("dragging", false);
 	};
 
 	// Let it go, let it go !

@@ -21,6 +21,20 @@
         padding-top: 50px;
       }
 
+      svg .draggable { cursor: move; }
+
+      .dragging {
+        fill: red;
+        stroke: brown;
+      }
+
+      .axis line {
+        fill: none;
+        stroke: #ddd;
+        shape-rendering: crispEdges;
+        vector-effect: non-scaling-stroke;
+      }
+
     </style>
   </head>
   <body>
