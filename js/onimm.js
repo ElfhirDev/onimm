@@ -95,19 +95,37 @@ function Onimm(id, data_uri) {
 
 			onimm.settings.data = json;
 
-			onimm.dot = onimm.container.append("g")
-				.attr("class", "dot")
-			  .selectAll("circle")
-				.data(onimm.settings.data)
-			  .enter().append("svg:circle")
-			  	.attr("r", 20)
-			  	.style("fill", "#eee")
-				.style("stroke", "#ff400d")
-				.style("stroke-width", "1.5px")
-				.attr("cx", function(d,i) {return d.x;})
-				.attr("cy", function(d,i) {return d.y;})
-				.call(onimm.settings.drag);
+			onimm.board = onimm.container.append("svg:g")
+				.attr("class", "board");
+				
+			onimm.jobs = onimm.board.selectAll("g")
+				.data(onimm.settings.data);
+
+			onimm.jobsEnter = onimm.jobs.enter().append("svg:g")
+				.attr("class", "jobs");
+				
+			onimm.jobs.append("svg:circle")
+					.attr("class", "circle")
+					.attr("r", 20)
+					.style("fill", "#eee")
+					.style("stroke", "#ff400d")
+					.style("stroke-width", "1.5px")
+					.attr("cx", function(d,i) {return d.x;})
+					.attr("cy", function(d,i) {return d.y;});
+			onimm.jobs.append("svg:text")
+					.attr("class", "data-text")
+					.attr("x", function(d,i) {return d.x;})
+					.attr("y", function(d,i) {return d.y;})
+					.text(function(d,i) {return d.name;});
+			
+			onimm.jobs.call(onimm.settings.drag);
 		
+			// onimm.circle = onimm.dot
+			// 	.selectAll("circle")
+			// 		.data(onimm.settings.data)
+			// 	.enter()
+					
+
 		}); // End d3.json(uri,function)
 	};
 
@@ -128,8 +146,8 @@ function Onimm(id, data_uri) {
 
 	// Admitted the dragged element is a circle
 	onimm.dragged = function(d) {
-		d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-		//d3.select(this).attr("transfom", "translate("+ d3.event.translate + ")");
+		//d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+		d3.select(this).attr("transfom", "translate("+ d.x + "," + d.y +")");
 	};
 
 	onimm.dragended = function(d) {
