@@ -1,7 +1,7 @@
 [
     {   
-        "x" : 420,
-        "y": 70,
+        "x" : 200,
+        "y": 0,
         "name": "Ingénieur du BTP",
         "salary": 2600,
         "specialisation": [
@@ -16,8 +16,8 @@
         ]
     },
     {
-        "x" : 70,
-        "y": 70,
+        "x" : 100,
+        "y": 173,
         "name": "Ingénieur en génie climatique",
         "salary": 2200,
         "specialisation": [
@@ -31,8 +31,8 @@
         ]
     },
     {
-        "x" : 200,
-        "y": 140,
+        "x" : -100,
+        "y": 173,
         "name": "Ingénieur structures",
         "salary": 2800,
         "specialisation": [
@@ -47,8 +47,8 @@
         ]
     },
     {
-        "x" : 300,
-        "y": 200,
+        "x" : -200,
+        "y": 0,
         "name": "Ingénieur efficacité énergétique du bâtiment",
         "salary": 2500,
         "specialisation": [
@@ -64,8 +64,8 @@
         ]
     },
     {
-        "x" : 400,
-        "y": 340,
+        "x" : -100,
+        "y": -173,
         "name": "Architecte",
         "salary": 2000,
         "specialisation": [
@@ -80,8 +80,8 @@
         ]
     },
     {
-        "x" : 220,
-        "y": 240,
+        "x" : 100,
+        "y": -173,
         "name": "Chef de chantier",
         "salary": 2600,
         "specialisation": [

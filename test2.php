@@ -24,8 +24,14 @@
       svg .draggable { cursor: move; }
 
       .dragging {
-        fill: red;
-        stroke: brown;
+        fill: rgba(0,65,200,0.4);
+        stroke: #212121;
+      }
+
+      .circle {
+        fill: #eee;
+        stroke: #ff400d;
+        stroke-width: 1.5px;
       }
 
       .axis line {

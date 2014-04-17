@@ -102,37 +102,27 @@ function Onimm(id, data_uri) {
 				.data(onimm.settings.data);
 
 			onimm.jobsEnter = onimm.jobs.enter().append("svg:g")
-				.attr("class", "jobs");
+				.attr("class", "jobs")
+				.attr("class", "draggable");
+
+			onimm.settings.totalNodes = onimm.jobsEnter.size();
 				
 			onimm.jobs.append("svg:circle")
 					.attr("class", "circle")
 					.attr("r", 20)
-					.style("fill", "#eee")
-					.style("stroke", "#ff400d")
-					.style("stroke-width", "1.5px")
-					.attr("cx", function(d,i) {return d.x;})
-					.attr("cy", function(d,i) {return d.y;});
+					.attr("cx", function(d,i) {return onimm.x_coordinates(i);})
+					.attr("cy", function(d,i) {return onimm.y_coordinates(i);});
 			onimm.jobs.append("svg:text")
 					.attr("class", "data-text")
-					.attr("x", function(d,i) {return d.x;})
-					.attr("y", function(d,i) {return d.y;})
+					.attr("x", function(d,i) {return onimm.x_coordinates(i);})
+					.attr("y", function(d,i) {return onimm.y_coordinates(i);})
 					.text(function(d,i) {return d.name;});
 			
 			onimm.jobs.call(onimm.settings.drag);
 		
-			// onimm.circle = onimm.dot
-			// 	.selectAll("circle")
-			// 		.data(onimm.settings.data)
-			// 	.enter()
-					
+				
 
 		}); // End d3.json(uri,function)
-	};
-
-	onimm.dottype = function(d) {
-		d.x = +d.x;
-		d.y = +d.y;
-		return d;
 	};
 
 	onimm.zoomed = function() {
@@ -144,15 +134,28 @@ function Onimm(id, data_uri) {
 		d3.select(this).classed("dragging", true);
 	};
 
-	// Admitted the dragged element is a circle
+	// Admitted the dragged element is a svg group g with internal circle and text
 	onimm.dragged = function(d) {
-		//d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-		d3.select(this).attr("transfom", "translate("+ d.x + "," + d.y +")");
+		d3.select(this).select('circle').attr("cx", d.x = d3.event.x + 0.5*onimm.settings.width).attr("cy", d.y = d3.event.y + 0.5*onimm.settings.height);
+		d3.select(this).attr("transfom", "translate("+ d3.event.x + 0.5*onimm.settings.width +","+ d3.event.y + 0.5*onimm.settings.height+")");
+		d3.select(this).select('text').attr("x", d.x = d3.event.x + 0.5*onimm.settings.width).attr("y", d.y = d3.event.y + 0.5*onimm.settings.height);
 	};
 
 	onimm.dragended = function(d) {
 		d3.select(this).classed("dragging", false);
 	};
+
+	onimm.x_coordinates = function(i) {
+		var x_coordinates = 0.5*(onimm.settings.height*Math.cos(i*(2*Math.PI)/onimm.settings.totalNodes));
+		console.log("x"+i+": "+ x_coordinates);
+		return x_coordinates + 0.5*onimm.settings.width;
+	}
+
+	onimm.y_coordinates = function(i) {
+		var y_coordinates = 0.5*(onimm.settings.height*Math.sin(i*(2*Math.PI)/onimm.settings.totalNodes));
+		console.log("y"+i+": "+ y_coordinates);
+		return y_coordinates + 0.5*onimm.settings.height;
+	}
 
 	// Let it go, let it go !
 	onimm.init();
@@ -164,5 +167,5 @@ function Onimm(id, data_uri) {
 onimm = Onimm("#onimm_", "http://www.jeremy-ta.fr/work/onisep/d3/data/test2.json");
 
 // DEBUG
-//console.dir(onimm);
+console.dir(onimm);
 
