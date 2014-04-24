@@ -95,5 +95,41 @@
             "Ingénieur structures",
             "Ingénieur en génie climatique"
         ]
+    },
+    {
+        "x" : 200,
+        "y": 80,
+        "name": "Géologue",
+        "salary": 2000,
+        "specialisation": [
+        ],
+        "hierachie": [
+        ],
+        "collaboration": [
+            "Chef de chantier",
+            "Architecte",
+            "Ingénieur efficacité énergétique",
+            "Ingénieur du BTP",
+            "Ingénieur structures",
+            "Ingénieur en génie climatique"
+        ]
+    },
+    {
+        "x" : 200,
+        "y": 80,
+        "name": "Tailleur de pierre",
+        "salary": 1400,
+        "specialisation": [
+        ],
+        "hierachie": [
+            "Chef de chantier"
+        ],
+        "collaboration": [
+            "Architecte",
+            "Ingénieur efficacité énergétique",
+            "Ingénieur du BTP",
+            "Ingénieur structures",
+            "Ingénieur en génie climatique"
+        ]
     }
 ]

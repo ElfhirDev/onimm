@@ -19,6 +19,21 @@
 
       body {
         padding-top: 50px;
+        background-color: rgba(0,210,210,0.8);
+      }
+
+      body.foreignObject {
+      	padding: 0;
+      	background-color: transparent;
+      }
+
+      .bubble {
+      	width: 100%;
+      	height: 100%;
+      }
+
+      #onimm_svg_ {
+      	background-color: #fff;
       }
 
       svg .draggable { cursor: move; }
@@ -29,9 +44,13 @@
       }
 
       .circle {
-        fill: #eee;
+        fill: #ccc;
         stroke: #ff400d;
         stroke-width: 1.5px;
+      }
+
+      .jobs {
+        fill-opacity: 0.9;
       }
 
       .axis line {
@@ -39,6 +58,10 @@
         stroke: #ddd;
         shape-rendering: crispEdges;
         vector-effect: non-scaling-stroke;
+      }
+
+      .data-text {
+        text-anchor:middle;
       }
 
     </style>
@@ -58,9 +81,9 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="http://www.jeremy-ta.fr/work/onisep/d3/test1.php">Test 1</a></li>
+            <li><a href="./test1.html">Test 1</a></li>
             <li class="active"><a href="#">Test 2</a></li>
-            <li><a href="http://www.jeremy-ta.fr/work/onisep/d3/test3.php">Test 3</a></li>
+            <li><a href="./test3.html">Test 3</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -71,7 +94,6 @@
           <h1>D3 Test 2</h1>
           <h2 class="lead">Mind mapping</h2>
           <div id="onimm_"></div>
-
       </div>
     </div>
 
