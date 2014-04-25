@@ -30,9 +30,7 @@ function Onimm(id, data_uri) {
 		radius:20,
 		background_color : "#eee",
 		stroke_color : "#111",
-		totalNodes : 0,
-		zoom : null,
-		current : {x : 0, y : 0}
+		totalNodes : 0
 	};
 
 	/**
@@ -109,6 +107,37 @@ function Onimm(id, data_uri) {
 
 			onimm.jobs.call(onimm.settings.drag);
 			onimm.svg.call(onimm.settings.zoom);
+
+			// When double click on jobs node (since simple click might be blocked)
+			onimm.jobs.on("dblclick",function(d){
+				onimm.modale = onimm.svg.append("svg:svg")
+					.attr("width", onimm.settings.width - 20)
+					.attr("height", onimm.settings.height - 20)
+					.attr("align", "center")
+					.style("fill", "#bbb")
+					.attr("id", id + "modale_");
+
+				// -- Create container of elements -----
+				onimm.modale_rect = onimm.modale.append("rect")
+					.attr("transform", "translate(" + 20 + "," + 20 + ")")
+					.attr("width", (onimm.settings.width-40))
+					.attr("height", (onimm.settings.height-40))
+					.style("fill", "rgba(255,255,255,0.9)");
+
+				onimm.modale_leave = onimm.modale.append("foreignObject")
+					.attr("width", 30)
+					.attr("height", 30)
+					.attr("x", onimm.settings.width - 50)
+					.attr("y", (onimm.settings.height - 380))
+						.append("xhtml:body").attr("class", "foreignObject")
+							.html("<img class='close-icon' src='./img/close-icon.png'>");
+
+				// If we click on the close button
+				onimm.modale_leave.on("click", function(d) {
+					onimm.modale.remove();
+				});
+
+			});
 
 		}); // End d3.json(uri,function)
 	};
