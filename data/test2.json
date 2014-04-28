@@ -1,9 +1,12 @@
 [
     {   
+        "id" : 0,
         "x" : 200,
         "y": 0,
         "name": "Ingénieur du BTP",
         "salary": 2600,
+        "sector": "BTP et architecture",
+        "isActive": true,
         "specialisation": [
             "Ingénieur structures"
         ],
@@ -16,10 +19,13 @@
         ]
     },
     {
+        "id" : 1,
         "x" : 100,
         "y": 173,
         "name": "Ingénieur en génie climatique",
         "salary": 2200,
+        "sector": "BTP et architecture",
+        "isActive": false,
         "specialisation": [
         ],
         "hierachie": [
@@ -31,10 +37,13 @@
         ]
     },
     {
+        "id" : 2,
         "x" : -100,
         "y": 173,
         "name": "Ingénieur structures",
         "salary": 2800,
+        "sector": "BTP et architecture",
+        "isActive": false,
         "specialisation": [
             "Ingénieur génie urbain",
             "Ingénieur efficacité énergétique"
@@ -47,10 +56,13 @@
         ]
     },
     {
+        "id" : 3,
         "x" : -200,
         "y": 0,
         "name": "Ingénieur efficacité énergétique",
         "salary": 2500,
+        "sector": "BTP et architecture",
+        "isActive": false,
         "specialisation": [
             "Ingénieur du BTP",
             "Ingénieur en génie climatique"
@@ -64,10 +76,13 @@
         ]
     },
     {
+        "id" : 4,
         "x" : -100,
         "y": -173,
         "name": "Architecte",
         "salary": 2000,
+        "sector": "BTP et architecture",
+        "isActive": false,
         "specialisation": [
             "Ingénieur du BTP",
             "Ingénieur méthodes"
@@ -80,10 +95,13 @@
         ]
     },
     {
+        "id" : 5,
         "x" : 200,
         "y": 80,
         "name": "Chef de chantier",
         "salary": 2600,
+        "sector": "BTP et architecture",
+        "isActive": false,
         "specialisation": [
         ],
         "hierachie": [

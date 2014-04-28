@@ -20,10 +20,11 @@ function Onimm(id, data_uri) {
 	// internal object
 	var onimm = {};
 
-	onimm.settings = {
+	onimm.vars = {
 		id : "#"+id,
 		data_uri : data_uri,
-		data : [],
+		x_coordinates : [],
+		y_coordinates : [],
 		margin : {top: -5, right: -5, bottom: -5, left: -5},
 		width : 600,
 		height : 400,
@@ -39,29 +40,29 @@ function Onimm(id, data_uri) {
 	onimm.init = function() {
 
 		// ---- When panning the background -----
-		onimm.settings.zoom = d3.behavior.zoom()
+		onimm.vars.zoom = d3.behavior.zoom()
 			.scaleExtent([1, 1])
 			.on("zoomstart", onimm.zoomstart)
 			.on("zoom", onimm.zoomed)
 			.on("zoomend", onimm.zoomend);
 
 		// -------------- When dragging -----
-		onimm.settings.drag = d3.behavior.drag()
+		onimm.vars.drag = d3.behavior.drag()
 			.on("dragstart", onimm.dragstarted)
 			.on("drag", onimm.dragged)
 			.on("dragend", onimm.dragended);
 
 		// ---------- Create SVG element -----
-		onimm.svg = d3.select(onimm.settings.id).append("svg:svg")
-			.attr("width", onimm.settings.width)
-			.attr("height", onimm.settings.height)
+		onimm.svg = d3.select(onimm.vars.id).append("svg:svg")
+			.attr("width", onimm.vars.width)
+			.attr("height", onimm.vars.height)
 			.attr("align", "center")
 			.style("border", "1px solid black")
 			.attr("id", id + "svg_");
 
 		// -- Create container of elements -----
 		onimm.container = onimm.svg.append("g")
-			.attr("transform", "translate(" + 0.5*onimm.settings.width + "," + 0.5*onimm.settings.height + ")")
+			.attr("transform", "translate(" + 0.5*onimm.vars.width + "," + 0.5*onimm.vars.height + ")")
 			.attr("class", "g_container_");
 
 
@@ -71,66 +72,104 @@ function Onimm(id, data_uri) {
 			// DEBUG
 			if (error) return console.warn(error);
 
-			onimm.settings.data = json;
+			onimm.vars.data = json;
+
+			console.dir(onimm.vars.data);
 
 			onimm.jobs = onimm.container.selectAll("g")
-				.data(onimm.settings.data);
+				.data(onimm.vars.data);
 
 			onimm.jobs_enter = onimm.jobs.enter().append("svg:g")
 				.classed("jobs", function(d){return d;})
 				.classed("draggable", function(d) {return d;});
 
-			onimm.settings.totalNodes = onimm.jobs_enter.size();
+			onimm.vars.totalNodes = onimm.jobs_enter.size();
 				
 			onimm.jobs.append("svg:circle")
 					.attr("class", "circle")
-					.attr("r", onimm.settings.radius)
-					.attr("cx", function(d,i) {return d.x = onimm.x_coordinates(i);})
-					.attr("cy", function(d,i) {return d.y = onimm.y_coordinates(i);});
+					.attr("r", onimm.vars.radius)
+					.attr("cx", function(d,i) {
+						onimm.vars.x_coordinates.push(onimm.x_coordinates(d,i));
+						return d.x = onimm.x_coordinates(d,i);
+					})
+					.attr("cy", function(d,i) {
+						onimm.vars.y_coordinates.push(onimm.y_coordinates(d,i));
+						return d.y = onimm.y_coordinates(d,i);
+					});
 
 			onimm.jobs_text = onimm.jobs.append("svg:text")
 					.attr("class", "data-text")
-					.attr("x", function(d,i) {return d.x = onimm.x_coordinates(i);})
-					.attr("y", function(d,i) {return d.y = onimm.y_coordinates(i);})
+					.attr("x", function(d,i) {return d.x = onimm.x_coordinates(d,i);})
+					.attr("y", function(d,i) {return d.y = onimm.y_coordinates(d,i);})
 					.attr("dx", "0")
-					.attr("dy", function(d,i) {return (1.5*onimm.settings.radius);})
+					.attr("dy", function(d,i) {return (1.5*onimm.vars.radius);})
 					.text(function(d,i) {return d.name})
-					.call(onimm.wrap, 10*onimm.settings.radius);
+					.call(onimm.wrap, 10*onimm.vars.radius);
 
 			onimm.jobs.append("foreignObject")
-				.attr("width", 2*onimm.settings.radius)
-				.attr("height", 2*onimm.settings.radius)
-				.attr("x", function(d,i) {return d.x = onimm.x_coordinates(i) - onimm.settings.radius;})
-				.attr("y", function(d,i) {return d.y = onimm.y_coordinates(i) - onimm.settings.radius;})
+				.attr("width", 2*onimm.vars.radius)
+				.attr("height", 2*onimm.vars.radius)
+				.attr("x", function(d,i) {return d.x = onimm.x_coordinates(d,i) - onimm.vars.radius;})
+				.attr("y", function(d,i) {return d.y = onimm.y_coordinates(d,i) - onimm.vars.radius;})
 					.append("xhtml:body").attr("class", "foreignObject")
 						.html("<img class='bubble' src='./img/bubble.png'>");
 
-			onimm.jobs.call(onimm.settings.drag);
-			onimm.svg.call(onimm.settings.zoom);
+			// Path joining Nodes Jobs
+			for(var a = 1, l = onimm.vars.totalNodes; a<l; a++) {
+				onimm.container.append("path")
+					.attr("class", function(d,i) {return "bond_"})
+					.attr("id", function(d,i) {return "bond_"+a})
+					.attr("fill", "none").attr("stroke","#ff64ff").attr("stroke-width", "7")
+					.attr("d", "M 0,0 C 10,0 10,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
+			}
+
+
+			onimm.jobs.call(onimm.vars.drag);
+			onimm.svg.call(onimm.vars.zoom);
 
 			// When double click on jobs node (since simple click might be blocked)
 			onimm.jobs.on("dblclick",function(d){
-				onimm.modale = onimm.svg.append("svg:svg")
-					.attr("width", onimm.settings.width - 20)
-					.attr("height", onimm.settings.height - 20)
+
+				console.dir(d);
+
+				onimm.modale = onimm.svg.append("svg:svg");
+
+				onimm.modale
+					.transition().duration(3000).delay(500)
+					.attr("width", onimm.vars.width - 20)
+					.attr("height", onimm.vars.height - 20)
 					.attr("align", "center")
 					.style("fill", "#bbb")
 					.attr("id", id + "modale_");
 
 				// -- Create container of elements -----
-				onimm.modale_rect = onimm.modale.append("rect")
+				onimm.modale_rect = onimm.modale.append("svg:rect");
+
+				onimm.modale_rect
+					.transition().duration(3000).delay(500)
 					.attr("transform", "translate(" + 20 + "," + 20 + ")")
-					.attr("width", (onimm.settings.width-40))
-					.attr("height", (onimm.settings.height-40))
+					.attr("width", (onimm.vars.width-40))
+					.attr("height", (onimm.vars.height-40))
 					.style("fill", "rgba(255,255,255,0.9)");
 
-				onimm.modale_leave = onimm.modale.append("foreignObject")
+				onimm.modale_leave = onimm.modale.append("foreignObject");
+
+				onimm.modale_leave
 					.attr("width", 30)
 					.attr("height", 30)
-					.attr("x", onimm.settings.width - 50)
-					.attr("y", (onimm.settings.height - 380))
+					.attr("x", onimm.vars.width - 50)
+					.attr("y", (onimm.vars.height - 380))
 						.append("xhtml:body").attr("class", "foreignObject")
 							.html("<img class='close-icon' src='./img/close-icon.png'>");
+
+				onimm.modale_title = onimm.modale.append("svg:text");
+
+				onimm.modale_title
+					.transition().duration(3000).delay(500)
+					.attr("class", "modale-title")
+					.attr("x", 0.4*onimm.vars.width)
+					.attr("y", 30)
+					.text(d.name);
 
 				// If we click on the close button
 				onimm.modale_leave.on("click", function(d) {
@@ -147,9 +186,8 @@ function Onimm(id, data_uri) {
 	};
 
 	onimm.zoomed = function(d) {
-		
-		var new_x = d3.event.translate[0] + 0.5*onimm.settings.width;
-		var new_y = d3.event.translate[1] + 0.5*onimm.settings.height;
+		var new_x = d3.event.translate[0] + 0.5*onimm.vars.width;
+		var new_y = d3.event.translate[1] + 0.5*onimm.vars.height;
 		onimm.container.attr("transform", "translate(" + new_x + "," + new_y + ")");
 	};
 
@@ -168,27 +206,75 @@ function Onimm(id, data_uri) {
 		//d3.select(this).attr("transform", "translate("+ d3.event.x +","+ d3.event.y +")");
 		d3.select(this).select('text').attr("x", d3.event.x).attr("y", d3.event.y);
 		d3.select(this).select('foreignObject')
-			.attr("x", d3.event.x - onimm.settings.radius).attr("y", d3.event.y - onimm.settings.radius);
+			.attr("x", d3.event.x - onimm.vars.radius).attr("y", d3.event.y - onimm.vars.radius);
+
 		d.x = d3.event.x;
 		d.y = d3.event.y;
+		onimm.vars.x_coordinates[d] = d3.event.x;
+		onimm.vars.y_coordinates[d] = d3.event.y;
+		
+		d3.select("#bond_"+ d.id +"").attr("d", "M 0,0 C 10,0 10,0 "+ d3.event.x +","+ d3.event.y +"");
 	};
 
 	onimm.dragended = function(d) {
 		d3.select(this).classed("dragging", false);
 	};
 
+	// /**
+	//  * Initiate the jobs position with coordinates from polar
+	//  * @param  {integer} i zero-based index of element
+	//  * @return {float} x coordinates
+	//  */
+	// onimm.x_coordinates = function(d,i) {
+		
+	// 	var x_coordinates = 0;
+	// 	if(d.isActive === true) {
+	// 		onimm.vars.x_coordinates.push(x_coordinates);
+	// 		return x_coordinates;
+	// 	}
+	// 	else {
+	// 		x_coordinates = 0.4*(onimm.vars.height*Math.cos((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
+	// 		onimm.vars.x_coordinates.push(x_coordinates);
+	// 		return x_coordinates;
+	// 	}
+	// };
+	// onimm.y_coordinates = function(d,i) {
+	// 	var y_coordinates = 0;
+	// 	if(d.isActive === true) {
+	// 		onimm.vars.y_coordinates.push(y_coordinates);
+	// 		return y_coordinates;
+	// 	}
+	// 	else {
+	// 		y_coordinates = 0.4*(onimm.vars.height*Math.sin((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
+	// 		onimm.vars.y_coordinates.push(y_coordinates);
+	// 		return y_coordinates;
+	// 	}
+	// };
+	
 	/**
 	 * Initiate the jobs position with coordinates from polar
 	 * @param  {integer} i zero-based index of element
 	 * @return {float} x coordinates
 	 */
-	onimm.x_coordinates = function(i) {
-		var x_coordinates = 0.4*(onimm.settings.height*Math.cos(i*(2*Math.PI)/onimm.settings.totalNodes));
-		return x_coordinates;
+	onimm.x_coordinates = function(d,i) {
+		var x_coordinates = 0;
+		if(d.isActive === true) {
+			return x_coordinates;
+		}
+		else {
+			x_coordinates = 0.4*(onimm.vars.height*Math.cos((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
+			return x_coordinates;
+		}
 	};
-	onimm.y_coordinates = function(i) {
-		var y_coordinates = 0.4*(onimm.settings.height*Math.sin(i*(2*Math.PI)/onimm.settings.totalNodes));
-		return y_coordinates;
+	onimm.y_coordinates = function(d,i) {
+		var y_coordinates = 0;
+		if(d.isActive === true) {
+			return y_coordinates;
+		}
+		else {
+			y_coordinates = 0.4*(onimm.vars.height*Math.sin((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
+			return y_coordinates;
+		}
 	};
 
 	/**
