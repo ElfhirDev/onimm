@@ -8,14 +8,14 @@
         "sector": "BTP et architecture",
         "isActive": true,
         "specialisation": [
-            "Ingénieur structures"
+            {"2" : "Ingénieur structures"}
         ],
         "hierachie": [
-            "Chef de chantier"
+            {"5" : "Chef de chantier"}
         ],
         "collaboration": [
-            "Architecte",
-            "Ingénieur en génie climatique"
+            {"4" : "Architecte"},
+            {"1" : "Ingénieur en génie climatique"}
         ]
     },
     {
@@ -29,11 +29,11 @@
         "specialisation": [
         ],
         "hierachie": [
-            "Chef de chantier"
+            {"5" : "Chef de chantier"}
         ],
         "collaboration": [
-            "Ingénieur du BTP",
-            "Ingénieur efficacité énergétique"
+            {"0" : "Ingénieur du BTP"},
+            {"3" : "Ingénieur efficacité énergétique"}
         ]
     },
     {
@@ -45,14 +45,12 @@
         "sector": "BTP et architecture",
         "isActive": false,
         "specialisation": [
-            "Ingénieur génie urbain",
-            "Ingénieur efficacité énergétique"
         ],
         "hierachie": [
-            "Chef de chantier"
+            {"5" : "Chef de chantier"}
         ],
         "collaboration": [
-            "Architecte"
+            {"4" : "Architecte"}
         ]
     },
     {
@@ -64,15 +62,15 @@
         "sector": "BTP et architecture",
         "isActive": false,
         "specialisation": [
-            "Ingénieur du BTP",
-            "Ingénieur en génie climatique"
+            {"0" : "Ingénieur du BTP"},
+            {"1" : "Ingénieur en génie climatique"}
         ],
         "hierachie": [
-            "Chef de chantier"
+            {"5" : "Chef de chantier"}
         ],
         "collaboration": [
-            "Architecte",
-            "Ingénieur structures"
+            {"4" : "Architecte"},
+            {"2" : "Ingénieur structures"}
         ]
     },
     {
@@ -84,14 +82,14 @@
         "sector": "BTP et architecture",
         "isActive": false,
         "specialisation": [
-            "Ingénieur du BTP",
-            "Ingénieur méthodes"
+            {"0" : "Ingénieur du BTP"},
+            {"2" : "Ingénieur structures"}
         ],
         "hierachie": [
-            "Chef de chantier"
+            {"5" : "Chef de chantier"}
         ],
         "collaboration": [
-            "Ingénieur efficacité énergétique"
+            {"3" : "Ingénieur efficacité énergétique"}
         ]
     },
     {
@@ -107,11 +105,11 @@
         "hierachie": [
         ],
         "collaboration": [
-            "Architecte",
-            "Ingénieur efficacité énergétique",
-            "Ingénieur du BTP",
-            "Ingénieur structures",
-            "Ingénieur en génie climatique"
+            {"4" : "Architecte"},
+            {"3" : "Ingénieur efficacité énergétique"},
+            {"0" : "Ingénieur du BTP"},
+            {"2" : "Ingénieur structures"},
+            {"1" : "Ingénieur en génie climatique"}
         ]
     }
 ]

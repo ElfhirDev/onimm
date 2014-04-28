@@ -31,6 +31,12 @@ function Onimm(id, data_uri) {
 		radius:20,
 		background_color : "#eee",
 		stroke_color : "#111",
+		hierarchie_color: "#FC8C2E",
+		collaboration_color: "#C9D800",
+		specialisation_color: "#0D7B92",
+		hierarchie: [],
+		collaboration: [],
+		specialisation: [],
 		totalNodes : 0
 	};
 
@@ -119,15 +125,37 @@ function Onimm(id, data_uri) {
 						.html("<img class='bubble' src='./img/bubble.png'>");
 
 			// Path joining Nodes Jobs
-			for(var a = 1, l = onimm.vars.totalNodes; a<l; a++) {
-				onimm.container.append("path")
-					.attr("class", function(d,i) {return "bond_"})
-					.attr("id", function(d,i) {return "bond_"+a})
-					.attr("fill", "none").attr("stroke","#ff64ff").attr("stroke-width", "7")
-					.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
+			for(var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
+
+				if(onimm.vars.data[a].isActive === false){
+
+					onimm.bonds = onimm.container.append("path")
+						.attr("class", function(d,i) {return "bond_"})
+						.attr("id", function(d,i) {return "bond_"+a})
+						.attr("fill", "none").attr("stroke-width", "6").attr("stroke", "#ff400d")
+						.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
+				}
+				else {
+					/* TODO */
+					onimm.hierarchie = onimm.vars.data[a].hierarchie;	
+					onimm.specialisation = onimm.vars.data[a].specialisation;
+					onimm.collaboration = onimm.vars.data[a].collaboration;
+				
+					console.log(onimm.hierarchie);
+				}
+					// Set the good color of bonds between nodes
+					// if(onimm.vars.data[a].hiearchie) {
+					// 	onimm.bonds.attr("stroke", onimm.vars.hierarchie_color);
+					// }
+					// else if(onimm.vars.data[a].specialisation) {
+					// 	onimm.bonds.attr("stroke", onimm.vars.specialisation_color);
+					// }
+					// else if(onimm.vars.data[a].collaboration) {
+					// 	onimm.bonds.attr("stroke", onimm.vars.collaboration_color);
+					// }
+				
 			}
 
-			console.dir(onimm.vars.x_coordinates);
 
 			onimm.jobs.call(onimm.vars.drag);
 			onimm.svg.call(onimm.vars.zoom);
@@ -215,21 +243,6 @@ function Onimm(id, data_uri) {
 
 		d.x = d3.event.x;
 		d.y = d3.event.y;
-		
-		console.log(d);
-		
-		// if(d.isActive === true) {
-		// 	for(var a = 1, l = onimm.vars.totalNodes; a<l; a++) {
-		// 		d3.select("#bond_"+a)
-		// 		.attr("d", "M "+d3.event.x+","+d3.event.y+" C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
-		// 	}
-		// }
-		// else {
-		// 	d3.select("#bond_"+ d.id +"").attr("d", "M "+ d3.event.x +","+ d3.event.y +" C 10,0 10,0 "+ d3.event.x +","+ d3.event.y +"");
-		// 	onimm.vars.x_coordinates[d] = d3.event.x;
-		// 	onimm.vars.y_coordinates[d] = d3.event.y;
-		// }	
-		
 
 		if(d.isActive === true) {
 			for(var a = 1, l = onimm.vars.totalNodes; a<l; a++) {
