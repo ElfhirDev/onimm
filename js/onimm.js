@@ -74,8 +74,6 @@ function Onimm(id, data_uri) {
 
 			onimm.vars.data = json;
 
-			console.dir(onimm.vars.data);
-
 			onimm.jobs = onimm.container.selectAll("g")
 				.data(onimm.vars.data);
 
@@ -99,8 +97,14 @@ function Onimm(id, data_uri) {
 
 			onimm.jobs_text = onimm.jobs.append("svg:text")
 					.attr("class", "data-text")
-					.attr("x", function(d,i) {return d.x = onimm.x_coordinates(d,i);})
-					.attr("y", function(d,i) {return d.y = onimm.y_coordinates(d,i);})
+					.attr("x", function(d,i) {
+						onimm.vars.x_coordinates.push(onimm.x_coordinates(d,i));
+						return d.x = onimm.x_coordinates(d,i);
+					})
+					.attr("y", function(d,i) {
+						onimm.vars.y_coordinates.push(onimm.y_coordinates(d,i));
+						return d.y = onimm.y_coordinates(d,i);
+					})
 					.attr("dx", "0")
 					.attr("dy", function(d,i) {return (1.5*onimm.vars.radius);})
 					.text(function(d,i) {return d.name})
@@ -120,9 +124,10 @@ function Onimm(id, data_uri) {
 					.attr("class", function(d,i) {return "bond_"})
 					.attr("id", function(d,i) {return "bond_"+a})
 					.attr("fill", "none").attr("stroke","#ff64ff").attr("stroke-width", "7")
-					.attr("d", "M 0,0 C 10,0 10,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
+					.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
 			}
 
+			console.dir(onimm.vars.x_coordinates);
 
 			onimm.jobs.call(onimm.vars.drag);
 			onimm.svg.call(onimm.vars.zoom);
@@ -210,46 +215,40 @@ function Onimm(id, data_uri) {
 
 		d.x = d3.event.x;
 		d.y = d3.event.y;
-		onimm.vars.x_coordinates[d] = d3.event.x;
-		onimm.vars.y_coordinates[d] = d3.event.y;
 		
-		d3.select("#bond_"+ d.id +"").attr("d", "M 0,0 C 10,0 10,0 "+ d3.event.x +","+ d3.event.y +"");
+		console.log(d);
+		
+		// if(d.isActive === true) {
+		// 	for(var a = 1, l = onimm.vars.totalNodes; a<l; a++) {
+		// 		d3.select("#bond_"+a)
+		// 		.attr("d", "M "+d3.event.x+","+d3.event.y+" C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
+		// 	}
+		// }
+		// else {
+		// 	d3.select("#bond_"+ d.id +"").attr("d", "M "+ d3.event.x +","+ d3.event.y +" C 10,0 10,0 "+ d3.event.x +","+ d3.event.y +"");
+		// 	onimm.vars.x_coordinates[d] = d3.event.x;
+		// 	onimm.vars.y_coordinates[d] = d3.event.y;
+		// }	
+		
+
+		if(d.isActive === true) {
+			for(var a = 1, l = onimm.vars.totalNodes; a<l; a++) {
+				d3.select("#bond_"+a)
+				.attr("d", "M "+d3.event.x+","+d3.event.y+" C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
+			}
+			onimm.vars.x_coordinates[0] = d3.event.x;
+			onimm.vars.y_coordinates[0] = d3.event.y;
+		}
+		else {
+			d3.select("#bond_"+ d.id +"").attr("d", "M "+ onimm.vars.x_coordinates[0] +","+ onimm.vars.y_coordinates[0] +" C 0,0 0,0 "+ d3.event.x +","+ d3.event.y +"");
+			onimm.vars.x_coordinates[d.id] = d3.event.x;
+			onimm.vars.y_coordinates[d.id] = d3.event.y;
+		}	
 	};
 
 	onimm.dragended = function(d) {
 		d3.select(this).classed("dragging", false);
 	};
-
-	// /**
-	//  * Initiate the jobs position with coordinates from polar
-	//  * @param  {integer} i zero-based index of element
-	//  * @return {float} x coordinates
-	//  */
-	// onimm.x_coordinates = function(d,i) {
-		
-	// 	var x_coordinates = 0;
-	// 	if(d.isActive === true) {
-	// 		onimm.vars.x_coordinates.push(x_coordinates);
-	// 		return x_coordinates;
-	// 	}
-	// 	else {
-	// 		x_coordinates = 0.4*(onimm.vars.height*Math.cos((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
-	// 		onimm.vars.x_coordinates.push(x_coordinates);
-	// 		return x_coordinates;
-	// 	}
-	// };
-	// onimm.y_coordinates = function(d,i) {
-	// 	var y_coordinates = 0;
-	// 	if(d.isActive === true) {
-	// 		onimm.vars.y_coordinates.push(y_coordinates);
-	// 		return y_coordinates;
-	// 	}
-	// 	else {
-	// 		y_coordinates = 0.4*(onimm.vars.height*Math.sin((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
-	// 		onimm.vars.y_coordinates.push(y_coordinates);
-	// 		return y_coordinates;
-	// 	}
-	// };
 	
 	/**
 	 * Initiate the jobs position with coordinates from polar
