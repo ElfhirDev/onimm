@@ -66,10 +66,16 @@ function Onimm(id, data_uri) {
 			.style("border", "1px solid black")
 			.attr("id", id + "svg_");
 
+		// -- Create container of Bond(s), James Bond ---
+		onimm.bond_container = onimm.svg.append("g")
+			.attr("transform", "translate(" + 0.5*onimm.vars.width + "," + 0.5*onimm.vars.height + ")")
+			.attr("class", "g_bond_container_");
+
 		// -- Create container of elements -----
 		onimm.container = onimm.svg.append("g")
 			.attr("transform", "translate(" + 0.5*onimm.vars.width + "," + 0.5*onimm.vars.height + ")")
 			.attr("class", "g_container_");
+
 
 
 		// Load our resources
@@ -88,28 +94,69 @@ function Onimm(id, data_uri) {
 				.classed("draggable", function(d) {return d;});
 
 			onimm.vars.totalNodes = onimm.jobs_enter.size();
-				
+
 			onimm.jobs.append("svg:circle")
 					.attr("class", "circle")
 					.attr("r", onimm.vars.radius)
 					.attr("cx", function(d,i) {
-						onimm.vars.x_coordinates.push(onimm.x_coordinates(d,i));
-						return d.x = onimm.x_coordinates(d,i);
+						onimm.vars.x_coordinates.push(onimm.init_x_coordinates(d,i));
+						return d.x = onimm.init_x_coordinates(d,i);
 					})
 					.attr("cy", function(d,i) {
-						onimm.vars.y_coordinates.push(onimm.y_coordinates(d,i));
-						return d.y = onimm.y_coordinates(d,i);
+						onimm.vars.y_coordinates.push(onimm.init_y_coordinates(d,i));
+						return d.y = onimm.init_y_coordinates(d,i);
 					});
+
+			// ---- Path joining Nodes Jobs ----
+			onimm.bonds = [];
+			for(var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
+
+				if(onimm.vars.data[a].isActive === false){
+
+					onimm.bonds[a] = onimm.bond_container.append("path")
+						.attr("class", function(d,i) {return "bond_"})
+						.attr("id", function(d,i) {return "bond_"+a})
+						.attr("fill", "none").attr("stroke-width", "6").attr("stroke", "none")
+						.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
+				}
+				else {		
+					onimm.bonds[a] = "isActive";	// current node active doesn't need bond		
+					onimm.hierarchie = onimm.vars.data[a].hierarchie;	
+					onimm.specialisation = onimm.vars.data[a].specialisation;
+					onimm.collaboration = onimm.vars.data[a].collaboration;
+				}
+
+			}
+
+			for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
+				// node active doesn't have path svg, so no attr()
+				
+				if (onimm.bonds[a] != "isActive") {
+					
+					// Use jQuery inArray, in future use built-in indexOf (<I.E9)
+					if (-1 != $.inArray(a, onimm.hierarchie)) {
+						onimm.bonds[a].attr("stroke", "#FC8C2E");
+					}
+
+					if (-1 != $.inArray(a, onimm.specialisation)) {
+						onimm.bonds[a].attr("stroke", "#0D7B92");
+					}
+
+					if (-1 != $.inArray(a, onimm.collaboration)) {
+						onimm.bonds[a].attr("stroke", "#C9D800");
+					}
+				}
+			}
 
 			onimm.jobs_text = onimm.jobs.append("svg:text")
 					.attr("class", "data-text")
 					.attr("x", function(d,i) {
-						onimm.vars.x_coordinates.push(onimm.x_coordinates(d,i));
-						return d.x = onimm.x_coordinates(d,i);
+						onimm.vars.x_coordinates.push(onimm.init_x_coordinates(d,i));
+						return d.x = onimm.init_x_coordinates(d,i);
 					})
 					.attr("y", function(d,i) {
-						onimm.vars.y_coordinates.push(onimm.y_coordinates(d,i));
-						return d.y = onimm.y_coordinates(d,i);
+						onimm.vars.y_coordinates.push(onimm.init_y_coordinates(d,i));
+						return d.y = onimm.init_y_coordinates(d,i);
 					})
 					.attr("dx", "0")
 					.attr("dy", function(d,i) {return (1.5*onimm.vars.radius);})
@@ -119,42 +166,11 @@ function Onimm(id, data_uri) {
 			onimm.jobs.append("foreignObject")
 				.attr("width", 2*onimm.vars.radius)
 				.attr("height", 2*onimm.vars.radius)
-				.attr("x", function(d,i) {return d.x = onimm.x_coordinates(d,i) - onimm.vars.radius;})
-				.attr("y", function(d,i) {return d.y = onimm.y_coordinates(d,i) - onimm.vars.radius;})
+				.attr("x", function(d,i) {return d.x = onimm.init_x_coordinates(d,i) - onimm.vars.radius;})
+				.attr("y", function(d,i) {return d.y = onimm.init_y_coordinates(d,i) - onimm.vars.radius;})
 					.append("xhtml:body").attr("class", "foreignObject")
 						.html("<img class='bubble' src='./img/bubble.png'>");
 
-			// Path joining Nodes Jobs
-			for(var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
-
-				if(onimm.vars.data[a].isActive === false){
-
-					onimm.bonds = onimm.container.append("path")
-						.attr("class", function(d,i) {return "bond_"})
-						.attr("id", function(d,i) {return "bond_"+a})
-						.attr("fill", "none").attr("stroke-width", "6").attr("stroke", "#ff400d")
-						.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
-				}
-				else {
-					/* TODO */
-					onimm.hierarchie = onimm.vars.data[a].hierarchie;	
-					onimm.specialisation = onimm.vars.data[a].specialisation;
-					onimm.collaboration = onimm.vars.data[a].collaboration;
-				
-					console.log(onimm.hierarchie);
-				}
-					// Set the good color of bonds between nodes
-					// if(onimm.vars.data[a].hiearchie) {
-					// 	onimm.bonds.attr("stroke", onimm.vars.hierarchie_color);
-					// }
-					// else if(onimm.vars.data[a].specialisation) {
-					// 	onimm.bonds.attr("stroke", onimm.vars.specialisation_color);
-					// }
-					// else if(onimm.vars.data[a].collaboration) {
-					// 	onimm.bonds.attr("stroke", onimm.vars.collaboration_color);
-					// }
-				
-			}
 
 
 			onimm.jobs.call(onimm.vars.drag);
@@ -268,7 +284,7 @@ function Onimm(id, data_uri) {
 	 * @param  {integer} i zero-based index of element
 	 * @return {float} x coordinates
 	 */
-	onimm.x_coordinates = function(d,i) {
+	onimm.init_x_coordinates = function(d,i) {
 		var x_coordinates = 0;
 		if(d.isActive === true) {
 			return x_coordinates;
@@ -278,7 +294,7 @@ function Onimm(id, data_uri) {
 			return x_coordinates;
 		}
 	};
-	onimm.y_coordinates = function(d,i) {
+	onimm.init_y_coordinates = function(d,i) {
 		var y_coordinates = 0;
 		if(d.isActive === true) {
 			return y_coordinates;
