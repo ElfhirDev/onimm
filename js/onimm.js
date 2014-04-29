@@ -238,6 +238,7 @@ function Onimm(id, data_uri) {
 		var new_x = d3.event.translate[0] + 0.5*onimm.vars.width;
 		var new_y = d3.event.translate[1] + 0.5*onimm.vars.height;
 		onimm.container.attr("transform", "translate(" + new_x + "," + new_y + ")");
+		onimm.bond_container.attr("transform", "translate(" + new_x + "," + new_y + ")");
 	};
 
 	onimm.zoomend = function(d) {
