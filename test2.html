@@ -22,25 +22,34 @@
         background-color: rgba(0,210,210,0.8);
       }
 
-      body.foreignObject {
-      	padding: 0;
-      	background-color: transparent;
+      .bubble-body {
+        padding: 0;
+        background-color: transparent;
       }
 
-      .bubble {
+      body.bubble-foreignObject {
+      	padding: 0;
+      }
+
+      img.bubble {
       	width: 100%;
       	height: 100%;
       }
 
+      body.modale-body {
+        padding: 0;
+        background-color: transparent;
+      }
+
       #onimm_svg_ {
         background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
-background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
-background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
-background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* Opera 12+ */
-background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
-background: radial-gradient(ellipse at center,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#e5e5e5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-	
+        background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
+        background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* Opera 12+ */
+        background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
+        background: radial-gradient(ellipse at center,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#e5e5e5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
       }
 
       svg .draggable { cursor: move; }
