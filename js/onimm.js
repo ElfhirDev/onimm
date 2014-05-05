@@ -29,14 +29,17 @@ function Onimm(id, data_uri) {
 		half_width : 300,
 		height : 400,
 		half_height : 200,
-		radius:20,
+		radius: 20,
 		hierarchie_color: "#FC8C2E",
 		collaboration_color: "#C9D800",
 		specialisation_color: "#0D7B92",
 		hierarchie: [],
 		collaboration: [],
 		specialisation: [],
-		totalNodes : 0
+		totalNodes : 0,
+		isZoom : null,
+		new_y : 0,
+		new_x : 0
 	};
 
 	/**
@@ -82,33 +85,33 @@ function Onimm(id, data_uri) {
 			onimm.vars.totalNodes = onimm.jobs.size();
 
 			onimm.jobs.append("svg:circle")
-					.attr("class", "circle")
-					.attr("r", onimm.vars.radius)
-					.attr("cx", function(d,i) {
-						onimm.vars.x_coordinates.push(onimm.init_x_coordinates(d,i));
-						return d.x = onimm.init_x_coordinates(d,i);
-					})
-					.attr("cy", function(d,i) {
-						onimm.vars.y_coordinates.push(onimm.init_y_coordinates(d,i));
-						return d.y = onimm.init_y_coordinates(d,i);
-					});
+				.attr("class", "circle")
+				.attr("r", onimm.vars.radius)
+				.attr("cx", function(d,i) {
+					onimm.vars.x_coordinates.push(onimm.init_x_coordinates(d,i));
+					return d.x = onimm.init_x_coordinates(d,i);
+				})
+				.attr("cy", function(d,i) {
+					onimm.vars.y_coordinates.push(onimm.init_y_coordinates(d,i));
+					return d.y = onimm.init_y_coordinates(d,i);
+				});
 
 			onimm.init_bonds();
 
 			onimm.jobs_text = onimm.jobs.append("svg:text")
-					.attr("class", "data-text")
-					.attr("x", function(d,i) {
-						onimm.vars.x_coordinates.push(onimm.init_x_coordinates(d,i));
-						return d.x = onimm.init_x_coordinates(d,i);
-					})
-					.attr("y", function(d,i) {
-						onimm.vars.y_coordinates.push(onimm.init_y_coordinates(d,i));
-						return d.y = onimm.init_y_coordinates(d,i);
-					})
-					.attr("dx", "0")
-					.attr("dy", function(d,i) {return (1.5*onimm.vars.radius);})
-					.text(function(d,i) {return d.name})
-					.call(onimm.wrap, 10*onimm.vars.radius);
+				.attr("class", "data-text")
+				.attr("x", function(d,i) {
+					onimm.vars.x_coordinates.push(onimm.init_x_coordinates(d,i));
+					return d.x = onimm.init_x_coordinates(d,i);
+				})
+				.attr("y", function(d,i) {
+					onimm.vars.y_coordinates.push(onimm.init_y_coordinates(d,i));
+					return d.y = onimm.init_y_coordinates(d,i);
+				})
+				.attr("dx", "0")
+				.attr("dy", function(d,i) {return (1.5*onimm.vars.radius);})
+				.text(function(d,i) {return d.name})
+				.call(onimm.wrap, 10*onimm.vars.radius);
 
 			onimm.bubble = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "bubble-foreignObject")
@@ -120,14 +123,15 @@ function Onimm(id, data_uri) {
 						.html("<img class='bubble' src='./img/bubble.png'>");
 
 
-
 			onimm.jobs.call(onimm.vars.drag);
 			onimm.svg.call(onimm.vars.zoom);
+	
 
 			// When double click on jobs node (since simple click might be blocked)
-			onimm.jobs.on("dblclick",function(d){
+			onimm.jobs.on("click", function(d){
 
-				console.dir(d);
+				onimm.vars.zoom.on("zoom", null);
+				onimm.vars.zoom = function() {};
 
 				onimm.modale = onimm.svg.append("svg:svg");
 
@@ -143,7 +147,7 @@ function Onimm(id, data_uri) {
 					.attr("transform", "translate(" + 20 + "," + 20 + ")")
 					.attr("width", onimm.vars.width)
 					.attr("height", onimm.vars.height)
-					.style("fill", "rgba(255,255,255,0.9)");
+					.style("fill", "rgba(255,255,255,1)");
 
 				// -- elastic animation ----- 
 				onimm.modale_rect
@@ -175,6 +179,14 @@ function Onimm(id, data_uri) {
 				// If we click on the close button
 				onimm.modale_leave.on("click", function(d) {
 					onimm.modale.remove();
+
+					onimm.vars.zoom = d3.behavior.zoom()
+						.scaleExtent([1, 1])
+						.on("zoomstart", onimm.zoomstart)
+						.on("zoom", onimm.zoomed)
+						.on("zoomend", onimm.zoomend);
+
+					onimm.svg.call(onimm.vars.zoom);
 				});
 
 			});
@@ -203,11 +215,12 @@ function Onimm(id, data_uri) {
 		d3.event.sourceEvent.stopPropagation();
 	};
 
+	/* TODO : interupt moving when fenetre modale */
 	onimm.zoomed = function(d) {
-		var new_x = d3.event.translate[0] + onimm.vars.half_width;
-		var new_y = d3.event.translate[1] + onimm.vars.half_height;
-		onimm.container.attr("transform", "translate(" + new_x + "," + new_y + ")");
-		onimm.bond_container.attr("transform", "translate(" + new_x + "," + new_y + ")");
+		onimm.vars.new_x = d3.event.translate[0] + onimm.vars.half_width;
+		onimm.vars.new_y = d3.event.translate[1] + onimm.vars.half_height;
+		onimm.container.attr("transform", "translate(" + onimm.vars.new_x + "," + onimm.vars.new_y + ")");
+		onimm.bond_container.attr("transform", "translate(" + onimm.vars.new_x + "," + onimm.vars.new_y + ")");
 	};
 
 	onimm.zoomend = function(d) {
@@ -291,7 +304,7 @@ function Onimm(id, data_uri) {
 					.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
 			}
 			else {		
-				onimm.bonds[a] = "isActive";	// current node active doesn't need bond		
+				onimm.bonds[a] = "isActive";	// Bonds number == nodes number - 1
 				onimm.hierarchie = onimm.vars.data[a].hierarchie;	
 				onimm.specialisation = onimm.vars.data[a].specialisation;
 				onimm.collaboration = onimm.vars.data[a].collaboration;
@@ -361,4 +374,3 @@ onimm = Onimm("onimm_", "./data/test2.json");
 
 // DEBUG
 //console.dir(onimm);
-
