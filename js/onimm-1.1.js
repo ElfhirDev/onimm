@@ -15,7 +15,7 @@
 // Onisep Mind Mapping
 var onimm = onimm || {};
 
-function Onimm(id, data_uri) {
+function Onimm(id, met_id, data_uri) {
 
 	// internal object
 	var onimm = {};
@@ -68,19 +68,22 @@ function Onimm(id, data_uri) {
 			.attr("class", "g_container_");
 
 		// Load our resources
-		d3.json(data_uri, function(error, json) {
+		d3.xml(data_uri, "application/xml", function(error, xml) {
 
 			// DEBUG
 			if (error) return console.warn(error);
 
-			onimm.vars.data = json;
+			onimm.vars.data = onimm.xmlToJson(xml);
+			onimm.vars.data = onimm.vars.data.CARTE_HEURISTIQUE.METIER.record;
+
+			console.log(onimm.vars.data[1]);
 
 			onimm.jobs = onimm.container.selectAll("g")
 				.data(onimm.vars.data);
 
 			onimm.jobs = onimm.jobs.enter().append("svg:g")
-				.classed("jobs", function(d){return d;})
-				.classed("draggable", function(d) {return d;});
+				.classed("jobs", function(d){return (2*d + 1);})
+				.classed("draggable", function(d) {return (2*d + 1);});
 
 			onimm.vars.totalNodes = onimm.jobs.size();
 
@@ -110,7 +113,9 @@ function Onimm(id, data_uri) {
 				})
 				.attr("dx", "0")
 				.attr("dy", function(d,i) {return (1.5*onimm.vars.radius);})
-				.text(function(d,i) {return d.name})
+				.text(function(d,i) {
+					return d.CSLABELFLD["#text"];
+				})
 				.call(onimm.wrap, 10*onimm.vars.radius);
 
 			onimm.bubble = onimm.jobs.append("svg:foreignObject")
@@ -128,7 +133,7 @@ function Onimm(id, data_uri) {
 	
 
 			// When double click on jobs node (since simple click might be blocked)
-			onimm.jobs.on("click", function(d){
+			onimm.jobs.on("dblclick", function(d){
 
 				onimm.vars.zoom.on("zoom", null);
 				onimm.vars.zoom = function() {};
@@ -244,7 +249,7 @@ function Onimm(id, data_uri) {
 		d.x = d3.event.x;
 		d.y = d3.event.y;
 
-		if(d.isActive === true) {
+		if(d.MET_ID["#text"] === met_id) {
 			for(var a = 1, l = onimm.vars.totalNodes; a<l; a++) {
 				d3.select("#bond_"+a)
 				.attr("d", "M "+d3.event.x+","+d3.event.y+" C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
@@ -270,7 +275,7 @@ function Onimm(id, data_uri) {
 	 */
 	onimm.init_x_coordinates = function(d,i) {
 		var x_coordinates = 0;
-		if(d.isActive === true) {
+		if(d.MET_ID["#text"] === met_id) {
 			return x_coordinates;
 		}
 		else {
@@ -280,7 +285,7 @@ function Onimm(id, data_uri) {
 	};
 	onimm.init_y_coordinates = function(d,i) {
 		var y_coordinates = 0;
-		if(d.isActive === true) {
+		if(d.MET_ID["#text"] === met_id) {
 			return y_coordinates;
 		}
 		else {
@@ -295,33 +300,46 @@ function Onimm(id, data_uri) {
 	onimm.init_bonds = function() {
 		onimm.bonds = [];
 		for(var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
-			if(onimm.vars.data[a].isActive === false){
+			if(onimm.vars.data[a].met_id !== met_id){
 
 				onimm.bonds[a] = onimm.bond_container.append("path")
 					.attr("class", function(d,i) {return "bond_"})
 					.attr("id", function(d,i) {return "bond_"+a})
-					.attr("fill", "none").attr("stroke-width", "6").attr("stroke", "none")
+					.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "none")
 					.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
 			}
 			else {		
 				onimm.bonds[a] = "isActive";	// Bonds number == nodes number - 1
-				onimm.hierarchie = onimm.vars.data[a].hierarchie;	
-				onimm.specialisation = onimm.vars.data[a].specialisation;
-				onimm.collaboration = onimm.vars.data[a].collaboration;
+				onimm.supervised = onimm.vars.data[a].Liens_metiers_supervise;
+				onimm.is_supervised = onimm.vars.data[a].Liens_metiers_est_supervise;
+				onimm.specialisation = onimm.vars.data[a].Liens_metiers_fils;
+				onimm.is_specialisation = onimm.vars.data[a].Liens_metiers_père;
+				onimm.collaboration = onimm.vars.data[a].Liens_metiers_collabore;
 			}
 		}
 		for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
 			// node active doesn't have path svg, so no attr()
 			if (onimm.bonds[a] != "isActive") {	
 				// Use jQuery inArray, in future use built-in indexOf (<I.E9)
-				if (-1 != $.inArray(a, onimm.hierarchie)) {
-					onimm.bonds[a].attr("stroke", "#FC8C2E");
-				}
-				if (-1 != $.inArray(a, onimm.specialisation)) {
+				if ($.isEmptyObject(a)) {
+					console.log("not empty !");
 					onimm.bonds[a].attr("stroke", "#0D7B92");
 				}
-				if (-1 != $.inArray(a, onimm.collaboration)) {
+				if ($.isEmptyObject(a)) {
+					console.log("not empty !");
 					onimm.bonds[a].attr("stroke", "#C9D800");
+				}
+				if ($.isEmptyObject(a)) {
+					console.log("not empty !");
+					onimm.bonds[a].attr("stroke", "#DE0027");
+				}
+				if ($.isEmptyObject(a)) {
+					console.log("not empty !");
+					onimm.bonds[a].attr("stroke", "#9D0D15");
+				}
+				if ($.isEmptyObject(a)) {
+					console.log("not empty !");
+					onimm.bonds[a].attr("stroke", "#558DB4");
 				}
 			}
 		}
@@ -334,34 +352,69 @@ function Onimm(id, data_uri) {
 	 */
 	onimm.wrap = function(text, width) {
 	  text.each(function() {
-	    var text = d3.select(this),
-	        words = text.text().split(/\s+/).reverse(),
-	        word,
-	        line = [],
-	        lineNumber = 0,
-	        lineHeight = 0.7,
-	        y = text.attr("y"),
-	        dy = parseFloat(text.attr("dy")),
-	        dx = parseFloat(text.attr("dx")),
-	        tspan = text.text(null).append("tspan").attr("x", text.x).attr("y", text.y).attr("dy", (dy) + "");
-	    while (word = words.pop()) {
-	      line.push(word);
-	      tspan.text(line.join(" "));
-	      if (tspan.node().getComputedTextLength() > width) {
-	        line.pop();
-	        tspan.text(line.join(" "));
-	        line = [word];
-	        tspan = text.append("tspan")
-	        .attr("x", text.x)
-	        .attr("y", text.y)
-	        .attr("dy", ++lineNumber * lineHeight + (1.2*dy) + "")
-	        .attr("dx", ++lineNumber * 0.02 * width + (3*dx) + "")
-	        .text(word);
-	      }
-	    }
+		var text = d3.select(this),
+			words = text.text().split(/\s+/).reverse(),
+			word,
+			line = [],
+			lineNumber = 0,
+			lineHeight = 0.7,
+			y = text.attr("y"),
+			dy = parseFloat(text.attr("dy")),
+			dx = parseFloat(text.attr("dx")),
+			tspan = text.text(null).append("tspan").attr("x", text.x).attr("y", text.y).attr("dy", (dy) + "");
+		while (word = words.pop()) {
+		  line.push(word);
+		  tspan.text(line.join(" "));
+		  if (tspan.node().getComputedTextLength() > width) {
+			line.pop();
+			tspan.text(line.join(" "));
+			line = [word];
+			tspan = text.append("tspan")
+			.attr("x", text.x)
+			.attr("y", text.y)
+			.attr("dy", ++lineNumber * lineHeight + (1.2*dy) + "")
+			.attr("dx", ++lineNumber * 0.02 * width + (3*dx) + "")
+			.text(word);
+		  }
+		}
 	  });
 	};
 
+	/* http://stackoverflow.com/questions/7769829/tool-javascript-to-convert-a-xml-string-to-json
+	 * var jsonText = JSON.stringify(xmlToJson(xmlDoc)); 
+	 * with xmlDoc an xml dom document 
+	 */
+	onimm.xmlToJson = function(xml) {
+		var obj = {};
+		if (xml.nodeType == 1) {
+			if (xml.attributes.length > 0) {
+				obj["attributes"] = {};
+				for (var j = 0; j < xml.attributes.length; j++) {
+					var attribute = xml.attributes.item(j);
+					obj["attributes"][attribute.nodeName] = attribute.nodeValue;
+				}
+			}
+		} else if (xml.nodeType == 3) { 
+			obj = xml.nodeValue;
+		}            
+		if (xml.hasChildNodes()) {
+			for (var i = 0; i < xml.childNodes.length; i++) {
+				var item = xml.childNodes.item(i);
+				var nodeName = item.nodeName;
+				if (typeof (obj[nodeName]) == "undefined") {
+					obj[nodeName] = onimm.xmlToJson(item);
+				} else {
+					if (typeof (obj[nodeName].push) == "undefined") {
+						var old = obj[nodeName];
+						obj[nodeName] = [];
+						obj[nodeName].push(old);
+					}
+					obj[nodeName].push(onimm.xmlToJson(item));
+				}
+			}
+		}
+		return obj;
+	}
 
 	// Let it go, let it go !
 	onimm.init();
@@ -370,7 +423,7 @@ function Onimm(id, data_uri) {
 };
 
 // Let it go !
-onimm = Onimm("onimm_", "./data/test2.json");
+onimm = Onimm("onimm_", "10381", "./data/carte_heuristique.xml");
 
 // DEBUG
 //console.dir(onimm);
