@@ -6,7 +6,7 @@
         "name": "Ingénieur du BTP",
         "salary": 2600,
         "sector": "BTP et architecture",
-        "isActive": true,
+        "isActive": false,
         "specialisation": [
             2
         ],
@@ -79,8 +79,7 @@
         "y": -173,
         "name": "Architecte",
         "salary": 2000,
-        "sector": "BTP et architecture",
-        "isActive": false,
+        "sector": true,
         "specialisation": [
             0,
             2

@@ -33,11 +33,15 @@ function Onimm(id, met_id, data_uri) {
 		hierarchie_color: "#FC8C2E",
 		collaboration_color: "#C9D800",
 		specialisation_color: "#0D7B92",
-		hierarchie: [],
-		collaboration: [],
-		specialisation: [],
+		supervised: {},
+		is_supervised: {},
+		collaboration: {},
+		specialisation: {},
+		is_specialisation: {},
 		totalNodes : 0,
 		isZoom : null,
+		isNodeCentralX: false,
+		isNodeCentralY: false,
 		new_y : 0,
 		new_x : 0
 	};
@@ -76,10 +80,10 @@ function Onimm(id, met_id, data_uri) {
 			onimm.vars.data = onimm.xmlToJson(xml);
 			onimm.vars.data = onimm.vars.data.CARTE_HEURISTIQUE.METIER.record;
 
-			console.log(onimm.vars.data[1]);
-
 			onimm.jobs = onimm.container.selectAll("g")
 				.data(onimm.vars.data);
+
+			//console.dir(onimm.vars.data);
 
 			onimm.jobs = onimm.jobs.enter().append("svg:g")
 				.classed("jobs", function(d){return (2*d + 1);})
@@ -99,7 +103,7 @@ function Onimm(id, met_id, data_uri) {
 					return d.y = onimm.init_y_coordinates(d,i);
 				});
 
-			onimm.init_bonds();
+			// onimm.init_bonds();
 
 			onimm.jobs_text = onimm.jobs.append("svg:text")
 				.attr("class", "data-text")
@@ -122,10 +126,15 @@ function Onimm(id, met_id, data_uri) {
 				.attr("class", "bubble-foreignObject")
 				.attr("width", 2*onimm.vars.radius)
 				.attr("height", 2*onimm.vars.radius)
-				.attr("x", function(d,i) {return d.x = onimm.init_x_coordinates(d,i) - onimm.vars.radius;})
-				.attr("y", function(d,i) {return d.y = onimm.init_y_coordinates(d,i) - onimm.vars.radius;})
-					.append("xhtml:body").attr("class", "bubble-body")
-						.html("<img class='bubble' src='./img/bubble.png'>");
+				.attr("x", function(d,i) {
+					return onimm.init_x_coordinates(d,i) - onimm.vars.radius;
+					// TODO : The d coordinates doesn't have MET_ID, so the last is not decalled ?
+				})
+				.attr("y", function(d,i) {
+					return onimm.init_y_coordinates(d,i) - onimm.vars.radius;
+				})
+				.append("xhtml:body").attr("class", "bubble-body")
+					.html("<img class='bubble' src='./img/bubble.png'>");
 
 
 			onimm.jobs.call(onimm.vars.drag);
@@ -195,8 +204,10 @@ function Onimm(id, met_id, data_uri) {
 				});
 
 			});
+	
+			onimm.init_bonds(onimm.vars.data);
 
-		}); // End d3.json(uri,function)
+		}); // End d3.json(uri, met_id, function)
 	};
 
 	/* ------ methods ------- */
@@ -275,21 +286,33 @@ function Onimm(id, met_id, data_uri) {
 	 */
 	onimm.init_x_coordinates = function(d,i) {
 		var x_coordinates = 0;
+
 		if(d.MET_ID["#text"] === met_id) {
+			onimm.vars.isNodeCentralX = true;
 			return x_coordinates;
 		}
-		else {
+		else if (d.MET_ID["#text"] !== met_id && false === onimm.vars.isNodeCentralX) {
+			x_coordinates = 0.4*(onimm.vars.height*Math.cos((i)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
+			return x_coordinates;
+		}
+		else if (d.MET_ID["#text"] !== met_id && true === onimm.vars.isNodeCentralX) {
 			x_coordinates = 0.4*(onimm.vars.height*Math.cos((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
 			return x_coordinates;
 		}
 	};
 	onimm.init_y_coordinates = function(d,i) {
 		var y_coordinates = 0;
+
 		if(d.MET_ID["#text"] === met_id) {
+			onimm.vars.isNodeCentralY = true;
 			return y_coordinates;
 		}
-		else {
-			y_coordinates = 0.4*(onimm.vars.height*Math.sin((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
+		else if (d.MET_ID["#text"] !== met_id && false === onimm.vars.isNodeCentralY) {
+			y_coordinates = 0.4*(onimm.vars.height*Math.sin((i)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
+			return y_coordinates;
+		}
+		else if (d.MET_ID["#text"] !== met_id && true === onimm.vars.isNodeCentralY) {
+			y_coordinates = 0.4*(onimm.vars.height*Math.sin((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));	
 			return y_coordinates;
 		}
 	};
@@ -297,11 +320,12 @@ function Onimm(id, met_id, data_uri) {
 	/**
 	 * Create bonds
 	 */
-	onimm.init_bonds = function() {
+	onimm.init_bonds = function(data) {
+		// console.log(data[1].Liens_metiers_collabore.METIER.record);
 		onimm.bonds = [];
-		for(var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
-			if(onimm.vars.data[a].met_id !== met_id){
-
+		for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
+			if (data[a].MET_ID["#text"] !== met_id){
+				//console.log(onimm.vars.data[a]);
 				onimm.bonds[a] = onimm.bond_container.append("path")
 					.attr("class", function(d,i) {return "bond_"})
 					.attr("id", function(d,i) {return "bond_"+a})
@@ -310,39 +334,54 @@ function Onimm(id, met_id, data_uri) {
 			}
 			else {		
 				onimm.bonds[a] = "isActive";	// Bonds number == nodes number - 1
-				onimm.supervised = onimm.vars.data[a].Liens_metiers_supervise;
-				onimm.is_supervised = onimm.vars.data[a].Liens_metiers_est_supervise;
-				onimm.specialisation = onimm.vars.data[a].Liens_metiers_fils;
-				onimm.is_specialisation = onimm.vars.data[a].Liens_metiers_père;
-				onimm.collaboration = onimm.vars.data[a].Liens_metiers_collabore;
+					
+				onimm.vars.supervised = data[a].Liens_metiers_supervise;
+				onimm.vars.is_supervised = data[a].Liens_metiers_est_supervise;
+				onimm.vars.specialisation = data[a].Liens_metiers_fils;
+				onimm.vars.is_specialisation = data[a].Liens_metiers_père;
+				onimm.vars.collaboration = data[a].Liens_metiers_collabore;
 			}
+			// console.log("lol :");
+			// console.dir(data[a].Liens_metiers_fils.METIER);
+			
 		}
-		for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
-			// node active doesn't have path svg, so no attr()
-			if (onimm.bonds[a] != "isActive") {	
-				// Use jQuery inArray, in future use built-in indexOf (<I.E9)
-				if ($.isEmptyObject(a)) {
-					console.log("not empty !");
-					onimm.bonds[a].attr("stroke", "#0D7B92");
-				}
-				if ($.isEmptyObject(a)) {
-					console.log("not empty !");
-					onimm.bonds[a].attr("stroke", "#C9D800");
-				}
-				if ($.isEmptyObject(a)) {
-					console.log("not empty !");
-					onimm.bonds[a].attr("stroke", "#DE0027");
-				}
-				if ($.isEmptyObject(a)) {
-					console.log("not empty !");
-					onimm.bonds[a].attr("stroke", "#9D0D15");
-				}
-				if ($.isEmptyObject(a)) {
-					console.log("not empty !");
-					onimm.bonds[a].attr("stroke", "#558DB4");
-				}
-			}
-		}
+
+		// console.log(onimm.vars.supervised);
+		// console.log(onimm.vars.is_supervised);
+		// console.log(onimm.vars.specialisation);
+		// console.log(onimm.vars.is_specialisation);
+		// console.log(onimm.vars.collaboration);
+
+		// for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
+		// 	// node active doesn't have path svg, so no attr()
+		// 	if (onimm.bonds[a] != "isActive") {	
+		// 		if (onimm.vars.supervised.METIER.hasOwnProperty("record")) {
+		// 			if (data[a].Liens_metiers_supervise.attributes.csRelFld === onimm.vars.supervised.METIER.record.MET_MET_ID['#text']) {
+		// 				onimm.bonds[a].attr("stroke", "#0D7B92");
+		// 			}
+		// 		}
+		// 		if (onimm.vars.is_supervised.METIER.hasOwnProperty("record")) {
+		// 			if (data[a].Liens_metiers_est_supervise.attributes.csRelFld === onimm.vars.is_supervised.METIER.record.MET_MET_ID['#text']) {
+		// 				onimm.bonds[a].attr("stroke", "#C9D800");
+		// 			}
+		// 		}
+		// 		if (onimm.vars.specialisation.METIER.hasOwnProperty("record")) {
+		// 			if (data[a].Liens_metiers_fils.attributes.csRelFld === onimm.vars.specialisation.METIER.record.MET_MET_ID['#text']) {
+		// 				onimm.bonds[a].attr("stroke", "#DE0027");
+		// 			}
+		// 		}
+		// 		if (onimm.vars.is_specialisation.METIER.hasOwnProperty("record")) {
+		// 			if (data[a].Liens_metiers_père.attributes.csRelFld === onimm.vars.is_specialisation.METIER.record.MET_MET_ID['#text']) {
+		// 				onimm.bonds[a].attr("stroke", "#9D0D15");
+		// 			}
+		// 		}
+		// 		if (onimm.vars.collaboration.METIER.hasOwnProperty("record")) {
+		// 			if (data[a].Liens_metiers_collabore.attributes.csRelFld === onimm.vars.collaboration.METIER.record.MET_MET_ID['#text']) {
+		// 				onimm.bonds[a].attr("stroke", "#558DB4");
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 
 	/**
@@ -423,7 +462,7 @@ function Onimm(id, met_id, data_uri) {
 };
 
 // Let it go !
-onimm = Onimm("onimm_", "10381", "./data/carte_heuristique.xml");
+onimm = Onimm("onimm_", "10053", "./data/carte_heuristique.xml");
 
 // DEBUG
 //console.dir(onimm);
