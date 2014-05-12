@@ -126,7 +126,6 @@ function Onimm(id, met_id, data_uri) {
 				.attr("height", 2*onimm.vars.radius)
 				.attr("x", function(d,i) {
 					return onimm.vars.x_coordinates[i] - onimm.vars.radius;
-					// TODO : The d coordinates doesn't have MET_ID, so the last is not decalled ?
 				})
 				.attr("y", function(d,i) {
 					return onimm.vars.y_coordinates[i] - onimm.vars.radius;
@@ -229,7 +228,6 @@ function Onimm(id, met_id, data_uri) {
 		d3.event.sourceEvent.stopPropagation();
 	};
 
-	/* TODO : interupt moving when fenetre modale */
 	onimm.zoomed = function(d) {
 		onimm.vars.new_x = d3.event.translate[0] + onimm.vars.half_width;
 		onimm.vars.new_y = d3.event.translate[1] + onimm.vars.half_height;
@@ -246,6 +244,7 @@ function Onimm(id, met_id, data_uri) {
 		d3.select(this).classed("dragging", true);
 	};
 
+	// TODO : mettre à jour l'extrémité non centrale
 	// Admitted the dragged element is a svg group g with internal circle and text
 	onimm.dragged = function(d) {
 		d3.select(this).select('circle').attr("cx", d3.event.x ).attr("cy", d3.event.y);
@@ -325,61 +324,110 @@ function Onimm(id, met_id, data_uri) {
 			if (data[a].MET_ID["#text"] !== met_id){
 				//console.log(onimm.vars.data[a]);
 				onimm.bonds[a] = onimm.bond_container.append("path")
-					.attr("class", function(d,i) {return "bond_"})
+					.attr("class", function(d,i) {return "bond"})
 					.attr("id", function(d,i) {return "bond_"+a})
 					.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "none")
 					.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
 			}
 			else {		
-				onimm.bonds[a] = "isActive";	// Bonds number == nodes number - 1
-					
+				onimm.bonds[a] = onimm.bond_container.append("path")
+					.attr("class", function(d,i) {return "active_bond"})
+					.attr("id", function(d,i) {return "bond_"+a})
+					.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "none")
+					.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"")
+				
+				// For active node, we get all bonds	
 				onimm.vars.supervised = data[a].Liens_metiers_supervise;
 				onimm.vars.is_supervised = data[a].Liens_metiers_est_supervise;
 				onimm.vars.specialisation = data[a].Liens_metiers_fils;
 				onimm.vars.is_specialisation = data[a].Liens_metiers_père;
 				onimm.vars.collaboration = data[a].Liens_metiers_collabore;
 			}
-			// console.log("lol :");
-			// console.dir(data[a].Liens_metiers_fils.METIER);
-			
 		}
 
-		// console.log(onimm.vars.supervised);
-		// console.log(onimm.vars.is_supervised);
-		// console.log(onimm.vars.specialisation);
-		// console.log(onimm.vars.is_specialisation);
-		// console.log(onimm.vars.collaboration);
+		for (var b = 0, le = onimm.vars.totalNodes; b<le; b++) {	
+			// node active doesn't have path svg, so no attr()
 
-		// for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
-		// 	// node active doesn't have path svg, so no attr()
-		// 	if (onimm.bonds[a] != "isActive") {	
-		// 		if (onimm.vars.supervised.METIER.hasOwnProperty("record")) {
-		// 			if (data[a].Liens_metiers_supervise.attributes.csRelFld === onimm.vars.supervised.METIER.record.MET_MET_ID['#text']) {
-		// 				onimm.bonds[a].attr("stroke", "#0D7B92");
-		// 			}
-		// 		}
-		// 		if (onimm.vars.is_supervised.METIER.hasOwnProperty("record")) {
-		// 			if (data[a].Liens_metiers_est_supervise.attributes.csRelFld === onimm.vars.is_supervised.METIER.record.MET_MET_ID['#text']) {
-		// 				onimm.bonds[a].attr("stroke", "#C9D800");
-		// 			}
-		// 		}
-		// 		if (onimm.vars.specialisation.METIER.hasOwnProperty("record")) {
-		// 			if (data[a].Liens_metiers_fils.attributes.csRelFld === onimm.vars.specialisation.METIER.record.MET_MET_ID['#text']) {
-		// 				onimm.bonds[a].attr("stroke", "#DE0027");
-		// 			}
-		// 		}
-		// 		if (onimm.vars.is_specialisation.METIER.hasOwnProperty("record")) {
-		// 			if (data[a].Liens_metiers_père.attributes.csRelFld === onimm.vars.is_specialisation.METIER.record.MET_MET_ID['#text']) {
-		// 				onimm.bonds[a].attr("stroke", "#9D0D15");
-		// 			}
-		// 		}
-		// 		if (onimm.vars.collaboration.METIER.hasOwnProperty("record")) {
-		// 			if (data[a].Liens_metiers_collabore.attributes.csRelFld === onimm.vars.collaboration.METIER.record.MET_MET_ID['#text']) {
-		// 				onimm.bonds[a].attr("stroke", "#558DB4");
-		// 			}
-		// 		}
-		// 	}
-		// }
+			if (onimm.bonds[b].classed("active_bond", true)) {	
+
+				if (onimm.vars.supervised.METIER.record != undefined) {
+					if ($.isArray(onimm.vars.supervised.METIER.record)) {
+						for (var j = 0, l = onimm.vars.supervised.METIER.record.length; j<l ; j++) {
+							if (data[b].MET_ID["#text"] == onimm.vars.supervised.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.bonds[b].attr("stroke", "#0D7B92");
+							}
+						}
+					}
+					else {
+						if (data[b].MET_ID["#text"] == onimm.vars.supervised.METIER.record.MET_MET_ID['#text']) {
+							onimm.bonds[b].attr("stroke", "#0D7B92");
+						}
+					}
+				}
+
+				if (onimm.vars.is_supervised.METIER.record != undefined) {
+					if ($.isArray(onimm.vars.is_supervised.METIER.record)) {
+						for (var j = 0, l = onimm.vars.is_supervised.METIER.record.length; j<l; j++) {
+							if (data[b].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.bonds[b].attr("stroke", "#C9D800");
+							}
+						}
+					}
+					else {
+						if (data[b].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record.MET_MET_ID['#text']) {
+							onimm.bonds[b].attr("stroke", "#C9D800");
+						}
+					}	
+				}
+
+				if (onimm.vars.specialisation.METIER.record != undefined) {
+					if ($.isArray(onimm.vars.specialisation.METIER.record)) {
+						for (var j = 0 , l = onimm.vars.specialisation.METIER.record.length; j<l; j++) {
+							if (data[b].MET_ID["#text"] == onimm.vars.specialisation.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.bonds[b].attr("stroke", "#DE0027");
+							}
+						}
+					}
+					else {
+						if (data[b].MET_ID["#text"] == onimm.vars.specialisation.METIER.record.MET_MET_ID['#text']) {
+							onimm.bonds[b].attr("stroke", "#DE0027");
+						}
+					}
+				}
+
+				if (onimm.vars.is_specialisation.METIER.record != undefined) {
+					if ($.isArray(onimm.vars.is_specialisation.METIER.record)) {
+						for (var j = 0, l = onimm.vars.is_specialisation.METIER.record.length; j<l; j++) {
+							if (data[b].MET_ID["#text"] == onimm.vars.is_specialisation.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.bonds[b].attr("stroke", "#9D0D15");
+							}
+						}
+					}
+					else {
+						if (data[b].MET_ID["#text"] == onimm.vars.is_specialisation.METIER.record.MET_MET_ID['#text']) {
+							onimm.bonds[b].attr("stroke", "#9D0D15");
+						}
+					}
+				}
+
+				if (onimm.vars.collaboration.METIER.record != undefined) {
+					if ($.isArray(onimm.vars.collaboration.METIER.record)) {
+						for (var j = 0, l = onimm.vars.collaboration.METIER.record.length; j<l; j++) {
+							if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.bonds[b].attr("stroke", "#558DB4");
+							}
+						}
+					}
+					else {
+						if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record.MET_MET_ID['#text']) {
+							onimm.bonds[b].attr("stroke", "#558DB4");
+						}
+					}
+				}
+
+			}// end if isActive
+		}// end for
+
 	}
 
 	/**
@@ -460,7 +508,7 @@ function Onimm(id, met_id, data_uri) {
 };
 
 // Let it go !
-onimm = Onimm("onimm_", "10053", "./data/carte_heuristique.xml");
+onimm = Onimm("onimm_", "10194", "./data/carte_heuristique.xml");
 
 // DEBUG
 //console.dir(onimm);
