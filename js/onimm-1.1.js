@@ -108,12 +108,10 @@ function Onimm(id, met_id, data_uri) {
 			onimm.jobs_text = onimm.jobs.append("svg:text")
 				.attr("class", "data-text")
 				.attr("x", function(d,i) {
-					onimm.vars.x_coordinates.push(onimm.init_x_coordinates(d,i));
-					return d.x = onimm.init_x_coordinates(d,i);
+					return d.x = onimm.vars.x_coordinates[i];
 				})
 				.attr("y", function(d,i) {
-					onimm.vars.y_coordinates.push(onimm.init_y_coordinates(d,i));
-					return d.y = onimm.init_y_coordinates(d,i);
+					return d.y = onimm.vars.y_coordinates[i];
 				})
 				.attr("dx", "0")
 				.attr("dy", function(d,i) {return (1.5*onimm.vars.radius);})
@@ -127,11 +125,11 @@ function Onimm(id, met_id, data_uri) {
 				.attr("width", 2*onimm.vars.radius)
 				.attr("height", 2*onimm.vars.radius)
 				.attr("x", function(d,i) {
-					return onimm.init_x_coordinates(d,i) - onimm.vars.radius;
+					return onimm.vars.x_coordinates[i] - onimm.vars.radius;
 					// TODO : The d coordinates doesn't have MET_ID, so the last is not decalled ?
 				})
 				.attr("y", function(d,i) {
-					return onimm.init_y_coordinates(d,i) - onimm.vars.radius;
+					return onimm.vars.y_coordinates[i] - onimm.vars.radius;
 				})
 				.append("xhtml:body").attr("class", "bubble-body")
 					.html("<img class='bubble' src='./img/bubble.png'>");
@@ -466,3 +464,5 @@ onimm = Onimm("onimm_", "10053", "./data/carte_heuristique.xml");
 
 // DEBUG
 //console.dir(onimm);
+
+
