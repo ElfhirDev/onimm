@@ -25,6 +25,8 @@ function Onimm(id, met_id, data_uri) {
 		data_uri : data_uri,
 		x_coordinates : [],
 		y_coordinates : [],
+		xCentral: 0,
+		yCentral: 0,
 		width : 600,
 		half_width : 300,
 		height : 400,
@@ -244,7 +246,6 @@ function Onimm(id, met_id, data_uri) {
 		d3.select(this).classed("dragging", true);
 	};
 
-	// TODO : mettre à jour l'extrémité non centrale
 	// Admitted the dragged element is a svg group g with internal circle and text
 	onimm.dragged = function(d) {
 		d3.select(this).select('circle').attr("cx", d3.event.x ).attr("cy", d3.event.y);
@@ -258,17 +259,26 @@ function Onimm(id, met_id, data_uri) {
 		d.y = d3.event.y;
 
 		if(d.MET_ID["#text"] === met_id) {
-			for(var a = 1, l = onimm.vars.totalNodes; a<l; a++) {
+			for(var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
 				d3.select("#bond_"+a)
-				.attr("d", "M "+d3.event.x+","+d3.event.y+" C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
+					.attr("d", "M "+d3.event.x+","+d3.event.y+" C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
+				if (onimm.bonds[a][0][0].attributes[3].nodeValue === d.MET_ID["#text"]) {
+					onimm.vars.x_coordinates[onimm.bonds[a][0][0].attributes[2].nodeValue] = d3.event.x;
+					onimm.vars.y_coordinates[onimm.bonds[a][0][0].attributes[2].nodeValue] = d3.event.y;
+					onimm.vars.xCentral = d3.event.x;
+					onimm.vars.yCentral = d3.event.y;
+				}
 			}
-			onimm.vars.x_coordinates[0] = d3.event.x;
-			onimm.vars.y_coordinates[0] = d3.event.y;
 		}
 		else {
-			d3.select("#bond_"+ d.id +"").attr("d", "M "+ onimm.vars.x_coordinates[0] +","+ onimm.vars.y_coordinates[0] +" C 0,0 0,0 "+ d3.event.x +","+ d3.event.y +"");
-			onimm.vars.x_coordinates[d.id] = d3.event.x;
-			onimm.vars.y_coordinates[d.id] = d3.event.y;
+			for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
+				if (onimm.bonds[a][0][0].attributes[3].nodeValue === d.MET_ID["#text"]) {
+					onimm.vars.x_coordinates[a] = d3.event.x;
+					onimm.vars.y_coordinates[a] = d3.event.y;
+					d3.select("#bond_"+a)
+						.attr("d", "M"+ onimm.vars.xCentral+","+onimm.vars.yCentral +"C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
+				}
+			}
 		}	
 	};
 
@@ -326,6 +336,8 @@ function Onimm(id, met_id, data_uri) {
 				onimm.bonds[a] = onimm.bond_container.append("path")
 					.attr("class", function(d,i) {return "bond"})
 					.attr("id", function(d,i) {return "bond_"+a})
+					.attr("num", function(d,i) {return a})
+					.attr("met_id", function(d,i) {return data[a].MET_ID["#text"]})
 					.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "none")
 					.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"");
 			}
@@ -333,6 +345,8 @@ function Onimm(id, met_id, data_uri) {
 				onimm.bonds[a] = onimm.bond_container.append("path")
 					.attr("class", function(d,i) {return "active_bond"})
 					.attr("id", function(d,i) {return "bond_"+a})
+					.attr("num", function(d,i) {return a})
+					.attr("met_id", function(d,i) {return data[a].MET_ID["#text"]})
 					.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "none")
 					.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"")
 				
@@ -345,10 +359,10 @@ function Onimm(id, met_id, data_uri) {
 			}
 		}
 
-		for (var b = 0, le = onimm.vars.totalNodes; b<le; b++) {	
+		for (var b = 0, le = onimm.vars.totalNodes; b<le; b++) {
 			// node active doesn't have path svg, so no attr()
 
-			if (onimm.bonds[b].classed("active_bond", true)) {	
+			if (onimm.bonds[b].classed("active_bond", true)) {
 
 				if (onimm.vars.supervised.METIER.record != undefined) {
 					if ($.isArray(onimm.vars.supervised.METIER.record)) {
