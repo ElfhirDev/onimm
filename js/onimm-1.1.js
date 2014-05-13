@@ -23,6 +23,7 @@ function Onimm(id, met_id, data_uri) {
 	onimm.vars = {
 		id : "#"+id,
 		data_uri : data_uri,
+		used_data: [],
 		x_coordinates : [],
 		y_coordinates : [],
 		xCentral: 0,
@@ -82,10 +83,110 @@ function Onimm(id, met_id, data_uri) {
 			onimm.vars.data = onimm.xmlToJson(xml);
 			onimm.vars.data = onimm.vars.data.CARTE_HEURISTIQUE.METIER.record;
 
+			// Only keep the jobs with bonds with the met_id
+			// onimm.vars.unused_data = onimm.vars.data.splice(i, 1);
+			
+			for (var a = 0, l = onimm.vars.data.length; a<l; a++) {
+				if (onimm.vars.data[a].MET_ID["#text"] === met_id) {	
+					onimm.vars.used_data.push(onimm.vars.data[a])			
+					onimm.vars.supervised = onimm.vars.data[a].Liens_metiers_supervise;
+					onimm.vars.is_supervised = onimm.vars.data[a].Liens_metiers_est_supervise;
+					onimm.vars.specialisation = onimm.vars.data[a].Liens_metiers_fils;
+					onimm.vars.is_specialisation = onimm.vars.data[a].Liens_metiers_père;
+					onimm.vars.collaboration = onimm.vars.data[a].Liens_metiers_collabore;
+				}
+			}
+
+			// TODO : no splice ; get only data with MET_MET_ID and put in array
+			for (var k = 0, m = onimm.vars.data.length ; k<m; k++) {
+
+				// console.log("k : " + k + "  " + onimm.vars.data[k].MET_ID["#text"] + "  " + onimm.vars.collaboration.METIER.record[0].MET_MET_ID['#text']);
+				//console.log(typeof(onimm.vars.data[k].MET_ID["#text"]) + "  " + typeof(onimm.vars.collaboration.METIER.record[5].MET_MET_ID['#text']))
+
+				if (onimm.vars.supervised.METIER.hasOwnProperty("record")) {
+					if ($.isArray(onimm.vars.supervised.METIER.record)) {
+						for (var j = 0, l = onimm.vars.supervised.METIER.record.length; j<l ; j++) {
+							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.supervised.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.vars.used_data.push(onimm.vars.data[k]);
+							}
+						}
+					}
+					else {
+						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.supervised.METIER.record.MET_MET_ID['#text']) {
+							onimm.vars.used_data.push(onimm.vars.data[k]);
+						}
+					}
+				}
+
+				if (onimm.vars.is_supervised.METIER.hasOwnProperty("record")) {
+					if ($.isArray(onimm.vars.is_supervised.METIER.record)) {
+						for (var j = 0, l = onimm.vars.is_supervised.METIER.record.length; j<l; j++) {
+							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.vars.used_data.push(onimm.vars.data[k]);
+							}
+						}
+					}
+					else {
+						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record.MET_MET_ID['#text']) {
+							onimm.vars.used_data.push(onimm.vars.data[k]);
+						}
+					}	
+				}
+
+				if (onimm.vars.specialisation.METIER.hasOwnProperty("record")) {
+					if ($.isArray(onimm.vars.specialisation.METIER.record)) {
+						for (var j = 0 , l = onimm.vars.specialisation.METIER.record.length; j<l; j++) {
+							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.specialisation.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.vars.used_data.push(onimm.vars.data[k]);
+							}
+						}
+					}
+					else {
+						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.specialisation.METIER.record.MET_MET_ID['#text']) {
+							onimm.vars.used_data.push(onimm.vars.data[k]);
+						}
+					}
+				}
+
+				if (onimm.vars.is_specialisation.METIER.hasOwnProperty("record")) {
+					if ($.isArray(onimm.vars.is_specialisation.METIER.record)) {
+						for (var j = 0, l = onimm.vars.is_specialisation.METIER.record.length; j<l; j++) {
+							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_specialisation.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.vars.used_data.push(onimm.vars.data[k]);
+							}
+						}
+					}
+					else {
+						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_specialisation.METIER.record.MET_MET_ID['#text']) {
+							onimm.vars.used_data.push(onimm.vars.data[k]);
+						}
+					}
+				}
+
+				if (onimm.vars.collaboration.METIER.hasOwnProperty("record")) {
+					if ($.isArray(onimm.vars.collaboration.METIER.record)) {
+						for (var j = 0, l = onimm.vars.collaboration.METIER.record.length; j<l; j++) {
+							if (onimm.vars.data[k].MET_ID['#text'] == onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']) {
+								//console.log(onimm.vars.data[k].MET_ID['#text'] + " == " + onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']);
+								onimm.vars.used_data.push(onimm.vars.data[k]);
+							}
+						}
+					}
+					else {
+						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.collaboration.METIER.record.MET_MET_ID['#text']) {
+							onimm.vars.used_data.push(onimm.vars.data[k]);
+						}
+					}
+				}
+			}
+
+			onimm.vars.all_data = onimm.vars.data;
+			onimm.vars.data = onimm.vars.used_data;
+
+			console.dir(onimm.vars.data);
+
 			onimm.jobs = onimm.container.selectAll("g")
 				.data(onimm.vars.data);
-
-			//console.dir(onimm.vars.data);
 
 			onimm.jobs = onimm.jobs.enter().append("svg:g")
 				.classed("jobs", function(d){return (2*d + 1);})
@@ -279,7 +380,7 @@ function Onimm(id, met_id, data_uri) {
 						.attr("d", "M"+ onimm.vars.xCentral+","+onimm.vars.yCentral +"C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
 				}
 			}
-		}	
+		}
 	};
 
 	onimm.dragended = function(d) {
@@ -328,7 +429,7 @@ function Onimm(id, met_id, data_uri) {
 	 * Create bonds
 	 */
 	onimm.init_bonds = function(data) {
-		// console.log(data[1].Liens_metiers_collabore.METIER.record);
+		
 		onimm.bonds = [];
 		for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
 			if (data[a].MET_ID["#text"] !== met_id){
@@ -522,7 +623,7 @@ function Onimm(id, met_id, data_uri) {
 };
 
 // Let it go !
-onimm = Onimm("onimm_", "10194", "./data/carte_heuristique.xml");
+onimm = Onimm("onimm_", "10164", "./data/carte_heuristique.xml");
 
 // DEBUG
 //console.dir(onimm);
