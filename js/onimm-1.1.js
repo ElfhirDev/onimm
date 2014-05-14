@@ -100,7 +100,7 @@ function Onimm(id, met_id, data_uri) {
 			// TODO : no splice ; get only data with MET_MET_ID and put in array
 			for (var k = 0, m = onimm.vars.data.length ; k<m; k++) {
 
-				// console.log("k : " + k + "  " + onimm.vars.data[k].MET_ID["#text"] + "  " + onimm.vars.collaboration.METIER.record[0].MET_MET_ID['#text']);
+				//console.log("k : " + k + "  " + onimm.vars.data[k].MET_ID["#text"] + "  " + onimm.vars.collaboration.METIER.record[0].MET_MET_ID['#text']);
 				//console.log(typeof(onimm.vars.data[k].MET_ID["#text"]) + "  " + typeof(onimm.vars.collaboration.METIER.record[5].MET_MET_ID['#text']))
 
 				if (onimm.vars.supervised.METIER.hasOwnProperty("record")) {
@@ -208,20 +208,20 @@ function Onimm(id, met_id, data_uri) {
 
 			// onimm.init_bonds();
 
-			onimm.jobs_text = onimm.jobs.append("svg:text")
-				.attr("class", "data-text")
+			onimm.jobs_text = onimm.jobs.append("svg:foreignObject")
+				.attr("class", "jobs-text-foreignObject")
+				.attr("width", 120)
+				.attr("height", 60)
 				.attr("x", function(d,i) {
-					return d.x = onimm.vars.x_coordinates[i];
+					return d.x = onimm.vars.x_coordinates[i] - 3*onimm.vars.radius;
 				})
 				.attr("y", function(d,i) {
-					return d.y = onimm.vars.y_coordinates[i];
+					return d.y = onimm.vars.y_coordinates[i] + 0.6*onimm.vars.radius;
 				})
-				.attr("dx", "0")
-				.attr("dy", function(d,i) {return (1.5*onimm.vars.radius);})
-				.text(function(d,i) {
-					return d.CSLABELFLD["#text"];
-				})
-				.call(onimm.wrap, 10*onimm.vars.radius);
+				.append("xhtml:body").attr("class", "jobs-text-body")
+					.html(function(d,i) {
+						return "<p class='jobs-text'>"+d.CSLABELFLD["#text"]+"</p>";
+					});
 
 			onimm.bubble = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "bubble-foreignObject")
@@ -244,6 +244,7 @@ function Onimm(id, met_id, data_uri) {
 			// When double click on jobs node (since simple click might be blocked)
 			onimm.jobs.on("dblclick", function(d){
 
+				// Stop behavior zoom when modale window
 				onimm.vars.zoom.on("zoom", null);
 				onimm.vars.zoom = function() {};
 
@@ -267,28 +268,38 @@ function Onimm(id, met_id, data_uri) {
 				onimm.modale_rect
 					.transition().duration(1500)
 					.attr("width", (onimm.vars.width-40))
-					.attr("height", (onimm.vars.height-40));
-					
+					.attr("height", (onimm.vars.height-40));	
 
-				onimm.modale_leave = onimm.modale.append("foreignObject").attr("class","modale");
+				onimm.modale_window = onimm.modale.append("svg:foreignObject").attr("class", "modale-foreignObject")
+					.attr("width", (onimm.vars.width-40))
+					.attr("height", (onimm.vars.height-40))
+					.attr("x", function(d,i) {
+						return 20;
+					})
+					.attr("y", function(d,i) {
+						return 20;
+					})
+					.append("xhtml:body").attr("class", "modale-body");
+
+
+				onimm.modale_leave = onimm.modale.append("foreignObject").attr("class","modale-close-foreignObject");
 
 				onimm.modale_leave
 					.attr("width", 30)
 					.attr("height", 30)
 					.attr("x", onimm.vars.width - 50)
 					.attr("y", (onimm.vars.height - 380))
-						.append("xhtml:body").attr("class", "modale-body")
+						.append("xhtml:body").attr("class", "modale-close-body")
 							.html("<img class='modale-close-icon' src='./img/close-icon.png'>");
 
-				onimm.modale_title = onimm.modale.append("svg:text");
+				// onimm.modale_title = onimm.modale.append("svg:text");
 
-				onimm.modale_title
-					.transition().duration(3000).delay(500)
-					.attr("class", "modale-title")
-					.attr("x", 0.4*onimm.vars.width)
-					.attr("y", 30)
-					.text(d.name);
-
+				// onimm.modale_title
+				// 	.transition().duration(3000).delay(500)
+				// 	.attr("class", "modale-title")
+				// 	.attr("x", 0.4*onimm.vars.width)
+				// 	.attr("y", 30)
+				// 	.text(d.name);
 
 				// If we click on the close button
 				onimm.modale_leave.on("click", function(d) {
@@ -351,7 +362,9 @@ function Onimm(id, met_id, data_uri) {
 	onimm.dragged = function(d) {
 		d3.select(this).select('circle').attr("cx", d3.event.x ).attr("cy", d3.event.y);
 		//d3.select(this).attr("transform", "translate("+ d3.event.x +","+ d3.event.y +")");
-		d3.select(this).select('text').attr("x", d3.event.x).attr("y", d3.event.y)
+		d3.select(this).select('.jobs-text-foreignObject')
+			.attr("x", d3.event.x - 3*onimm.vars.radius)
+			.attr("y", d3.event.y + 0.6*onimm.vars.radius)
 			.on("mousedown", function() { d3.event.stopPropagation(); });
 		d3.select(this).select('.bubble-foreignObject')
 			.attr("x", d3.event.x - onimm.vars.radius).attr("y", d3.event.y - onimm.vars.radius)
@@ -539,46 +552,10 @@ function Onimm(id, met_id, data_uri) {
 						}
 					}
 				}
-
 			}// end if isActive
 		}// end for
 
 	}
-
-	/**
-	 * SVG text doesn't provide line break, so we have to use tspan
-	 * This function compute the breaking based on a width given, 
-	 * 3 radius
-	 */
-	onimm.wrap = function(text, width) {
-	  text.each(function() {
-		var text = d3.select(this),
-			words = text.text().split(/\s+/).reverse(),
-			word,
-			line = [],
-			lineNumber = 0,
-			lineHeight = 0.7,
-			y = text.attr("y"),
-			dy = parseFloat(text.attr("dy")),
-			dx = parseFloat(text.attr("dx")),
-			tspan = text.text(null).append("tspan").attr("x", text.x).attr("y", text.y).attr("dy", (dy) + "");
-		while (word = words.pop()) {
-		  line.push(word);
-		  tspan.text(line.join(" "));
-		  if (tspan.node().getComputedTextLength() > width) {
-			line.pop();
-			tspan.text(line.join(" "));
-			line = [word];
-			tspan = text.append("tspan")
-			.attr("x", text.x)
-			.attr("y", text.y)
-			.attr("dy", ++lineNumber * lineHeight + (1.2*dy) + "")
-			.attr("dx", ++lineNumber * 0.02 * width + (3*dx) + "")
-			.text(word);
-		  }
-		}
-	  });
-	};
 
 	/* http://stackoverflow.com/questions/7769829/tool-javascript-to-convert-a-xml-string-to-json
 	 * var jsonText = JSON.stringify(xmlToJson(xmlDoc)); 
@@ -623,7 +600,7 @@ function Onimm(id, met_id, data_uri) {
 };
 
 // Let it go !
-onimm = Onimm("onimm_", "10164", "./data/carte_heuristique.xml");
+onimm = Onimm("onimm_", "10183", "./data/carte_heuristique.xml");
 
 // DEBUG
 //console.dir(onimm);
