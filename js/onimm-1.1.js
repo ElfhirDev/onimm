@@ -2,7 +2,7 @@
  * 2014 © Onisep - tous droits réservés - version 1.1
  * 
  * Created by <jta@onisep.fr> 2014-04-14
- * Last update on 2014-05-05 by <jta@onisep.fr>
+ * Last update on 2014-16-05 by <jta@onisep.fr>
  *
  * Script aiming to render the mind map for a job
  *
@@ -20,6 +20,7 @@ function Onimm(id, met_id, data_uri) {
 	// internal object
 	var onimm = {};
 
+	// TODO : rassembler ici des settings
 	onimm.vars = {
 		id : "#"+id,
 		data_uri : data_uri,
@@ -45,6 +46,7 @@ function Onimm(id, met_id, data_uri) {
 		isZoom : null,
 		isNodeCentralX: false,
 		isNodeCentralY: false,
+		positionSlide:0,
 		new_y : 0,
 		new_x : 0
 	};
@@ -183,7 +185,7 @@ function Onimm(id, met_id, data_uri) {
 			onimm.vars.all_data = onimm.vars.data;
 			onimm.vars.data = onimm.vars.used_data;
 
-			console.dir(onimm.vars.data);
+			//console.dir(onimm.vars.data);
 
 			onimm.jobs = onimm.container.selectAll("g")
 				.data(onimm.vars.data);
@@ -244,6 +246,8 @@ function Onimm(id, met_id, data_uri) {
 			// When double click on jobs node (since simple click might be blocked)
 			onimm.jobs.on("dblclick", function(d){
 
+				//console.dir(d);
+
 				// Stop behavior zoom when modale window
 				onimm.vars.zoom.on("zoom", null);
 				onimm.vars.zoom = function() {};
@@ -251,14 +255,15 @@ function Onimm(id, met_id, data_uri) {
 				onimm.modale = onimm.svg.append("svg:svg");
 
 				onimm.modale
-					.attr("width", onimm.vars.width - 20)
-					.attr("height", onimm.vars.height - 20)
+					.attr("width", onimm.vars.width)
+					.attr("height", onimm.vars.height)
 					.attr("align", "center")
 					.style("fill", "#bbb")
 					.attr("id", id + "modale_");
 
 				// -- Create container of elements -----
 				onimm.modale_rect = onimm.modale.append("svg:rect")
+
 					.attr("transform", "translate(" + 20 + "," + 20 + ")")
 					.attr("width", onimm.vars.width)
 					.attr("height", onimm.vars.height)
@@ -266,40 +271,76 @@ function Onimm(id, met_id, data_uri) {
 
 				// -- elastic animation ----- 
 				onimm.modale_rect
-					.transition().duration(1500)
 					.attr("width", (onimm.vars.width-40))
 					.attr("height", (onimm.vars.height-40));	
 
-				onimm.modale_window = onimm.modale.append("svg:foreignObject").attr("class", "modale-foreignObject")
+				onimm.modale_foreignObject = onimm.modale.append("svg:foreignObject").attr("class", "modale-foreignObject");
+
+				// Load the content
+				onimm.modale_window = onimm.modale_foreignObject
 					.attr("width", (onimm.vars.width-40))
 					.attr("height", (onimm.vars.height-40))
-					.attr("x", function(d,i) {
-						return 20;
-					})
-					.attr("y", function(d,i) {
-						return 20;
-					})
-					.append("xhtml:body").attr("class", "modale-body");
+					.attr("x", function(d,i) {return 20;})
+					.attr("y", function(d,i) {return 20;})
+						.append("xhtml:body").attr("class", "modale-body")
+							.attr("width", (onimm.vars.width-40))
+							.attr("height", (onimm.vars.height-40));
 
+				onimm.modale_content = onimm.modale_window.append("xhtml:div").attr("class", "modale-container")
+				onimm.modale_overflow = onimm.modale_content
+					.append("xhtml:div").attr("class", "modale-overflow")
+						.html(function() { return onimm.init_modale_window(d);});
 
-				onimm.modale_leave = onimm.modale.append("foreignObject").attr("class","modale-close-foreignObject");
+				onimm.modale_overflow.style("width", ($(".modale-div").length*(onimm.vars.width-46)+"px"));
+
+				$(".modale-container, .modale-body").css({
+					"width" : (onimm.vars.width-52),
+					"height": (onimm.vars.height-52)
+				});
+
+				$(".modale-div").css({
+					"width": (onimm.vars.width-46)
+				});
+
+				console.log(onimm.vars.positionSlide);
+
+				// TODO block slider when no more Div on the left or the right
+				// Keydown arrow control
+				$(".modale-container").ready(function(){
+					$(this).on("keydown", function(event){
+						switch(event.which) {
+							case 39://right
+								event.preventDefault();
+								if (onimm.vars.positionSlide < $(".modale-div").length-1) {
+									$(".modale-overflow").css({
+										"left": parseFloat($(".modale-overflow").css("left")) - (onimm.vars.width-46) +"px"
+									});
+									onimm.vars.positionSlide++;
+								}
+
+							break;
+							case 37://left
+								event.preventDefault();
+								if (onimm.vars.positionSlide > 0) {
+									$(".modale-overflow").css({
+										"left": parseFloat($(".modale-overflow").css("left")) + (onimm.vars.width-46) +"px"
+									});
+									onimm.vars.positionSlide--;
+								}
+							break;
+						}
+					});
+				});
+
+				onimm.modale_leave = onimm.modale.append("svg:foreignObject").attr("class","modale-close-foreignObject");
 
 				onimm.modale_leave
 					.attr("width", 30)
 					.attr("height", 30)
-					.attr("x", onimm.vars.width - 50)
-					.attr("y", (onimm.vars.height - 380))
+					.attr("x", onimm.vars.width - 30)
+					.attr("y", (onimm.vars.height - 400))
 						.append("xhtml:body").attr("class", "modale-close-body")
 							.html("<img class='modale-close-icon' src='./img/close-icon.png'>");
-
-				// onimm.modale_title = onimm.modale.append("svg:text");
-
-				// onimm.modale_title
-				// 	.transition().duration(3000).delay(500)
-				// 	.attr("class", "modale-title")
-				// 	.attr("x", 0.4*onimm.vars.width)
-				// 	.attr("y", 30)
-				// 	.text(d.name);
 
 				// If we click on the close button
 				onimm.modale_leave.on("click", function(d) {
@@ -438,9 +479,7 @@ function Onimm(id, met_id, data_uri) {
 		}
 	};
 
-	/**
-	 * Create bonds
-	 */
+	// Create bonds
 	onimm.init_bonds = function(data) {
 		
 		onimm.bonds = [];
@@ -554,8 +593,33 @@ function Onimm(id, met_id, data_uri) {
 				}
 			}// end if isActive
 		}// end for
+	};
 
-	}
+	// Content of modale window
+	onimm.init_modale_window = function(data) {
+		var modale_window = "";
+		var div_modale = "<div class='modale-div'>"
+
+		// slide 1
+		modale_window += div_modale+"<h2 class='modale-h2'>"+data.CSLABELFLD['#text']+"</h2>";
+
+		for (var i = 0, l = data.Thesaurus.CSTM_T.record.length; i<l; i++) {
+			modale_window += "<h3 class='modale-h3'>"+data.Thesaurus.CSTM_T.record[i].CSLABELFLD['#text']+"</h3>";
+		}
+
+		modale_window += "</div>";
+
+		// slide 2
+		modale_window += div_modale+"<h2 class='modale-h2'>2"+data.CSLABELFLD['#text']+"</h2>";
+
+		for (var i = 0, l = data.Thesaurus.CSTM_T.record.length; i<l; i++) {
+			modale_window += "<h3 class='modale-h3'>"+data.Thesaurus.CSTM_T.record[i].CSLABELFLD['#text']+"</h3>";
+		}
+
+		modale_window += "</div>";	
+
+		return modale_window;
+	};
 
 	/* http://stackoverflow.com/questions/7769829/tool-javascript-to-convert-a-xml-string-to-json
 	 * var jsonText = JSON.stringify(xmlToJson(xmlDoc)); 

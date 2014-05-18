@@ -1,0 +1,115 @@
+/* onimm.css */ 
+
+
+body {
+  padding-top: 50px;
+  background-color: rgba(0,210,210,0.8);
+}
+
+#onimm_ {
+  position: relative;
+  left: 125px;
+}
+
+body.jobs-text-body {
+  padding: 0 1px;
+  width: 120px;
+  height: 60px;
+  background-color: transparent;
+}
+
+.bubble-foreignObject {
+  padding: 0;
+}
+
+body.bubble-body {
+  padding: 0;
+  background-color: transparent;
+}
+
+img.bubble {
+  width: 100%;
+  height: 100%;
+}
+
+body.modale-body {
+  padding: 2px;
+  background-color: transparent;
+}
+
+.modale-container {
+  position: relative;
+  margin: 2px;
+  padding: 2px;
+  background-color: rgba(22,254,254,0.8);
+}
+
+.modale-overflow {
+  position: relative;
+  background-color: transparent;
+}
+
+.modale-div {
+  position: relative;
+  float: left;
+  height: inherit;
+  background-color: rgba(50,254,254,0.2);
+}
+
+body.modale-close-body {
+  padding: 0;
+  background-color: transparent;
+}
+
+img.modale-close-icon {
+  padding: 0;
+}
+
+/* Modale Window */
+
+.modale-h2 {
+  text-align: center;
+  font-size: 12px;
+}
+
+.modale-h3 {
+  font-size: 10px;
+}
+
+#onimm_svg_ {
+  background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
+  background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* Opera 12+ */
+  background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
+  background: radial-gradient(ellipse at center,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#e5e5e5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+  overflow-y: scroll; 
+}
+
+svg .draggable { cursor: move; }
+
+.dragging {
+  fill: rgba(0,65,200,0.4);
+  stroke: #212121;
+}
+
+.circle {
+  fill: #ccc;
+  stroke: #ff400d;
+  stroke-width: 1.5px;
+}
+
+.jobs {
+  fill-opacity: 0.9;
+}
+
+.jobs-text {
+  font-size: 15px;
+  position: relative;
+  margin: 0 1px;
+  padding: 2px;
+  width: 120px;
+  text-align: center;
+}
