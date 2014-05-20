@@ -47,13 +47,17 @@ body.modale-body {
 .modale-overflow {
   position: relative;
   background-color: transparent;
+  overflow-y: hidden;
 }
 
 .modale-div {
   position: relative;
   float: left;
   height: inherit;
-  background-color: rgba(50,254,254,0.2);
+}
+
+.modale-text {
+  width: 98%;
 }
 
 body.modale-close-body {
@@ -69,11 +73,36 @@ img.modale-close-icon {
 
 .modale-h2 {
   text-align: center;
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
 }
 
 .modale-h3 {
+  text-align: left;
+  font-style: italic;
+  font-size: 14.5px;
+  margin: 15px 0 12px;
+}
+
+.modale-h4 {
+  text-align: left;
+  font-size: 12.5px;
+  color: #0D7B92;
+  margin: 10px 0 10px;
+}
+
+.modale-h5 {
+  text-align: left;
+  font-size: 12.5px;
+  font-style: italic;
+  margin: 8px 0 8px;
+}
+
+.modale-bloc-p {
+  text-align: left;
   font-size: 10px;
+  margin: 8px 0 8px;
 }
 
 #onimm_svg_ {

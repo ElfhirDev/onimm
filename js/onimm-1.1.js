@@ -2,7 +2,7 @@
  * 2014 © Onisep - tous droits réservés - version 1.1
  * 
  * Created by <jta@onisep.fr> 2014-04-14
- * Last update on 2014-16-05 by <jta@onisep.fr>
+ * Last update on 2014-19-05 by <jta@onisep.fr>
  *
  * Script aiming to render the mind map for a job
  *
@@ -29,10 +29,10 @@ function Onimm(id, met_id, data_uri) {
 		y_coordinates : [],
 		xCentral: 0,
 		yCentral: 0,
-		width : 600,
-		half_width : 300,
-		height : 400,
-		half_height : 200,
+		width : 800,
+		half_width : 400,
+		height : 600,
+		half_height : 300,
 		radius: 20,
 		hierarchie_color: "#FC8C2E",
 		collaboration_color: "#C9D800",
@@ -99,7 +99,6 @@ function Onimm(id, met_id, data_uri) {
 				}
 			}
 
-			// TODO : no splice ; get only data with MET_MET_ID and put in array
 			for (var k = 0, m = onimm.vars.data.length ; k<m; k++) {
 
 				//console.log("k : " + k + "  " + onimm.vars.data[k].MET_ID["#text"] + "  " + onimm.vars.collaboration.METIER.record[0].MET_MET_ID['#text']);
@@ -291,7 +290,8 @@ function Onimm(id, met_id, data_uri) {
 					.append("xhtml:div").attr("class", "modale-overflow")
 						.html(function() { return onimm.init_modale_window(d);});
 
-				onimm.modale_overflow.style("width", ($(".modale-div").length*(onimm.vars.width-46)+"px"));
+				onimm.modale_overflow.style("width", ($(".modale-div").length*(onimm.vars.width-46)+"px"))
+					.style("height", (onimm.vars.height-60)+"px");
 
 				$(".modale-container, .modale-body").css({
 					"width" : (onimm.vars.width-52),
@@ -302,10 +302,7 @@ function Onimm(id, met_id, data_uri) {
 					"width": (onimm.vars.width-46)
 				});
 
-				console.log(onimm.vars.positionSlide);
-
-				// TODO block slider when no more Div on the left or the right
-				// Keydown arrow control
+				// Keydown arrow control for testing
 				$(".modale-container").ready(function(){
 					$(this).on("keydown", function(event){
 						switch(event.which) {
@@ -317,7 +314,6 @@ function Onimm(id, met_id, data_uri) {
 									});
 									onimm.vars.positionSlide++;
 								}
-
 							break;
 							case 37://left
 								event.preventDefault();
@@ -326,6 +322,22 @@ function Onimm(id, met_id, data_uri) {
 										"left": parseFloat($(".modale-overflow").css("left")) + (onimm.vars.width-46) +"px"
 									});
 									onimm.vars.positionSlide--;
+								}
+							break;
+							case 38://up
+								if ( parseFloat($(".modale-div").css("top")) < 0) {
+									event.preventDefault();
+									$(".modale-div").css({
+										"top": parseFloat($(".modale-div").css("top"))+25+"px"
+									});
+								}
+							break;
+							case 40://down
+								if ( parseFloat($(".modale-div").css("top")) > -(onimm.vars.half_height-100)) {
+									event.preventDefault();
+									$(".modale-div").css({
+										"top": parseFloat($(".modale-div").css("top"))-25+"px"
+									});
 								}
 							break;
 						}
@@ -338,7 +350,7 @@ function Onimm(id, met_id, data_uri) {
 					.attr("width", 30)
 					.attr("height", 30)
 					.attr("x", onimm.vars.width - 30)
-					.attr("y", (onimm.vars.height - 400))
+					.attr("y", 0)
 						.append("xhtml:body").attr("class", "modale-close-body")
 							.html("<img class='modale-close-icon' src='./img/close-icon.png'>");
 
@@ -597,27 +609,153 @@ function Onimm(id, met_id, data_uri) {
 
 	// Content of modale window
 	onimm.init_modale_window = function(data) {
+
+		//console.dir(data.XML.XMLCONTENT.record[4]);
+
 		var modale_window = "";
 		var div_modale = "<div class='modale-div'>"
 
-		// slide 1
-		modale_window += div_modale+"<h2 class='modale-h2'>"+data.CSLABELFLD['#text']+"</h2>";
+		// slide 1 le métier
+		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
+		modale_window += "<h3 class='modale-h3 modale-text'>Le métier</h3>";
+		modale_window += "<h4 class='modale-h4 modale-text'>Nature du travail</h4>";
 
-		for (var i = 0, l = data.Thesaurus.CSTM_T.record.length; i<l; i++) {
-			modale_window += "<h3 class='modale-h3'>"+data.Thesaurus.CSTM_T.record[i].CSLABELFLD['#text']+"</h3>";
+		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
+			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_NATURE_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
+				for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.p.length; j<m; j++) {
+					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.inter[j] != undefined) {
+						modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.inter[j]["#text"]+ "</h5>";
+					}
+					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.p[j] != undefined) {
+						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.p[j]["#text"]+ "</p>";
+					}	
+				}
+			}
+		}
+
+		modale_window += "<h4 class='modale-h4'>Compétences requises</h4>";
+
+		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
+			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_COMPETENCE_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
+				for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.p.length; j<m; j++) {
+					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.inter[j] != undefined) {
+						modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.inter[j]["#text"]+ "</h5>";
+					}
+					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.p[j] != undefined) {
+						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.p[j]["#text"]+ "</p>";
+					}
+				}
+			}
 		}
 
 		modale_window += "</div>";
 
-		// slide 2
-		modale_window += div_modale+"<h2 class='modale-h2'>2"+data.CSLABELFLD['#text']+"</h2>";
+		// slide 2 où l'exercer
+		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
+		modale_window += "<h3 class='modale-h3 modale-text'>Où l'exercer ?</h3>";
+		modale_window += "<h4 class='modale-h4 modale-text'>Lieux d'exercice et statuts</h4>";
 
-		for (var i = 0, l = data.Thesaurus.CSTM_T.record.length; i<l; i++) {
-			modale_window += "<h3 class='modale-h3'>"+data.Thesaurus.CSTM_T.record[i].CSLABELFLD['#text']+"</h3>";
+		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
+			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_CONDITION_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
+				for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.p.length; j<m; j++) {
+					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.inter[j] != undefined) {
+						modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.inter[j]["#text"]+ "</h5>";
+					}
+					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.p[j] != undefined) {
+						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.p[j]["#text"]+ "</p>";
+					}
+				}
+			}
 		}
 
-		modale_window += "</div>";	
+		modale_window += "</div>";
 
+		// slide 3 Carrière et Salaire
+		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
+		modale_window += "<h3 class='modale-h3 modale-text'>Carrière et salaire</h3>";
+
+		modale_window += "<h4 class='modale-h4 modale-text'>Salaire</h4>";
+
+		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
+			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_VIE_PRO_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
+				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.inter != undefined) {
+					modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.inter["#text"]+ "</h5>";
+				}
+				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p != undefined) {
+					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal != undefined) {
+						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal["#text"]+ " " +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p['#text']+"</p>";
+					}
+					else {
+						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p["#text"]+ "</p>";
+					}
+				}	
+			}
+		}
+
+		modale_window += "<h4 class='modale-h4 modale-text'>Intégrer le marché du travail</h4>";
+
+		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
+			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_VIE_PRO_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
+				for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.p.length; j<m; j++) {
+					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.inter[j] != undefined) {
+						modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.inter[j]["#text"]+ "</h5>";
+					}
+					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.p[j] != undefined) {
+						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.p[j]["#text"]+ "</p>";
+					}	
+				}
+			}
+		}
+
+		modale_window += "</div>";
+
+
+		// slide 4 Accès au métier
+		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
+		modale_window += "<h3 class='modale-h3 modale-text'>Accès au métier</h3>";
+
+		modale_window += "<h4 class='modale-h4 modale-text'>Accès au métier</h4>";
+		
+		modale_window += "</div>";
+
+
+		// slide 5 Exemple de formations
+		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
+		modale_window += "<h3 class='modale-h3 modale-text'>Exemple de formations</h3>";
+
+		modale_window += "<h4 class='modale-h4 modale-text'>Après BAC</h4>";
+		
+		modale_window += "</div>";
+
+		// slide 6 Carrière et Salaire
+		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
+		modale_window += "<h3 class='modale-h3 modale-text'>En savoir plus</h3>";
+		modale_window += "<h4 class='modale-h4 modale-text'>Publications</h4>";
+
+		modale_window += "</div>";
+
+		//
+		//for (var i = 0, l = data.Thesaurus.CSTM_T.record.length; i<l; i++) {
+		//	modale_window += "<p class='modale-bloc-p'>"+data.Thesaurus.CSTM_T.record[i].CSLABELFLD['#text']+"</p>";
+		//}
+		// for (var i = 0, l = 3; i<l; i++) {
+		// 	if(data.XML.XMLCONTENT.record[0].XC_XML.hasOwnProperty("MET_CONDITION_DESCRIPTIF")) {
+		// 		modale_window += "<p>" +data.XML.XMLCONTENT.record[0].XC_XML.MET_CONDITION_DESCRIPTIF.p[i]["#text"]+ "</p>";
+		// 	}
+		// 	if(data.XML.XMLCONTENT.record[0].XC_XML.hasOwnProperty("MET_VIE_PRO_DESCRIPTIF")) {
+		// 		modale_window += "<p>" +data.XML.XMLCONTENT.record[0].XC_XML.MET_VIE_PRO_DESCRIPTIF.p[i]["#text"]+ "</p>";
+		// 	}
+		// 	if(data.XML.XMLCONTENT.record[0].XC_XML.hasOwnProperty("MET_REFERENCES_DESCRIPTIF")) {
+		// 		modale_window += "<p>" +data.XML.XMLCONTENT.record[0].XC_XML.MET_REFERENCES_DESCRIPTIF.p[i]["#text"]+ "</p>";
+		// 	}
+		// 	if(data.XML.XMLCONTENT.record[0].XC_XML.hasOwnProperty("MET_COMPETENCE_DESCRIPTIF")) {
+		// 		modale_window += "<p>" +data.XML.XMLCONTENT.record[0].XC_XML.MET_COMPETENCE_DESCRIPTIF.p[i]["#text"]+ "</p>";
+		// 	}
+		// 	if(data.XML.XMLCONTENT.record[0].XC_XML.hasOwnProperty("MET_ACCES_DESCRIPTIF")) {
+		// 		modale_window += "<p>" +data.XML.XMLCONTENT.record[0].XC_XML.MET_ACCES_DESCRIPTIF.p[i]["#text"]+ "</p>";
+		// 	}
+		// }
+	
 		return modale_window;
 	};
 
@@ -668,5 +806,3 @@ onimm = Onimm("onimm_", "10183", "./data/carte_heuristique.xml");
 
 // DEBUG
 //console.dir(onimm);
-
-
