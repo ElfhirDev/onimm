@@ -303,44 +303,9 @@ function Onimm(id, met_id, data_uri) {
 				});
 
 				// Keydown arrow control for testing
-				$(".modale-container").ready(function(){
-					$(this).on("keydown", function(event){
-						switch(event.which) {
-							case 39://right
-								event.preventDefault();
-								if (onimm.vars.positionSlide < $(".modale-div").length-1) {
-									$(".modale-overflow").css({
-										"left": parseFloat($(".modale-overflow").css("left")) - (onimm.vars.width-46) +"px"
-									});
-									onimm.vars.positionSlide++;
-								}
-							break;
-							case 37://left
-								event.preventDefault();
-								if (onimm.vars.positionSlide > 0) {
-									$(".modale-overflow").css({
-										"left": parseFloat($(".modale-overflow").css("left")) + (onimm.vars.width-46) +"px"
-									});
-									onimm.vars.positionSlide--;
-								}
-							break;
-							case 38://up
-								if ( parseFloat($(".modale-div").css("top")) < 0) {
-									event.preventDefault();
-									$(".modale-div").css({
-										"top": parseFloat($(".modale-div").css("top"))+25+"px"
-									});
-								}
-							break;
-							case 40://down
-								if ( parseFloat($(".modale-div").css("top")) > -(onimm.vars.half_height-100)) {
-									event.preventDefault();
-									$(".modale-div").css({
-										"top": parseFloat($(".modale-div").css("top"))-25+"px"
-									});
-								}
-							break;
-						}
+				$(".modale-container").ready(function() {
+					$(document).bind("keydown.modale", function(event) {
+						onimm.keydownlistener(event);
 					});
 				});
 
@@ -356,6 +321,13 @@ function Onimm(id, met_id, data_uri) {
 
 				// If we click on the close button
 				onimm.modale_leave.on("click", function(d) {
+					
+					$(".modale-container").unbind("keydown.modale", false);
+
+					onimm.vars.positionSlide = 0;
+					$(".modale-overflow").css("left", "0px");
+					$(".modale-div").css("top", "0px");
+
 					onimm.modale.remove();
 
 					onimm.vars.zoom = d3.behavior.zoom()
@@ -451,6 +423,45 @@ function Onimm(id, met_id, data_uri) {
 
 	onimm.dragended = function(d) {
 		d3.select(this).classed("dragging", false);
+	};
+
+	onimm.keydownlistener = function(event) {
+		switch(event.which) {
+			case 39://right
+				event.preventDefault();
+				if (onimm.vars.positionSlide < $(".modale-div").length-1) {
+					$(".modale-overflow").css({
+						"left": parseFloat($(".modale-overflow").css("left")) - (onimm.vars.width-46) +"px"
+					});
+					onimm.vars.positionSlide++;
+				}
+			break;
+			case 37://left
+				event.preventDefault();
+				if (onimm.vars.positionSlide > 0) {
+					$(".modale-overflow").css({
+						"left": parseFloat($(".modale-overflow").css("left")) + (onimm.vars.width-46) +"px"
+					});
+					onimm.vars.positionSlide--;
+				}
+			break;
+			case 38://up
+				if ( parseFloat($(".modale-div").css("top")) < 0) {
+					event.preventDefault();
+					$(".modale-div").css({
+						"top": parseFloat($(".modale-div").css("top"))+25+"px"
+					});
+				}
+			break;
+			case 40://down
+				if ( parseFloat($(".modale-div").css("top")) > -(onimm.vars.half_height-100)) {
+					event.preventDefault();
+					$(".modale-div").css({
+						"top": parseFloat($(".modale-div").css("top"))-25+"px"
+					});
+				}
+			break;
+		}
 	};
 	
 	/**
@@ -610,8 +621,6 @@ function Onimm(id, met_id, data_uri) {
 	// Content of modale window
 	onimm.init_modale_window = function(data) {
 
-		//console.dir(data.XML.XMLCONTENT.record[4]);
-
 		var modale_window = "";
 		var div_modale = "<div class='modale-div'>"
 
@@ -682,13 +691,37 @@ function Onimm(id, met_id, data_uri) {
 					modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.inter["#text"]+ "</h5>";
 				}
 				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p != undefined) {
-					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal != undefined) {
-						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal["#text"]+ " " +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p['#text']+"</p>";
+					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p)) {
+						if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal != undefined) {
+							modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p[0]["#text"][0]
+							+ " " +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p[1].sal['#text']
+							+ " " +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p[0]['#text'][1]+"</p>";
+						}
+						else {
+							modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p["#text"]+ "</p>";
+						}
 					}
 					else {
-						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p["#text"]+ "</p>";
+						if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal != undefined) {
+							modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p["#text"][0]
+							+ " " +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal['#text']
+							+data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p['#text'][1]+"</p>";
+						}
+						else {
+							modale_window += "<p class='modale-bloc-p modale-text'>Pas de données.</p>";
+						}
 					}
-				}	
+				}
+				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit != undefined) {
+					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p)) {
+						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit.p["#text"][0]
+						+ data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit.p.exp
+						+ data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit.p["#text"][1] +"</p>";
+					}
+					else {
+						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit.p["#text"]+"</p>";
+					}
+				}
 			}
 		}
 
@@ -709,28 +742,126 @@ function Onimm(id, met_id, data_uri) {
 
 		modale_window += "</div>";
 
-
+		// TODO : itsimp et ses multiples formes.
 		// slide 4 Accès au métier
 		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
 		modale_window += "<h3 class='modale-h3 modale-text'>Accès au métier</h3>";
 
 		modale_window += "<h4 class='modale-h4 modale-text'>Accès au métier</h4>";
+
+		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
+			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_ACCES_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
+				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.p.accr_p != undefined) {
+					modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.p.accr_p["#text"]+ "</p>";
+				}
+				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.p["#text"] != undefined) {
+					modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.p["#text"]+ "</p>";
+				}
+				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.inter != undefined) {
+					for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.inter.length; j<m; j++) {
+						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.inter[j]["#text"]+ "</p>";
+						modale_window += "<p class='modale-bloc-p modale-text'>";
+						if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste != undefined) {
+							if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp)) {
+								for (var k = 0, n = data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp.length; k<n; k++) {
+									modale_window += "<em class='modale-em'>"+data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp[k].em["#text"]+"</em>";
+									modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp[k]["#text"];
+								}
+							}
+							else {
+								modale_window += "<em class='modale-em'>"+data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp.em["#text"]+"</em>";
+								modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp["#text"];
+							}
+						}
+						modale_window += "</p>";
+					}
+				}	
+			}
+		}
 		
 		modale_window += "</div>";
 
-
-		// slide 5 Exemple de formations
-		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
-		modale_window += "<h3 class='modale-h3 modale-text'>Exemple de formations</h3>";
-
-		modale_window += "<h4 class='modale-h4 modale-text'>Après BAC</h4>";
-		
-		modale_window += "</div>";
-
-		// slide 6 Carrière et Salaire
+		// slide 5 Carrière et Salaire
 		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
 		modale_window += "<h3 class='modale-h3 modale-text'>En savoir plus</h3>";
+		modale_window += "<h4 class='modale-h4 modale-text'>Ressources utiles</h4>";
+
+
+
+		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
+			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_REFERENCES_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
+				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr != undefined) {
+					modale_window += "<h5 class='modale-h5'>Ressources utiles</h5>";
+					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr)) {
+						for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.length; j<m; j++) {
+							modale_window += "<p class='modale-bloc-p modale-text'>";
+							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].nom_adr['#text'] + "</p>";
+							if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].sigle != undefined) {
+								modale_window += "<p class='modale-bloc-p modale-text'>";
+								modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].sigle['#text'] + "</p>";
+							}
+							modale_window += "<p class='modale-bloc-p modale-text'>"
+							modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].voie['#text'] + "</p>";
+
+							modale_window += "<p class='modale-bloc-p modale-text'>";
+							modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].cp['#text'];
+							modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].com['#text'] + "</p>";
+							modale_window += "<p class='modale-bloc-p modale-text'>";
+							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].tel_elt['#text'] + "</p>";
+							if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].url_elt != undefined) {
+								modale_window += "<p class='modale-bloc-p modale-text'><a href='http://"+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].url_elt['#text']+"'>";
+								modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].url_elt['#text'] + "</a></p>";
+							}
+						}
+					}
+					else {
+						modale_window += "<p class='modale-bloc-p modale-text'>";
+						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.nom_adr['#text'] + "</p>";
+						modale_window += "<p class='modale-bloc-p modale-text'>";
+						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.sigle['#text'];
+						modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.voie['#text'] + "</p>";
+						modale_window += "<p class='modale-bloc-p modale-text'>";
+						modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.cp['#text'];
+						modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.com['#text'] + "</p>";
+						modale_window += "<p class='modale-bloc-p modale-text'>";
+						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.tel_elt['#text'] + "</p>";
+						modale_window += "<p class='modale-bloc-p modale-text'><a href='http://"+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.url_elt['#text']+"'>";
+						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.url_elt['#text'] + "</a></p>";
+					}
+				}
+			}
+		}
+
 		modale_window += "<h4 class='modale-h4 modale-text'>Publications</h4>";
+
+		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
+
+			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_REFERENCES_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
+				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub != undefined) {
+					modale_window += "<h5 class='modale-h5'>Publications Onisep</h5>";
+					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep)) {
+						for (var j=0, m=data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.length; j<m; j++) {
+							modale_window += "<p class='modale-bloc-p modale-text'>";
+							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep[j].nom_pub["#text"]+"</p>";
+							modale_window += "<p class='modale-bloc-p modale-text'>Collection ";
+							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep[j].coll["#text"]
+							+", "+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep[j].edit["#text"]+"</p>";
+							modale_window += "<p class='modale-bloc-p modale-text'>parution ";
+							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep[j].annee["#text"]+"</p>";
+						}
+					}
+					else {
+						modale_window += "<p class='modale-bloc-p modale-text'>";
+						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.nom_pub["#text"]+"</p>";
+						modale_window += "<p class='modale-bloc-p modale-text'>Collection ";
+						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.coll["#text"]
+						+", "+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.edit["#text"]+"</p>";
+						modale_window += "<p class='modale-bloc-p modale-text'>parution ";
+						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.annee["#text"]+"</p>";
+					}
+				}
+			}
+		}
 
 		modale_window += "</div>";
 
