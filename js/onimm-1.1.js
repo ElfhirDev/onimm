@@ -240,6 +240,13 @@ function Onimm(id, met_id, data_uri) {
 
 			onimm.jobs.call(onimm.vars.drag);
 			onimm.svg.call(onimm.vars.zoom);
+
+			// Keydown arrow control for testing
+			$(document).ready(function() {
+				$(document).live("keydown.modale", function(event) {
+					onimm.keydownlistener(event);
+				});
+			});
 	
 
 			// When double click on jobs node (since simple click might be blocked)
@@ -294,19 +301,12 @@ function Onimm(id, met_id, data_uri) {
 					.style("height", (onimm.vars.height-60)+"px");
 
 				$(".modale-container, .modale-body").css({
-					"width" : (onimm.vars.width-72),
-					"height": (onimm.vars.height-82)
+					"width" : (onimm.vars.width-52),
+					"height": (onimm.vars.height-52)
 				});
 
 				$(".modale-div").css({
 					"width": (onimm.vars.width-46)
-				});
-
-				// Keydown arrow control for testing
-				$(".modale-container").ready(function() {
-					$(document).bind("keydown.modale", function(event) {
-						onimm.keydownlistener(event);
-					});
 				});
 
 				onimm.modale_leave = onimm.modale.append("svg:foreignObject").attr("class","modale-close-foreignObject");
@@ -319,24 +319,48 @@ function Onimm(id, met_id, data_uri) {
 						.append("xhtml:body").attr("class", "modale-close-body")
 							.html("<img class='modale-close-icon' src='./img/close-icon.png'>");
 
+				onimm.arrow_left = onimm.modale.append("svg:foreignObject").attr("class", "modale-left-arrow-foreignObject");
+				onimm.arrow_right = onimm.modale.append("svg:foreignObject").attr("class", "modale-right-arrow-foreignObject");
+				onimm.arrow_up = onimm.modale.append("svg:foreignObject").attr("class", "modale-up-arrow-foreignObject");
+				onimm.arrow_down = onimm.modale.append("svg:foreignObject").attr("class", "modale-down-arrow-foreignObject");
+
+				onimm.arrow_left
+					.attr("width", 28).attr("height", 178)
+					.attr("x", onimm.vars.width -(onimm.vars.width)).attr("y", onimm.vars.half_height-80)
+						.append("xhtml:body").attr("class", "modale-arrow-body")
+							.html("<img class='modale-arrow-icon' src='./img/arrow-left.png'>");
+
+				onimm.arrow_right
+					.attr("width", 28).attr("height", 178)
+					.attr("x", onimm.vars.width - 30).attr("y", onimm.vars.half_height-80)
+						.append("xhtml:body").attr("class", "modale-arrow-body")
+							.html("<img class='modale-arrow-icon' src='./img/arrow-right.png'>");
+
+				$(".modale-left-arrow-foreignObject img").css("display","none");
+
+				onimm.arrow_left.on("click", function(d) {
+					if (onimm.vars.positionSlide > 0) {
+						$(".modale-overflow").css({
+							"left": parseFloat($(".modale-overflow").css("left")) + (onimm.vars.width-46) +"px"
+						});
+						onimm.vars.positionSlide--;
+						onimm.display_arrow_navigation();
+					}
+				});
+
+				onimm.arrow_right.on("click", function(d){
+					if (onimm.vars.positionSlide < $(".modale-div").length-1) {
+						$(".modale-overflow").css({
+							"left": parseFloat($(".modale-overflow").css("left")) - (onimm.vars.width-46) +"px"
+						});
+						onimm.vars.positionSlide++;
+						onimm.display_arrow_navigation();
+					}
+				});
+
 				// If we click on the close button
 				onimm.modale_leave.on("click", function(d) {
-					
-					$(".modale-container").unbind("keydown.modale", false);
-
-					onimm.vars.positionSlide = 0;
-					$(".modale-overflow").css("left", "0px");
-					$(".modale-div").css("top", "0px");
-
-					onimm.modale.remove();
-
-					onimm.vars.zoom = d3.behavior.zoom()
-						.scaleExtent([1, 1])
-						.on("zoomstart", onimm.zoomstart)
-						.on("zoom", onimm.zoomed)
-						.on("zoomend", onimm.zoomend);
-
-					onimm.svg.call(onimm.vars.zoom);
+					onimm.leave_modale(d);
 				});
 
 			});
@@ -461,7 +485,42 @@ function Onimm(id, met_id, data_uri) {
 					});
 				}
 			break;
+			case 27://escape
+				// If we click on the close button
+				onimm.leave_modale();
+			break;
 		}
+	};
+
+	onimm.display_arrow_navigation = function() {
+		if (onimm.vars.positionSlide == 0) {
+			$(".modale-left-arrow-foreignObject img").css("display","none");
+		}
+		else if (onimm.vars.positionSlide > 0) {
+			$(".modale-left-arrow-foreignObject img").css("display","block");
+		}
+		if (onimm.vars.positionSlide < $(".modale-div").length-1) {
+			$(".modale-right-arrow-foreignObject img").css("display","block");
+		}
+		else {
+			$(".modale-right-arrow-foreignObject img").css("display","none");
+		}
+	};
+
+	onimm.leave_modale = function(d) {
+		onimm.vars.positionSlide = 0;
+		$(".modale-overflow").css("left", "0px");
+		$(".modale-div").css("top", "0px");
+
+		onimm.modale.remove();
+
+		onimm.vars.zoom = d3.behavior.zoom()
+			.scaleExtent([1, 1])
+			.on("zoomstart", onimm.zoomstart)
+			.on("zoom", onimm.zoomed)
+			.on("zoomend", onimm.zoomend);
+
+		onimm.svg.call(onimm.vars.zoom);
 	};
 	
 	/**

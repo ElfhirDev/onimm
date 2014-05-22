@@ -20,6 +20,7 @@ body.jobs-text-body {
 
 .bubble-foreignObject {
   padding: 0;
+  cursor: move;
 }
 
 body.bubble-body {
@@ -67,6 +68,16 @@ body.modale-close-body {
 
 img.modale-close-icon {
   padding: 0;
+  cursor: pointer;
+}
+
+.modale-arrow-body {
+  padding: 0;
+  background-color: transparent;
+}
+
+img.modale-arrow-icon {
+  cursor: pointer;
 }
 
 /* Modale Window */
@@ -117,17 +128,21 @@ img.modale-close-icon {
   overflow-y: scroll; 
 }
 
-svg .draggable { cursor: move; }
+.draggable {
+  cursor: move;
+}
 
 .dragging {
   fill: rgba(0,65,200,0.4);
   stroke: #212121;
+  cursor: grabbing;
 }
 
 .circle {
   fill: #ccc;
   stroke: #ff400d;
   stroke-width: 1.5px;
+  cursor: move;
 }
 
 .jobs {
@@ -135,6 +150,7 @@ svg .draggable { cursor: move; }
 }
 
 .jobs-text {
+  cursor: move;
   font-size: 15px;
   position: relative;
   margin: 0 1px;
