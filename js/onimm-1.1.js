@@ -326,17 +326,32 @@ function Onimm(id, met_id, data_uri) {
 
 				onimm.arrow_left
 					.attr("width", 28).attr("height", 178)
-					.attr("x", onimm.vars.width -(onimm.vars.width)).attr("y", onimm.vars.half_height-80)
+					.attr("x", onimm.vars.width -(onimm.vars.width)).attr("y", onimm.vars.half_height-89)
 						.append("xhtml:body").attr("class", "modale-arrow-body")
 							.html("<img class='modale-arrow-icon' src='./img/arrow-left.png'>");
 
 				onimm.arrow_right
 					.attr("width", 28).attr("height", 178)
-					.attr("x", onimm.vars.width - 30).attr("y", onimm.vars.half_height-80)
+					.attr("x", onimm.vars.width - 30).attr("y", onimm.vars.half_height-89)
 						.append("xhtml:body").attr("class", "modale-arrow-body")
 							.html("<img class='modale-arrow-icon' src='./img/arrow-right.png'>");
 
+				onimm.arrow_down
+					.attr("width", 178).attr("height", 28)
+					.attr("x", onimm.vars.half_width-89).attr("y", onimm.vars.height-28)
+						.append("xhtml:body").attr("class", "modale-arrow-body")
+							.html("<img class='modale-arrow-icon' src='./img/arrow-down.png'>");
+
+				onimm.arrow_up
+					.attr("width", 178).attr("height", 28)
+					.attr("x", onimm.vars.half_width-89).attr("y", onimm.vars.height-28)
+						.append("xhtml:body").attr("class", "modale-arrow-body")
+							.html("<img class='modale-arrow-icon' src='./img/arrow-up.png'>");
+
+
 				$(".modale-left-arrow-foreignObject img").css("display","none");
+				$(".modale-up-arrow-foreignObject img").css("display","none");
+				$(".modale-down-arrow-foreignObject img").css("display","none");
 
 				onimm.arrow_left.on("click", function(d) {
 					if (onimm.vars.positionSlide > 0) {
@@ -355,6 +370,24 @@ function Onimm(id, met_id, data_uri) {
 						});
 						onimm.vars.positionSlide++;
 						onimm.display_arrow_navigation();
+					}
+				});
+
+				onimm.arrow_down.on("click", function(d) {
+					if ( parseFloat($(".modale-div").css("top")) > -(onimm.vars.half_height-100)) {
+						event.preventDefault();
+						$(".modale-div").css({
+							"top": parseFloat($(".modale-div").css("top"))-25+"px"
+						});
+					}
+				});
+				
+				onimm.arrow_up.on("click", function(d) {
+					if ( parseFloat($(".modale-div").css("top")) < 0) {
+						event.preventDefault();
+						$(".modale-div").css({
+							"top": parseFloat($(".modale-div").css("top"))+25+"px"
+						});
 					}
 				});
 
