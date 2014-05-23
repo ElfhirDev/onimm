@@ -12,9 +12,6 @@
 
 "use strict";
 
-// Onisep Mind Mapping
-var onimm = onimm || {};
-
 function Onimm(id, met_id, data_uri) {
 
 	// internal object
@@ -48,7 +45,8 @@ function Onimm(id, met_id, data_uri) {
 		isNodeCentralY: false,
 		positionSlide:0,
 		new_y : 0,
-		new_x : 0
+		new_x : 0,
+		current_height_modale: 0
 	};
 
 	/**
@@ -212,7 +210,7 @@ function Onimm(id, met_id, data_uri) {
 			onimm.jobs_text = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "jobs-text-foreignObject")
 				.attr("width", 120)
-				.attr("height", 60)
+				.attr("height", 100)
 				.attr("x", function(d,i) {
 					return d.x = onimm.vars.x_coordinates[i] - 3*onimm.vars.radius;
 				})
@@ -247,6 +245,38 @@ function Onimm(id, met_id, data_uri) {
 					onimm.keydownlistener(event);
 				});
 			});
+
+			onimm.legend = onimm.container.append("svg:rect")
+				.attr("x", 0.55*onimm.vars.half_width)
+				.attr("y", -0.95*onimm.vars.half_height)
+				.attr("width", 0.2*onimm.vars.width)
+				.attr("height", 0.25*onimm.vars.height)
+				.style("fill", "rgba(255,255,255,0.6)");
+
+			onimm.legend.append("svg:path")
+				.attr("class", function(d,i) {return "bond"})
+				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#0D7B92")
+				.attr("d", "M 0,0 0,0 0,0 "+120+","+150+"");
+
+			onimm.legend.append("svg:path")
+				.attr("class", function(d,i) {return "bond"})
+				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#C9D800")
+				.attr("d", "M 0,0 0,0 0,0 "+120+","+180+"");
+
+			onimm.legend.append("svg:path")
+				.attr("class", function(d,i) {return "bond"})
+				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#DE0027")
+				.attr("d", "M 0,0 0,0 0,0 "+120+","+210+"");
+
+			onimm.legend.append("svg:path")
+				.attr("class", function(d,i) {return "bond"})
+				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#9D0D15")
+				.attr("d", "M 0,0 0,0 0,0 "+120+","+240+"");
+
+			onimm.legend.append("svg:path")
+				.attr("class", function(d,i) {return "bond"})
+				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#558DB4")
+				.attr("d", "M 0,0 0,0 0,0 "+120+","+270+"");
 	
 
 			// When double click on jobs node (since simple click might be blocked)
@@ -265,7 +295,7 @@ function Onimm(id, met_id, data_uri) {
 					.attr("height", onimm.vars.height)
 					.attr("align", "center")
 					.style("fill", "#bbb")
-					.attr("id", id + "modale_");
+					.attr("id", id + "modale_"+d.MET_ID["#text"]);
 
 				// -- Create container of elements -----
 				onimm.modale_rect = onimm.modale.append("svg:rect")
@@ -306,7 +336,8 @@ function Onimm(id, met_id, data_uri) {
 				});
 
 				$(".modale-div").css({
-					"width": (onimm.vars.width-46)
+					"width": (onimm.vars.width-46),
+					"height": (onimm.vars.height)
 				});
 
 				onimm.modale_leave = onimm.modale.append("svg:foreignObject").attr("class","modale-close-foreignObject");
@@ -344,14 +375,20 @@ function Onimm(id, met_id, data_uri) {
 
 				onimm.arrow_up
 					.attr("width", 178).attr("height", 28)
-					.attr("x", onimm.vars.half_width-89).attr("y", onimm.vars.height-28)
+					.attr("x", onimm.vars.half_width-89).attr("y", 0)
 						.append("xhtml:body").attr("class", "modale-arrow-body")
 							.html("<img class='modale-arrow-icon' src='./img/arrow-up.png'>");
 
 
 				$(".modale-left-arrow-foreignObject img").css("display","none");
-				$(".modale-up-arrow-foreignObject img").css("display","none");
-				$(".modale-down-arrow-foreignObject img").css("display","none");
+				// $(".modale-up-arrow-foreignObject img").css("display","none");
+				// $(".modale-down-arrow-foreignObject img").css("display","none");
+
+				$(".modale-div").children().each(function(){
+					onimm.vars.current_height_modale = onimm.vars.current_height_modale + $(this).outerHeight();
+				});
+				console.log("curr : " + onimm.vars.current_height_modale + "  .modale-div : " + onimm.vars.height);
+
 
 				onimm.arrow_left.on("click", function(d) {
 					if (onimm.vars.positionSlide > 0) {
@@ -375,7 +412,6 @@ function Onimm(id, met_id, data_uri) {
 
 				onimm.arrow_down.on("click", function(d) {
 					if ( parseFloat($(".modale-div").css("top")) > -(onimm.vars.half_height-100)) {
-						event.preventDefault();
 						$(".modale-div").css({
 							"top": parseFloat($(".modale-div").css("top"))-25+"px"
 						});
@@ -384,7 +420,6 @@ function Onimm(id, met_id, data_uri) {
 				
 				onimm.arrow_up.on("click", function(d) {
 					if ( parseFloat($(".modale-div").css("top")) < 0) {
-						event.preventDefault();
 						$(".modale-div").css({
 							"top": parseFloat($(".modale-div").css("top"))+25+"px"
 						});
@@ -526,17 +561,28 @@ function Onimm(id, met_id, data_uri) {
 	};
 
 	onimm.display_arrow_navigation = function() {
+		//left
 		if (onimm.vars.positionSlide == 0) {
 			$(".modale-left-arrow-foreignObject img").css("display","none");
 		}
 		else if (onimm.vars.positionSlide > 0) {
 			$(".modale-left-arrow-foreignObject img").css("display","block");
 		}
+		//right
 		if (onimm.vars.positionSlide < $(".modale-div").length-1) {
 			$(".modale-right-arrow-foreignObject img").css("display","block");
 		}
 		else {
 			$(".modale-right-arrow-foreignObject img").css("display","none");
+		}
+		//up and down
+		if (onimm.vars.current_height_modale > 2*onimm.vars.height) {
+			$(".modale-up-arrow-foreignObject img").css("display","block");
+			$(".modale-down-arrow-foreignObject img").css("display","block");
+		}
+		else {
+			$(".modale-up-arrow-foreignObject img").css("display","none");
+			$(".modale-down-arrow-foreignObject img").css("display","none");
 		}
 	};
 
@@ -544,6 +590,7 @@ function Onimm(id, met_id, data_uri) {
 		onimm.vars.positionSlide = 0;
 		$(".modale-overflow").css("left", "0px");
 		$(".modale-div").css("top", "0px");
+		onimm.vars.current_height_modale = 0;
 
 		onimm.modale.remove();
 
@@ -1043,7 +1090,7 @@ function Onimm(id, met_id, data_uri) {
 };
 
 // Let it go !
-onimm = Onimm("onimm_", "10183", "./data/carte_heuristique.xml");
+// onimm = Onimm("onimm_", "10183", "./data/carte_heuristique.xml");
 
 // DEBUG
 //console.dir(onimm);

@@ -43,6 +43,7 @@ body.modale-body {
   margin: 2px;
   padding: 2px;
   background-color: rgba(22,254,254,0.8);
+  cursor: default;
 }
 
 .modale-overflow {
@@ -54,7 +55,7 @@ body.modale-body {
 .modale-div {
   position: relative;
   float: left;
-  height: inherit;
+  height: 700px;
 }
 
 .modale-text {
@@ -86,7 +87,7 @@ img.modale-arrow-icon {
   text-align: center;
   font-size: 16px;
   font-weight: bold;
-  margin: 0;
+  margin: 10px 0;
 }
 
 .modale-h3 {
@@ -125,7 +126,9 @@ img.modale-arrow-icon {
   background: radial-gradient(ellipse at center,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#e5e5e5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 
-  overflow-y: scroll; 
+  overflow-y: scroll;
+  cursor: grab;
+
 }
 
 .draggable {
