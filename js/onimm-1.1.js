@@ -64,6 +64,26 @@ function Onimm(id, met_id, data_uri) {
 			.style("border", "1px solid black")
 			.attr("id", id + "svg_");
 
+		// Define markers triangle for some bonds
+		// end
+		onimm.marker_end = onimm.svg.append("svg:defs")
+			.append("svg:marker")
+				.attr("id", "marker_arrow_end").attr("markerWidth", 10).attr("markerHeight", 10)
+				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
+
+		onimm.marker_end.append("svg:polygon")
+				.attr("points", "0,0 -12,3 -12,-3")
+				.attr("style", "fill: #C9D800; stroke: #C9D800; stroke-width:1px");
+		// start
+		onimm.marker_start = onimm.svg.append("svg:defs")
+			.append("svg:marker")
+				.attr("id", "marker_arrow_start").attr("markerWidth", 10).attr("markerHeight", 10)
+				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
+
+		onimm.marker_start.append("svg:polygon")
+				.attr("points", "0,0 12,3 12,-3")
+				.attr("style", "fill: #F4D800; stroke: #C9D800; stroke-width:1px");
+
 		// Create sub-container of Bond(s), James Bond
 		onimm.bond_container = onimm.svg.append("g")
 			.attr("transform", "translate(" + onimm.vars.half_width + "," + onimm.vars.half_height + ")")
@@ -553,7 +573,7 @@ function Onimm(id, met_id, data_uri) {
 			.attr("y1", 0.1*onimm.vars.half_height)
 			.attr("x2", 0.92*onimm.vars.width)
 			.attr("y2", 0.1*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke","#0D7B92");
+			.attr("stroke-width","5").attr("stroke","#C9D800");
 
 		onimm.legend_1_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "jobs-text-foreignObject")
@@ -629,7 +649,7 @@ function Onimm(id, met_id, data_uri) {
 			.attr("y1", 0.70*onimm.vars.half_height)
 			.attr("x2", 0.92*onimm.vars.width)
 			.attr("y2", 0.70*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke","#558DB4");
+			.attr("stroke-width","5").attr("stroke","#558DB4").attr("stroke-dasharray", "5,5");
 
 		onimm.legend_5_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "jobs-text-foreignObject")
@@ -685,9 +705,6 @@ function Onimm(id, met_id, data_uri) {
 	// TODO TODO TODO info bulle !
 	onimm.display_info_hover_node = function(d, i, data, x, y) {
 		d3.selectAll(".info-hover-foreignObject").remove();
-
-		console.log(i);
-		//console.log(d.x + "   " + d.y);
 
 		onimm.container.append("svg:foreignObject").attr("class","info-hover-foreignObject")
 			.attr("width", 120).attr("height", 120)
@@ -831,13 +848,15 @@ function Onimm(id, met_id, data_uri) {
 					if ($.isArray(onimm.vars.supervised.METIER.record)) {
 						for (var j = 0, l = onimm.vars.supervised.METIER.record.length; j<l ; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.supervised.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.bonds[b].attr("stroke", "#0D7B92");
+								onimm.bonds[b].attr("stroke", "#C9D800")
+								.attr("marker-start", "url(#marker_arrow_start)");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.supervised.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", "#0D7B92");
+							onimm.bonds[b].attr("stroke", "#C9D800")
+							.attr("marker-start", "url(#marker_arrow_start)");
 						}
 					}
 				}
@@ -846,13 +865,15 @@ function Onimm(id, met_id, data_uri) {
 					if ($.isArray(onimm.vars.is_supervised.METIER.record)) {
 						for (var j = 0, l = onimm.vars.is_supervised.METIER.record.length; j<l; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.bonds[b].attr("stroke", "#C9D800");
+								onimm.bonds[b].attr("stroke", "#C9D800")
+								.attr("marker-end", "url(#marker_arrow_end)");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", "#C9D800");
+							onimm.bonds[b].attr("stroke", "#C9D800")
+							.attr("marker-end", "url(#marker_arrow_end)");
 						}
 					}	
 				}
@@ -891,13 +912,15 @@ function Onimm(id, met_id, data_uri) {
 					if ($.isArray(onimm.vars.collaboration.METIER.record)) {
 						for (var j = 0, l = onimm.vars.collaboration.METIER.record.length; j<l; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.bonds[b].attr("stroke", "#558DB4");
+								onimm.bonds[b].attr("stroke", "#558DB4")
+								.attr("stroke-dasharray", "5,5");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", "#558DB4");
+							onimm.bonds[b].attr("stroke", "#558DB4")
+							.attr("stroke-dasharray", "5,5");
 						}
 					}
 				}
