@@ -2,7 +2,6 @@
 
 
 body {
-  padding-top: 50px;
   background-color: rgba(0,210,210,0.8);
 }
 
@@ -62,7 +61,31 @@ body.modale-body {
   width: 98%;
 }
 
+.help-text-legend {
+  color: #FC8C2E;
+}
+
+.help-text-legend:hover {
+  font-weight: bold;
+  cursor: help;
+}
+
 body.modale-close-body {
+  padding: 0;
+  background-color: transparent;
+}
+
+body.legend-close-body {
+  padding: 0;
+  background-color: transparent;
+}
+
+body.help-text-body {
+  padding: 0;
+  background-color: transparent;
+}
+
+body.info-hover-body {
   padding: 0;
   background-color: transparent;
 }
@@ -150,6 +173,7 @@ img.modale-arrow-icon {
 
 .jobs {
   fill-opacity: 0.9;
+  pointer-events: all;
 }
 
 .jobs-text {
@@ -160,4 +184,29 @@ img.modale-arrow-icon {
   padding: 2px;
   width: 120px;
   text-align: center;
+}
+
+.g_container_legend {
+  cursor: default;
+}
+
+.text-legend {
+  cursor: default;
+  font-size: 13px;
+  position: relative;
+  margin: 0 1px;
+  padding: 2px;
+  width: 120px;
+  text-align: center;
+}
+
+.info-hover {
+  padding: 5px;
+  background-color: #fff;
+  -webkit-border-radius: 15px 15px 15px 15px;
+          border-radius: 15px 15px 15px 15px;
+}
+
+.info-hover-text {
+  font-size: 10px;
 }

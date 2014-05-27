@@ -188,8 +188,7 @@ function Onimm(id, met_id, data_uri) {
 				.data(onimm.vars.data);
 
 			onimm.jobs = onimm.jobs.enter().append("svg:g")
-				.classed("jobs", function(d){return (2*d + 1);})
-				.classed("draggable", function(d) {return (2*d + 1);});
+				.attr("class", function(d){return "draggable jobs";});
 
 			onimm.vars.totalNodes = onimm.jobs.size();
 
@@ -209,7 +208,7 @@ function Onimm(id, met_id, data_uri) {
 
 			onimm.jobs_text = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "jobs-text-foreignObject")
-				.attr("width", 120)
+				.attr("width", 140)
 				.attr("height", 100)
 				.attr("x", function(d,i) {
 					return d.x = onimm.vars.x_coordinates[i] - 3*onimm.vars.radius;
@@ -246,38 +245,18 @@ function Onimm(id, met_id, data_uri) {
 				});
 			});
 
-			onimm.legend = onimm.container.append("svg:rect")
-				.attr("x", 0.55*onimm.vars.half_width)
-				.attr("y", -0.95*onimm.vars.half_height)
-				.attr("width", 0.2*onimm.vars.width)
-				.attr("height", 0.25*onimm.vars.height)
-				.style("fill", "rgba(255,255,255,0.6)");
+			onimm.set_legend();
 
-			onimm.legend.append("svg:path")
-				.attr("class", function(d,i) {return "bond"})
-				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#0D7B92")
-				.attr("d", "M 0,0 0,0 0,0 "+120+","+150+"");
+			// TODO
+			onimm.jobs.on("mouseenter", function(d,i) {
+				var x = d3.mouse(this)[0];
+       			var y = d3.mouse(this)[1];
+				onimm.display_info_hover_node(d, i, onimm.vars.data, x, y);
+			});
 
-			onimm.legend.append("svg:path")
-				.attr("class", function(d,i) {return "bond"})
-				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#C9D800")
-				.attr("d", "M 0,0 0,0 0,0 "+120+","+180+"");
-
-			onimm.legend.append("svg:path")
-				.attr("class", function(d,i) {return "bond"})
-				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#DE0027")
-				.attr("d", "M 0,0 0,0 0,0 "+120+","+210+"");
-
-			onimm.legend.append("svg:path")
-				.attr("class", function(d,i) {return "bond"})
-				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#9D0D15")
-				.attr("d", "M 0,0 0,0 0,0 "+120+","+240+"");
-
-			onimm.legend.append("svg:path")
-				.attr("class", function(d,i) {return "bond"})
-				.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "#558DB4")
-				.attr("d", "M 0,0 0,0 0,0 "+120+","+270+"");
-	
+			onimm.jobs.on("mouseleave", function(d,i) {
+				onimm.hide_info_hover_node(d,i);
+			});
 
 			// When double click on jobs node (since simple click might be blocked)
 			onimm.jobs.on("dblclick", function(d){
@@ -299,7 +278,6 @@ function Onimm(id, met_id, data_uri) {
 
 				// -- Create container of elements -----
 				onimm.modale_rect = onimm.modale.append("svg:rect")
-
 					.attr("transform", "translate(" + 20 + "," + 20 + ")")
 					.attr("width", onimm.vars.width)
 					.attr("height", onimm.vars.height)
@@ -387,8 +365,6 @@ function Onimm(id, met_id, data_uri) {
 				$(".modale-div").children().each(function(){
 					onimm.vars.current_height_modale = onimm.vars.current_height_modale + $(this).outerHeight();
 				});
-				console.log("curr : " + onimm.vars.current_height_modale + "  .modale-div : " + onimm.vars.height);
-
 
 				onimm.arrow_left.on("click", function(d) {
 					if (onimm.vars.positionSlide > 0) {
@@ -560,6 +536,174 @@ function Onimm(id, met_id, data_uri) {
 		}
 	};
 
+	onimm.set_legend = function() {
+		onimm.container_legend = onimm.svg.append("svg:g")
+			.attr("class","g_container_legend");
+
+		onimm.rect_legend = onimm.container_legend.append("svg:rect")
+			.attr("x", 0.82*onimm.vars.width)
+			.attr("y", 0.05*onimm.vars.half_height)
+			.attr("width", 0.15*onimm.vars.width)
+			.attr("height", 0.40*onimm.vars.height)
+			.style("fill", "rgba(255,255,255,1)");
+
+		onimm.legend_1 = onimm.container_legend.append("svg:line")
+			.attr("class", function(d,i) {return "bond"})
+			.attr("x1", 0.85*onimm.vars.width)
+			.attr("y1", 0.1*onimm.vars.half_height)
+			.attr("x2", 0.92*onimm.vars.width)
+			.attr("y2", 0.1*onimm.vars.half_height)
+			.attr("stroke-width","5").attr("stroke","#0D7B92");
+
+		onimm.legend_1_text = onimm.container_legend.append("svg:foreignObject")
+			.attr("class", "jobs-text-foreignObject")
+			.attr("width", 120)
+			.attr("height", 100)
+			.attr("x", 0.81*onimm.vars.width)
+			.attr("y", 0.12*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "jobs-text-body")
+				.html(function(d,i) {
+					return "<p class='text-legend'>supervise</p>";
+				});
+
+		onimm.legend_2 = onimm.container_legend.append("svg:line")
+			.attr("class", function(d,i) {return "bond"})
+			.attr("x1", 0.85*onimm.vars.width)
+			.attr("y1", 0.25*onimm.vars.half_height)
+			.attr("x2", 0.92*onimm.vars.width)
+			.attr("y2", 0.25*onimm.vars.half_height)
+			.attr("stroke-width","5").attr("stroke","#C9D800");
+
+		onimm.legend_2_text = onimm.container_legend.append("svg:foreignObject")
+			.attr("class", "jobs-text-foreignObject")
+			.attr("width", 120)
+			.attr("height", 100)
+			.attr("x", 0.81*onimm.vars.width)
+			.attr("y", 0.28*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "jobs-text-body")
+				.html(function(d,i) {
+					return "<p class='text-legend'>est supervisé</p>";
+				});
+
+		onimm.legend_3 = onimm.container_legend.append("svg:line")
+			.attr("class", function(d,i) {return "bond"})
+			.attr("x1", 0.85*onimm.vars.width)
+			.attr("y1", 0.40*onimm.vars.half_height)
+			.attr("x2", 0.92*onimm.vars.width)
+			.attr("y2", 0.40*onimm.vars.half_height)
+			.attr("stroke-width","5").attr("stroke","#DE0027");
+
+		onimm.legend_3_text = onimm.container_legend.append("svg:foreignObject")
+			.attr("class", "jobs-text-foreignObject")
+			.attr("width", 120)
+			.attr("height", 100)
+			.attr("x", 0.81*onimm.vars.width)
+			.attr("y", 0.42*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "jobs-text-body")
+				.html(function(d,i) {
+					return "<p class='text-legend'>se spécialise</p>";
+				});
+
+		onimm.legend_4 = onimm.container_legend.append("svg:line")
+			.attr("class", function(d,i) {return "bond"})
+			.attr("x1", 0.85*onimm.vars.width)
+			.attr("y1", 0.55*onimm.vars.half_height)
+			.attr("x2", 0.92*onimm.vars.width)
+			.attr("y2", 0.55*onimm.vars.half_height)
+			.attr("stroke-width","5").attr("stroke","#9D0D15");
+
+		onimm.legend_4_text = onimm.container_legend.append("svg:foreignObject")
+			.attr("class", "jobs-text-foreignObject")
+			.attr("width", 120)
+			.attr("height", 100)
+			.attr("x", 0.81*onimm.vars.width)
+			.attr("y", 0.57*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "jobs-text-body")
+				.html(function(d,i) {
+					return "<p class='text-legend'>est spécialisé</p>";
+				});
+
+		onimm.legend_5 = onimm.container_legend.append("svg:line")
+			.attr("class", function(d,i) {return "bond"})
+			.attr("x1", 0.85*onimm.vars.width)
+			.attr("y1", 0.70*onimm.vars.half_height)
+			.attr("x2", 0.92*onimm.vars.width)
+			.attr("y2", 0.70*onimm.vars.half_height)
+			.attr("stroke-width","5").attr("stroke","#558DB4");
+
+		onimm.legend_5_text = onimm.container_legend.append("svg:foreignObject")
+			.attr("class", "jobs-text-foreignObject")
+			.attr("width", 120)
+			.attr("height", 100)
+			.attr("x", 0.81*onimm.vars.width)
+			.attr("y", 0.72*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "jobs-text-body")
+				.html(function(d,i) {
+					return "<p class='text-legend'>Collaboration</p>";
+				});
+
+		onimm.legend_leave = onimm.container_legend.append("svg:foreignObject").attr("class","legend-close-foreignObject");
+
+		onimm.legend_leave
+			.attr("width", 30)
+			.attr("height", 30)
+			.attr("x", onimm.vars.width - 40)
+			.attr("y", 0)
+				.append("xhtml:body").attr("class", "legend-close-body")
+					.html("<img class='legend-close-icon' src='./img/close-icon.png'>");
+
+		onimm.legend_leave.on("click", function(d) {
+			onimm.close_legend();
+			onimm.set_help_legend();
+		});
+	};
+
+	onimm.close_legend = function() {
+		onimm.container_legend.remove();
+	};
+
+	onimm.set_help_legend = function() {
+		onimm.help_legend_container = onimm.svg.append("svg:g").attr("id", "g_help_text");
+		onimm.help_legend = onimm.help_legend_container.append("svg:foreignObject")
+			.attr("class", "help-text-foreignObject")
+			.attr("width", 50)
+			.attr("height", 50)
+			.attr("x", 0.90*onimm.vars.width)
+			.attr("y", 0.05*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "help-text-body")
+				.html(function(d,i) {
+					return "<p class='help-text-legend'>Help</p>";
+				});	
+
+		// Set legend again when clicking on help
+		onimm.help_legend.on("click", function(d) {
+			onimm.help_legend_container.remove();
+			onimm.set_legend();
+		});
+	};
+
+	// TODO TODO TODO info bulle !
+	onimm.display_info_hover_node = function(d, i, data, x, y) {
+		d3.selectAll(".info-hover-foreignObject").remove();
+
+		console.log(i);
+		//console.log(d.x + "   " + d.y);
+
+		onimm.container.append("svg:foreignObject").attr("class","info-hover-foreignObject")
+			.attr("width", 120).attr("height", 120)
+			.attr("x", x)
+			.attr("y", y)
+			.append("xhtml:body").attr("class", "info-hover-body")
+			.append("div")
+			.attr("class", "info-hover")
+			.html("<p class='info-hover-text'>"+d.Thesaurus.CSTM_T.record[0].CSLABELFLD["#text"]+"</p>");
+
+	};
+
+	onimm.hide_info_hover_node = function(d,i) {
+		d3.selectAll(".info-hover-foreignObject").remove();
+	}
+
 	onimm.display_arrow_navigation = function() {
 		//left
 		if (onimm.vars.positionSlide == 0) {
@@ -593,6 +737,10 @@ function Onimm(id, met_id, data_uri) {
 		onimm.vars.current_height_modale = 0;
 
 		onimm.modale.remove();
+
+		if (!document.getElementById("g_help_text")){
+			onimm.set_help_legend();
+		}
 
 		onimm.vars.zoom = d3.behavior.zoom()
 			.scaleExtent([1, 1])
@@ -759,6 +907,8 @@ function Onimm(id, met_id, data_uri) {
 
 	// Content of modale window
 	onimm.init_modale_window = function(data) {
+
+		onimm.close_legend();
 
 		var modale_window = "";
 		var div_modale = "<div class='modale-div'>"
