@@ -2,7 +2,8 @@
 
 
 body {
-  background-color: rgba(0,210,210,0.8);
+  /*background-color: rgba(0,210,210,0.8);*/
+  background-color: transparent;
 }
 
 #onimm_ {
@@ -172,7 +173,7 @@ img.modale-arrow-icon {
 }
 
 .jobs {
-  fill-opacity: 0.9;
+  fill-opacity: 1;
   pointer-events: all;
 }
 
@@ -203,10 +204,23 @@ img.modale-arrow-icon {
 .info-hover {
   padding: 5px;
   background-color: #fff;
-  -webkit-border-radius: 15px 15px 15px 15px;
-          border-radius: 15px 15px 15px 15px;
+
+  -webkit-box-shadow: inset 0 0 5px 1px rgba(0,0,0,0.2);
+          box-shadow: inset 0 0 5px 1px rgba(0,0,0,0.2);
+
+  -webkit-border-radius: 10px 10px 10px 10px;
+          border-radius: 10px 10px 10px 10px;
 }
 
 .info-hover-text {
   font-size: 10px;
+}
+
+.active_node img, .active_node .bubble-foreignObject{
+  width: 60px;
+  height: 60px;
+}
+
+.active_node .jobs-text {
+  font-weight: bold;
 }

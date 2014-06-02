@@ -2,7 +2,7 @@
  * 2014 © Onisep - tous droits réservés - version 1.2
  * 
  * Created by <jta@onisep.fr> 2014-04-14
- * Last update on 2014-28-05 by <jta@onisep.fr>
+ * Last update on 2014-02-06 by <jta@onisep.fr>
  *
  * Script aiming to render the mind map for a job
  *
@@ -31,10 +31,10 @@ function Onimm(id, met_id, data_uri) {
 		height : 600,
 		half_height : 300,
 		radius: 20,
-		coordination_color: "#FC8C2E",
-		collaboration_color: "#C9D800",
-		supervised: {},
-		is_supervised: {},
+		coordination_color: "#C9D800",
+		collaboration_color: "#558DB4",
+		coordinated: {},
+		is_coordinated: {},
 		collaboration: {},
 		specialisation: {},
 		is_specialisation: {},
@@ -49,13 +49,14 @@ function Onimm(id, met_id, data_uri) {
 	};
 
 	/**
-	 * Init all the script
+	 * create svg elements, load data from xml, start all listener
 	 */
 	onimm.init = function() {
 
+		// Start D3 zoom and drag behavior at line 483
 		onimm.init_behavior();
 
-		// Create SVG element container
+		// Create the main SVG element container
 		onimm.svg = d3.select(onimm.vars.id).append("svg:svg")
 			.attr("width", onimm.vars.width)
 			.attr("height", onimm.vars.height)
@@ -63,8 +64,8 @@ function Onimm(id, met_id, data_uri) {
 			.style("border", "1px solid black")
 			.attr("id", id + "svg_");
 
-		// Define markers triangle for some bonds
-		// end
+		/* ---- Define markers for design the bonds ---- */
+		// end of bonds
 		onimm.marker_end = onimm.svg.append("svg:defs")
 			.append("svg:marker")
 				.attr("id", "marker_arrow_end").attr("markerWidth", 10).attr("markerHeight", 10)
@@ -72,8 +73,9 @@ function Onimm(id, met_id, data_uri) {
 
 		onimm.marker_end.append("svg:polygon")
 				.attr("points", "0,0 -12,3 -12,-3")
-				.attr("style", "fill: #C9D800; stroke: #C9D800; stroke-width:1px");
-		// start
+				.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:1px");
+		
+		// start of bonds
 		onimm.marker_start = onimm.svg.append("svg:defs")
 			.append("svg:marker")
 				.attr("id", "marker_arrow_start").attr("markerWidth", 10).attr("markerHeight", 10)
@@ -81,7 +83,7 @@ function Onimm(id, met_id, data_uri) {
 
 		onimm.marker_start.append("svg:polygon")
 				.attr("points", "0,0 12,3 12,-3")
-				.attr("style", "fill: #F4D800; stroke: #C9D800; stroke-width:1px");
+				.attr("style", "fill:"+onimm.vars.coordination_color	+"; stroke:"+onimm.vars.coordination_color+"; stroke-width:1px");
 
 		// Create sub-container of Bond(s), James Bond
 		onimm.bond_container = onimm.svg.append("g")
@@ -96,90 +98,55 @@ function Onimm(id, met_id, data_uri) {
 		// Load our resources
 		d3.xml(data_uri, "application/xml", function(error, xml) {
 
-			// DEBUG
+			// DEBUG of D3 when import data
 			if (error) return console.warn(error);
 
+			// custom xml to json because it's better
 			onimm.vars.data = onimm.xmlToJson(xml);
 			onimm.vars.data = onimm.vars.data.CARTE_HEURISTIQUE.METIER.record;
 
-			// Only keep the jobs with bonds with the met_id
-			// onimm.vars.unused_data = onimm.vars.data.splice(i, 1);
-			
+			// Get arrays only for the job at the center and for convenience define arrays for bond relation
 			for (var a = 0, l = onimm.vars.data.length; a<l; a++) {
 				if (onimm.vars.data[a].MET_ID["#text"] === met_id) {	
 					onimm.vars.used_data.push(onimm.vars.data[a])			
-					onimm.vars.supervised = onimm.vars.data[a].Liens_metiers_supervise;
-					onimm.vars.is_supervised = onimm.vars.data[a].Liens_metiers_est_supervise;
-					onimm.vars.specialisation = onimm.vars.data[a].Liens_metiers_fils;
-					onimm.vars.is_specialisation = onimm.vars.data[a].Liens_metiers_père;
+					onimm.vars.coordinated = onimm.vars.data[a].Liens_metiers_supervise;
+					onimm.vars.is_coordinated = onimm.vars.data[a].Liens_metiers_est_supervise;
 					onimm.vars.collaboration = onimm.vars.data[a].Liens_metiers_collabore;
 				}
 			}
 
 			for (var k = 0, m = onimm.vars.data.length ; k<m; k++) {
 
-				//console.log("k : " + k + "  " + onimm.vars.data[k].MET_ID["#text"] + "  " + onimm.vars.collaboration.METIER.record[0].MET_MET_ID['#text']);
-				//console.log(typeof(onimm.vars.data[k].MET_ID["#text"]) + "  " + typeof(onimm.vars.collaboration.METIER.record[5].MET_MET_ID['#text']))
-
-				if (onimm.vars.supervised.METIER.hasOwnProperty("record")) {
-					if ($.isArray(onimm.vars.supervised.METIER.record)) {
-						for (var j = 0, l = onimm.vars.supervised.METIER.record.length; j<l ; j++) {
-							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.supervised.METIER.record[j].MET_MET_ID['#text']) {
+				if (onimm.vars.coordinated.METIER.hasOwnProperty("record")) {
+					if ($.isArray(onimm.vars.coordinated.METIER.record)) {
+						for (var j = 0, l = onimm.vars.coordinated.METIER.record.length; j<l ; j++) {
+							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.coordinated.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.vars.used_data.push(onimm.vars.data[k]);
 							}
 						}
 					}
 					else {
-						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.supervised.METIER.record.MET_MET_ID['#text']) {
+						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.coordinated.METIER.record.MET_MET_ID['#text']) {
 							onimm.vars.used_data.push(onimm.vars.data[k]);
 						}
 					}
 				}
 
-				if (onimm.vars.is_supervised.METIER.hasOwnProperty("record")) {
-					if ($.isArray(onimm.vars.is_supervised.METIER.record)) {
-						for (var j = 0, l = onimm.vars.is_supervised.METIER.record.length; j<l; j++) {
-							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record[j].MET_MET_ID['#text']) {
+				if (onimm.vars.is_coordinated.METIER.hasOwnProperty("record")) {
+					if ($.isArray(onimm.vars.is_coordinated.METIER.record)) {
+						for (var j = 0, l = onimm.vars.is_coordinated.METIER.record.length; j<l; j++) {
+							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.vars.used_data.push(onimm.vars.data[k]);
 							}
 						}
 					}
 					else {
-						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record.MET_MET_ID['#text']) {
+						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record.MET_MET_ID['#text']) {
 							onimm.vars.used_data.push(onimm.vars.data[k]);
 						}
 					}	
 				}
 
-				if (onimm.vars.specialisation.METIER.hasOwnProperty("record")) {
-					if ($.isArray(onimm.vars.specialisation.METIER.record)) {
-						for (var j = 0 , l = onimm.vars.specialisation.METIER.record.length; j<l; j++) {
-							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.specialisation.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.vars.used_data.push(onimm.vars.data[k]);
-							}
-						}
-					}
-					else {
-						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.specialisation.METIER.record.MET_MET_ID['#text']) {
-							onimm.vars.used_data.push(onimm.vars.data[k]);
-						}
-					}
-				}
-
-				if (onimm.vars.is_specialisation.METIER.hasOwnProperty("record")) {
-					if ($.isArray(onimm.vars.is_specialisation.METIER.record)) {
-						for (var j = 0, l = onimm.vars.is_specialisation.METIER.record.length; j<l; j++) {
-							if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_specialisation.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.vars.used_data.push(onimm.vars.data[k]);
-							}
-						}
-					}
-					else {
-						if (onimm.vars.data[k].MET_ID["#text"] == onimm.vars.is_specialisation.METIER.record.MET_MET_ID['#text']) {
-							onimm.vars.used_data.push(onimm.vars.data[k]);
-						}
-					}
-				}
 
 				if (onimm.vars.collaboration.METIER.hasOwnProperty("record")) {
 					if ($.isArray(onimm.vars.collaboration.METIER.record)) {
@@ -233,7 +200,10 @@ function Onimm(id, met_id, data_uri) {
 					return d.x = onimm.vars.x_coordinates[i] - 3*onimm.vars.radius;
 				})
 				.attr("y", function(d,i) {
-					return d.y = onimm.vars.y_coordinates[i] + 0.6*onimm.vars.radius;
+					if (i==0) {
+						return d.y = onimm.vars.y_coordinates[i] + 1.2*onimm.vars.radius;
+					}
+					else return d.y = onimm.vars.y_coordinates[i] + 0.6*onimm.vars.radius;
 				})
 				.append("xhtml:body").attr("class", "jobs-text-body")
 					.html(function(d,i) {
@@ -315,9 +285,7 @@ function Onimm(id, met_id, data_uri) {
 					.attr("height", (onimm.vars.height-40))
 					.attr("x", function(d,i) {return 20;})
 					.attr("y", function(d,i) {return 20;})
-						.append("xhtml:body").attr("class", "modale-body")
-							.attr("width", (onimm.vars.width-40))
-							.attr("height", (onimm.vars.height-40));
+						.append("xhtml:body").attr("class", "modale-body");
 
 				onimm.modale_content = onimm.modale_window.append("xhtml:div").attr("class", "modale-container")
 				onimm.modale_overflow = onimm.modale_content
@@ -337,49 +305,23 @@ function Onimm(id, met_id, data_uri) {
 					"height": (onimm.vars.height)
 				});
 
-				onimm.modale_leave = onimm.modale.append("svg:foreignObject").attr("class","modale-close-foreignObject");
 
-				onimm.modale_leave
-					.attr("width", 30)
-					.attr("height", 30)
-					.attr("x", onimm.vars.width - 30)
-					.attr("y", 0)
-						.append("xhtml:body").attr("class", "modale-close-body")
-							.html("<img class='modale-close-icon' src='./img/close-icon.png'>");
+				onimm.modale_leave = onimm.createForeignObject(onimm.modale, "modale-close", 30, 30, onimm.vars.width-30, 0);
+				onimm.createImg(onimm.modale_leave, "modale-close-icon", "./img/close-icon.png");
 
-				onimm.arrow_left = onimm.modale.append("svg:foreignObject").attr("class", "modale-left-arrow-foreignObject");
-				onimm.arrow_right = onimm.modale.append("svg:foreignObject").attr("class", "modale-right-arrow-foreignObject");
-				onimm.arrow_up = onimm.modale.append("svg:foreignObject").attr("class", "modale-up-arrow-foreignObject");
-				onimm.arrow_down = onimm.modale.append("svg:foreignObject").attr("class", "modale-down-arrow-foreignObject");
+				onimm.arrow_left = onimm.createForeignObject(onimm.modale, "modale-left-arrow", 28, 178, 0, onimm.vars.half_height-89);
+				onimm.createImg(onimm.arrow_left, "modale-arrow-icon", "./img/arrow-left.png");
 
-				onimm.arrow_left
-					.attr("width", 28).attr("height", 178)
-					.attr("x", onimm.vars.width -(onimm.vars.width)).attr("y", onimm.vars.half_height-89)
-						.append("xhtml:body").attr("class", "modale-arrow-body")
-							.html("<img class='modale-arrow-icon' src='./img/arrow-left.png'>");
+				onimm.arrow_right = onimm.createForeignObject(onimm.modale, "modale-right-arrow", 28, 178, onimm.vars.width - 30, onimm.vars.half_height-89);
+				onimm.createImg(onimm.arrow_right, "modale-arrow-icon", "./img/arrow-right.png");
 
-				onimm.arrow_right
-					.attr("width", 28).attr("height", 178)
-					.attr("x", onimm.vars.width - 30).attr("y", onimm.vars.half_height-89)
-						.append("xhtml:body").attr("class", "modale-arrow-body")
-							.html("<img class='modale-arrow-icon' src='./img/arrow-right.png'>");
+				onimm.arrow_down = onimm.createForeignObject(onimm.modale, "modale-down-arrow", 178, 28, onimm.vars.half_width-89, onimm.vars.height-28);
+				onimm.createImg(onimm.arrow_down, "modale-arrow-icon", "./img/arrow-down.png");
 
-				onimm.arrow_down
-					.attr("width", 178).attr("height", 28)
-					.attr("x", onimm.vars.half_width-89).attr("y", onimm.vars.height-28)
-						.append("xhtml:body").attr("class", "modale-arrow-body")
-							.html("<img class='modale-arrow-icon' src='./img/arrow-down.png'>");
-
-				onimm.arrow_up
-					.attr("width", 178).attr("height", 28)
-					.attr("x", onimm.vars.half_width-89).attr("y", 0)
-						.append("xhtml:body").attr("class", "modale-arrow-body")
-							.html("<img class='modale-arrow-icon' src='./img/arrow-up.png'>");
-
+				onimm.arrow_up = onimm.createForeignObject(onimm.modale, "modale-up-arrow", 178, 28, onimm.vars.half_width-89, 0);
+				onimm.createImg(onimm.arrow_up, "modale-arrow-icon", "./img/arrow-up.png");
 
 				$(".modale-left-arrow-foreignObject img").css("display","none");
-				// $(".modale-up-arrow-foreignObject img").css("display","none");
-				// $(".modale-down-arrow-foreignObject img").css("display","none");
 
 				$(".modale-div").children().each(function(){
 					onimm.vars.current_height_modale = onimm.vars.current_height_modale + $(this).outerHeight();
@@ -495,6 +437,11 @@ function Onimm(id, met_id, data_uri) {
 					onimm.vars.yCentral = d3.event.y;
 				}
 			}
+			d3.select(this).select('.bubble-foreignObject')
+				.attr("x", d3.event.x - 10 - onimm.vars.radius).attr("y", d3.event.y - 10 - onimm.vars.radius);
+			d3.select(this).select('.jobs-text-foreignObject')
+				.attr("y", d3.event.y + 10 +onimm.vars.radius);
+
 		}
 		else {
 			for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
@@ -563,7 +510,7 @@ function Onimm(id, met_id, data_uri) {
 			.attr("x", 0.82*onimm.vars.width)
 			.attr("y", 0.05*onimm.vars.half_height)
 			.attr("width", 0.15*onimm.vars.width)
-			.attr("height", 0.40*onimm.vars.height)
+			.attr("height", 0.20*onimm.vars.height)
 			.style("fill", "rgba(255,255,255,1)");
 
 		onimm.legend_1 = onimm.container_legend.append("svg:line")
@@ -572,7 +519,7 @@ function Onimm(id, met_id, data_uri) {
 			.attr("y1", 0.1*onimm.vars.half_height)
 			.attr("x2", 0.92*onimm.vars.width)
 			.attr("y2", 0.1*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke","#C9D800");
+			.attr("stroke-width","5").attr("stroke", onimm.vars.coordination_color);
 
 		onimm.legend_1_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "jobs-text-foreignObject")
@@ -582,94 +529,27 @@ function Onimm(id, met_id, data_uri) {
 			.attr("y", 0.12*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "jobs-text-body")
 				.html(function(d,i) {
-					return "<p class='text-legend'>supervise</p>";
+					return "<p class='text-legend'>Coordonination</p>";
 				});
 
 		onimm.legend_2 = onimm.container_legend.append("svg:line")
 			.attr("class", function(d,i) {return "bond"})
 			.attr("x1", 0.85*onimm.vars.width)
-			.attr("y1", 0.25*onimm.vars.half_height)
+			.attr("y1", 0.30*onimm.vars.half_height)
 			.attr("x2", 0.92*onimm.vars.width)
-			.attr("y2", 0.25*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke","#C9D800");
+			.attr("y2", 0.30*onimm.vars.half_height)
+			.attr("stroke-width","5").attr("stroke", onimm.vars.collaboration_color).attr("stroke-dasharray", "5,5");
 
 		onimm.legend_2_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "jobs-text-foreignObject")
 			.attr("width", 120)
 			.attr("height", 100)
 			.attr("x", 0.81*onimm.vars.width)
-			.attr("y", 0.28*onimm.vars.half_height)
-			.append("xhtml:body").attr("class", "jobs-text-body")
-				.html(function(d,i) {
-					return "<p class='text-legend'>est supervisé</p>";
-				});
-
-		onimm.legend_3 = onimm.container_legend.append("svg:line")
-			.attr("class", function(d,i) {return "bond"})
-			.attr("x1", 0.85*onimm.vars.width)
-			.attr("y1", 0.40*onimm.vars.half_height)
-			.attr("x2", 0.92*onimm.vars.width)
-			.attr("y2", 0.40*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke","#DE0027");
-
-		onimm.legend_3_text = onimm.container_legend.append("svg:foreignObject")
-			.attr("class", "jobs-text-foreignObject")
-			.attr("width", 120)
-			.attr("height", 100)
-			.attr("x", 0.81*onimm.vars.width)
-			.attr("y", 0.42*onimm.vars.half_height)
-			.append("xhtml:body").attr("class", "jobs-text-body")
-				.html(function(d,i) {
-					return "<p class='text-legend'>se spécialise</p>";
-				});
-
-		onimm.legend_4 = onimm.container_legend.append("svg:line")
-			.attr("class", function(d,i) {return "bond"})
-			.attr("x1", 0.85*onimm.vars.width)
-			.attr("y1", 0.55*onimm.vars.half_height)
-			.attr("x2", 0.92*onimm.vars.width)
-			.attr("y2", 0.55*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke","#9D0D15");
-
-		onimm.legend_4_text = onimm.container_legend.append("svg:foreignObject")
-			.attr("class", "jobs-text-foreignObject")
-			.attr("width", 120)
-			.attr("height", 100)
-			.attr("x", 0.81*onimm.vars.width)
-			.attr("y", 0.57*onimm.vars.half_height)
-			.append("xhtml:body").attr("class", "jobs-text-body")
-				.html(function(d,i) {
-					return "<p class='text-legend'>est spécialisé</p>";
-				});
-
-		onimm.legend_5 = onimm.container_legend.append("svg:line")
-			.attr("class", function(d,i) {return "bond"})
-			.attr("x1", 0.85*onimm.vars.width)
-			.attr("y1", 0.70*onimm.vars.half_height)
-			.attr("x2", 0.92*onimm.vars.width)
-			.attr("y2", 0.70*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke","#558DB4").attr("stroke-dasharray", "5,5");
-
-		onimm.legend_5_text = onimm.container_legend.append("svg:foreignObject")
-			.attr("class", "jobs-text-foreignObject")
-			.attr("width", 120)
-			.attr("height", 100)
-			.attr("x", 0.81*onimm.vars.width)
-			.attr("y", 0.72*onimm.vars.half_height)
+			.attr("y", 0.32*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "jobs-text-body")
 				.html(function(d,i) {
 					return "<p class='text-legend'>Collaboration</p>";
 				});
-
-		// onimm.legend_leave = onimm.container_legend.append("svg:foreignObject").attr("class","legend-close-foreignObject");
-
-		// onimm.legend_leave
-		// 	.attr("width", 30)
-		// 	.attr("height", 30)
-		// 	.attr("x", onimm.vars.width - 40)
-		// 	.attr("y", 0)
-		// 		.append("xhtml:body").attr("class", "legend-close-body")
-		// 			.html("<img class='legend-close-icon' src='./img/close-icon.png'>");
 
 		onimm.legend_leave = onimm.createForeignObject(onimm.container_legend, "legend-close", 30, 30, onimm.vars.width-40, 0);
 		onimm.createImg(onimm.legend_leave, "legend-close-icon", "./img/close-icon.png");
@@ -704,25 +584,32 @@ function Onimm(id, met_id, data_uri) {
 		});
 	};
 
-	// TODO TODO TODO info bulle !
+	// TODO :The location is sometimes not appropriate
 	onimm.display_info_hover_node = function(d, i, data, x, y) {
 		d3.selectAll(".info-hover-foreignObject").remove();
 
-		onimm.container.append("svg:foreignObject").attr("class","info-hover-foreignObject")
-			.attr("width", 120).attr("height", 120)
-			.attr("x", x)
-			.attr("y", y)
-			.append("xhtml:body").attr("class", "info-hover-body")
-			.append("div")
-			.attr("class", "info-hover")
-			.html("<p class='info-hover-text'>"+d.Thesaurus.CSTM_T.record[0].CSLABELFLD["#text"]+"</p>");
+		for (var j = 0, l = data.length; j<l; j++) {
 
+			if (d.MET_DOMAINE["#text"] === d.Thesaurus.CSTM_T.record[j].DKEY["#text"]) {
+
+				onimm.container.append("svg:foreignObject").attr("class","info-hover-foreignObject")
+					.attr("width", 120).attr("height", 120)
+					.attr("x", x)
+					.attr("y", y)
+					.append("xhtml:body").attr("class", "info-hover-body")
+					.append("div")
+					.attr("class", "info-hover")
+					.html("<p class='info-hover-text'>"+d.Thesaurus.CSTM_T.record[j].CSLABELFLD["#text"]+"</p>");
+
+			}			
+		}
 	};
 
 	onimm.hide_info_hover_node = function(d,i) {
 		d3.selectAll(".info-hover-foreignObject").remove();
 	}
 
+	// Arrow of modale window for navigating (tablette-friendly ?)
 	onimm.display_arrow_navigation = function() {
 		//left
 		if (onimm.vars.positionSlide == 0) {
@@ -808,13 +695,15 @@ function Onimm(id, met_id, data_uri) {
 		}
 	};
 
-	// Create bonds
+	/** 
+	 * Create bonds with color, marker, text
+	 */
 	onimm.init_bonds = function(data) {
 		
+		// set bonds coordinates and load array
 		onimm.bonds = [];
 		for (var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
 			if (data[a].MET_ID["#text"] !== met_id){
-				//console.log(onimm.vars.data[a]);
 				onimm.bonds[a] = onimm.bond_container.append("path")
 					.attr("class", function(d,i) {return "bond"})
 					.attr("id", function(d,i) {return "bond_"+a})
@@ -832,96 +721,94 @@ function Onimm(id, met_id, data_uri) {
 					.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "none")
 					.attr("d", "M 0,0 0,0 0,0 "+onimm.vars.x_coordinates[a]+","+onimm.vars.y_coordinates[a]+"")
 				
-				// For active node, we get all bonds	
-				onimm.vars.supervised = data[a].Liens_metiers_supervise;
-				onimm.vars.is_supervised = data[a].Liens_metiers_est_supervise;
-				onimm.vars.specialisation = data[a].Liens_metiers_fils;
-				onimm.vars.is_specialisation = data[a].Liens_metiers_père;
+				// For active node, we get the data
+				onimm.vars.coordinated = data[a].Liens_metiers_supervise;
+				onimm.vars.is_coordinated = data[a].Liens_metiers_est_supervise;
 				onimm.vars.collaboration = data[a].Liens_metiers_collabore;
+
+				// The circle must be a little bit larger
+				d3.select("circle").attr("r", onimm.vars.radius+10);
+				onimm.jobs.attr("class", function(d,i) { 
+					if (i==0) {
+						return "active_node draggable jobs";
+					}
+					else return "draggable jobs";
+				});
+				
+				d3.select(".bubble-foreignObject")
+					.attr('width', function(d,i) {
+						if (i==0) {
+							return 2*onimm.vars.radius+20;
+						}
+					})
+					.attr('height', function(d,i) {
+						if (i==0) {
+							return 2*onimm.vars.radius+20;
+						}
+					})
+					.attr('x', function(d,i) {
+						if (i==0) {
+							return -onimm.vars.radius-10;
+						}
+					})
+					.attr('y', function(d,i) {
+						if (i==0) {
+							return -onimm.vars.radius-10;
+						}
+					});
 			}
 		}
 
 		for (var b = 0, le = onimm.vars.totalNodes; b<le; b++) {
-			// node active doesn't have path svg, so no attr()
 
 			if (onimm.bonds[b].classed("active_bond", true)) {
-
-				if (onimm.vars.supervised.METIER.record != undefined) {
-					if ($.isArray(onimm.vars.supervised.METIER.record)) {
-						for (var j = 0, l = onimm.vars.supervised.METIER.record.length; j<l ; j++) {
-							if (data[b].MET_ID["#text"] == onimm.vars.supervised.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.bonds[b].attr("stroke", "#C9D800")
-								.attr("marker-start", "url(#marker_arrow_start)");
+				// Since the record in xml may be an array we have to test
+				if (onimm.vars.coordinated.METIER.record != undefined) {
+					if ($.isArray(onimm.vars.coordinated.METIER.record)) {
+						for (var j = 0, l = onimm.vars.coordinated.METIER.record.length; j<l ; j++) {
+							if (data[b].MET_ID["#text"] == onimm.vars.coordinated.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.bonds[b].attr("stroke", onimm.vars.coordination_color);
+								//.attr("marker-start", "url(#marker_arrow_start)");
 							}
 						}
 					}
 					else {
-						if (data[b].MET_ID["#text"] == onimm.vars.supervised.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", "#C9D800")
-							.attr("marker-start", "url(#marker_arrow_start)");
+						if (data[b].MET_ID["#text"] == onimm.vars.coordinated.METIER.record.MET_MET_ID['#text']) {
+							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color);
+							//.attr("marker-start", "url(#marker_arrow_start)");
 						}
 					}
 				}
 
-				if (onimm.vars.is_supervised.METIER.record != undefined) {
-					if ($.isArray(onimm.vars.is_supervised.METIER.record)) {
-						for (var j = 0, l = onimm.vars.is_supervised.METIER.record.length; j<l; j++) {
-							if (data[b].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.bonds[b].attr("stroke", "#C9D800")
-								.attr("marker-end", "url(#marker_arrow_end)");
+				if (onimm.vars.is_coordinated.METIER.record != undefined) {
+					if ($.isArray(onimm.vars.is_coordinated.METIER.record)) {
+						for (var j = 0, l = onimm.vars.is_coordinated.METIER.record.length; j<l; j++) {
+							if (data[b].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record[j].MET_MET_ID['#text']) {
+								onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
+								//.attr("marker-end", "url(#marker_arrow_end)");
 							}
 						}
 					}
 					else {
-						if (data[b].MET_ID["#text"] == onimm.vars.is_supervised.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", "#C9D800")
-							.attr("marker-end", "url(#marker_arrow_end)");
+						if (data[b].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record.MET_MET_ID['#text']) {
+							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color);
+							//.attr("marker-end", "url(#marker_arrow_end)");
 						}
 					}	
-				}
-
-				if (onimm.vars.specialisation.METIER.record != undefined) {
-					if ($.isArray(onimm.vars.specialisation.METIER.record)) {
-						for (var j = 0 , l = onimm.vars.specialisation.METIER.record.length; j<l; j++) {
-							if (data[b].MET_ID["#text"] == onimm.vars.specialisation.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.bonds[b].attr("stroke", "#DE0027");
-							}
-						}
-					}
-					else {
-						if (data[b].MET_ID["#text"] == onimm.vars.specialisation.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", "#DE0027");
-						}
-					}
-				}
-
-				if (onimm.vars.is_specialisation.METIER.record != undefined) {
-					if ($.isArray(onimm.vars.is_specialisation.METIER.record)) {
-						for (var j = 0, l = onimm.vars.is_specialisation.METIER.record.length; j<l; j++) {
-							if (data[b].MET_ID["#text"] == onimm.vars.is_specialisation.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.bonds[b].attr("stroke", "#9D0D15");
-							}
-						}
-					}
-					else {
-						if (data[b].MET_ID["#text"] == onimm.vars.is_specialisation.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", "#9D0D15");
-						}
-					}
 				}
 
 				if (onimm.vars.collaboration.METIER.record != undefined) {
 					if ($.isArray(onimm.vars.collaboration.METIER.record)) {
 						for (var j = 0, l = onimm.vars.collaboration.METIER.record.length; j<l; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.bonds[b].attr("stroke", "#558DB4")
+								onimm.bonds[b].attr("stroke", onimm.vars.collaboration_color)
 								.attr("stroke-dasharray", "5,5");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", "#558DB4")
+							onimm.bonds[b].attr("stroke", onimm.vars.collaboration_color)
 							.attr("stroke-dasharray", "5,5");
 						}
 					}
@@ -1055,60 +942,6 @@ function Onimm(id, met_id, data_uri) {
 		}
 
 		modale_window += "</div>";
-
-		// TODO : itsimp et ses multiples formes.
-		// slide 4 Accès au métier
-		// modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
-		// modale_window += "<h3 class='modale-h3 modale-text'>Accès au métier</h3>";
-
-		// modale_window += "<h4 class='modale-h4 modale-text'>Accès au métier</h4>";
-
-		// for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
-		// 	if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_ACCES_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
-		// 		if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.p.accr_p != undefined) {
-		// 			modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.p.accr_p["#text"]+ "</p>";
-		// 		}
-		// 		if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.p["#text"] != undefined) {
-		// 			modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.p["#text"]+ "</p>";
-		// 		}
-		// 		if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.inter != undefined) {
-		// 			for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.inter.length; j<m; j++) {
-		// 				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.inter != undefined) {
-		// 					modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.inter[j]["#text"]+ "</p>";
-		// 				}
-		// 				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste.tete != undefined) {
-		// 					modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].tete["#text"]+ "</p>"
-		// 				}
-		// 				modale_window += "<p class='modale-bloc-p modale-text'>";
-		// 				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste != undefined) {
-		// 					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp)) {
-
-		// 						if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp.em != undefined) {
-		// 							for (var k = 0, n = data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp.length; k<n; k++) {
-		// 								modale_window += "<em class='modale-em modale-text'>"+data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp[k].em["#text"]+"</em>";
-		// 								modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp[k]["#text"];
-		// 							}
-		// 						}
-		// 						else {
-		// 							for (var k = 0, n = data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp.length; k<n; k++) {
-		// 								modale_window += "<span class='modale-text'>"+data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp[k]["#text"]+"</span>";
-		// 								modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp[k]["#text"];
-		// 							}
-		// 						}
-		// 					}
-		// 					else {
-		// 						if (data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp.em != undefined) {
-		// 							modale_window += "<em class='modale-em'>"+data.XML.XMLCONTENT.record[i].XC_XML.MET_ACCES_DESCRIPTIF.liste[j].itsimp.em["#text"]+"</em>";
-		// 						}
-		// 					}
-		// 				}
-		// 				modale_window += "</p>";
-		// 			}
-		// 		}	
-		// 	}
-		// }
-		
-		// modale_window += "</div>";
 
 		// slide 5 Carrière et Salaire
 		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
