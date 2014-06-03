@@ -65,25 +65,41 @@ function Onimm(id, met_id, data_uri) {
 			.attr("id", id + "svg_");
 
 		/* ---- Define markers for design the bonds ---- */
-		// end of bonds
-		onimm.marker_end = onimm.svg.append("svg:defs")
-			.append("svg:marker")
-				.attr("id", "marker_arrow_end").attr("markerWidth", 10).attr("markerHeight", 10)
-				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
+		// // end of bonds
+		// onimm.marker_end = onimm.svg.append("svg:defs")
+		// 	.append("svg:marker")
+		// 		.attr("id", "marker_arrow_end").attr("markerWidth", 10).attr("markerHeight", 10)
+		// 		.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
 
-		onimm.marker_end.append("svg:polygon")
-				.attr("points", "0,0 -12,3 -12,-3")
-				.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:1px");
+		// onimm.marker_end.append("svg:polygon")
+		// 		.attr("points", "0,0 -12,3 -12,-3")
+		// 		.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:1px");
 		
-		// start of bonds
-		onimm.marker_start = onimm.svg.append("svg:defs")
+		// // start of bonds
+		// onimm.marker_start = onimm.svg.append("svg:defs")
+		// 	.append("svg:marker")
+		// 		.attr("id", "marker_arrow_start").attr("markerWidth", 10).attr("markerHeight", 10)
+		// 		.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
+
+		// onimm.marker_start.append("svg:polygon")
+		// 		.attr("points", "0,0 12,3 12,-3")
+		// 		.attr("style", "fill:"+onimm.vars.coordination_color+"; stroke:"+onimm.vars.coordination_color+"; stroke-width:1px");
+
+		// mid of bonds
+		onimm.marker_handshake = onimm.svg.append("svg:defs")
 			.append("svg:marker")
-				.attr("id", "marker_arrow_start").attr("markerWidth", 10).attr("markerHeight", 10)
+				.attr("id", "handshake").attr("markerWidth", 64).attr("markerHeight", 49)
 				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
 
-		onimm.marker_start.append("svg:polygon")
-				.attr("points", "0,0 12,3 12,-3")
-				.attr("style", "fill:"+onimm.vars.coordination_color	+"; stroke:"+onimm.vars.coordination_color+"; stroke-width:1px");
+		onimm.marker_handshake.append("svg:path")
+			.attr("d", "M-19,2 -19,-2 -18.5,-2 -18.5,2 Z M-8,2 -8,-2 -7.5,-2 -7.5,2 Z M -8.9,1.4 -13,2.5 -13,2.2 -11.5,2 -12,-1 -15,0 -13,-2.5 -9,-1 Z M -17.5,2 -17.0,2.3 -13,1.4 -13.1,0.7 -16.4,1.0 -16.4,0 -14.3,-2.6 -16,-2.4 -17.6,-1.1 Z")
+			.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:0.5px")
+			.attr("transform", "translate(-11.5,0) scale(0.7)")
+
+		// onimm.marker_handshake.append('svg:polygon')
+		// 	.attr("points","-10,0 -5,3 -5,-3")
+		// 	.attr("style", "fill:"+onimm.vars.collaboration_color+";fill-opacity:1");
+		
 
 		// Create sub-container of Bond(s), James Bond
 		onimm.bond_container = onimm.svg.append("g")
@@ -534,11 +550,20 @@ function Onimm(id, met_id, data_uri) {
 
 		onimm.legend_2 = onimm.container_legend.append("svg:line")
 			.attr("class", function(d,i) {return "bond"})
-			.attr("x1", 0.85*onimm.vars.width)
-			.attr("y1", 0.30*onimm.vars.half_height)
-			.attr("x2", 0.92*onimm.vars.width)
+			.attr("x2", 0.85*onimm.vars.width)
 			.attr("y2", 0.30*onimm.vars.half_height)
+			.attr("x1", 0.90*onimm.vars.width)
+			.attr("y1", 0.30*onimm.vars.half_height)
 			.attr("stroke-width","5").attr("stroke", onimm.vars.collaboration_color).attr("stroke-dasharray", "5,5");
+
+		// onimm.legend_2.attr("marker-end", "url(#handshake)");
+
+		onimm.marker_handshake_legend = onimm.container_legend.append("svg:path")
+			.attr("d", "M-19,2 -19,-2 -18.5,-2 -18.5,2 Z M-8,2 -8,-2 -7.5,-2 -7.5,2 Z M -8.9,1.4 -13,2.5 -13,2.2 -11.5,2 -12,-1 -15,0 -13,-2.5 -9,-1 Z M -17.5,2 -17.0,2.3 -13,1.4 -13.1,0.7 -16.4,1.0 -16.4,0 -14.3,-2.6 -16,-2.4 -17.6,-1.1 Z")
+			.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:0.5px");
+
+		onimm.marker_handshake_legend.attr("transform", "scale(1.8) translate("+1.06*onimm.vars.half_width+","+0.084*onimm.vars.height+")");
+
 
 		onimm.legend_2_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "jobs-text-foreignObject")
@@ -802,14 +827,16 @@ function Onimm(id, met_id, data_uri) {
 						for (var j = 0, l = onimm.vars.collaboration.METIER.record.length; j<l; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.bonds[b].attr("stroke", onimm.vars.collaboration_color)
-								.attr("stroke-dasharray", "5,5");
+								.attr("stroke-dasharray", "5,5")
+								.attr("marker-end", "url(#handshake)");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record.MET_MET_ID['#text']) {
 							onimm.bonds[b].attr("stroke", onimm.vars.collaboration_color)
-							.attr("stroke-dasharray", "5,5");
+							.attr("stroke-dasharray", "5,5")
+							.attr("marker-end", "url(#handshake)");
 						}
 					}
 				}
