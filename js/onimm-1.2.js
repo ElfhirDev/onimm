@@ -190,11 +190,12 @@ function Onimm(id, met_id, data_uri) {
 				.data(onimm.vars.data);
 
 			onimm.jobs = onimm.jobs.enter().append("svg:g")
-				.attr("class", function(d){return "draggable jobs";});
+				.attr("class", function(d){return "draggable jobs";})
+				.attr("csKeyFld", function(d) {return d.MET_DOMAINE["#text"];});
 
 			onimm.vars.totalNodes = onimm.jobs.size();
 
-			onimm.jobs.append("svg:circle")
+			onimm.circles = onimm.jobs.append("svg:circle")
 				.attr("class", "circle")
 				.attr("r", onimm.vars.radius)
 				.attr("cx", function(d,i) {
@@ -204,6 +205,13 @@ function Onimm(id, met_id, data_uri) {
 				.attr("cy", function(d,i) {
 					onimm.vars.y_coordinates.push(onimm.init_y_coordinates(d,i));
 					return d.y = onimm.init_y_coordinates(d,i);
+				})
+				.attr("csKeyFld", function(d) {return d.MET_DOMAINE["#text"];})
+				.style("stroke", function(d,i) {
+					
+					console.log(d.MET_DOMAINE["#text"]);
+
+					return onimm.init_color_node(d);
 				});
 
 			// onimm.init_bonds();
@@ -262,6 +270,8 @@ function Onimm(id, met_id, data_uri) {
 			onimm.jobs.on("mouseleave", function(d,i) {
 				onimm.hide_info_hover_node(d,i);
 			});
+
+
 
 			// When double click on jobs node (since simple click might be blocked)
 			onimm.jobs.on("dblclick", function(d){
@@ -387,11 +397,53 @@ function Onimm(id, met_id, data_uri) {
 			});
 	
 			onimm.init_bonds(onimm.vars.data);
-
+			
 		}); // End d3.json(uri, met_id, function)
 	};
 
 	/* ------ methods ------- */
+
+	/**
+	 * color the circle based on a fonction record in xml
+	 * The main PROBLEM is that the field with "fonction [...]"
+	 * text is not standard, not well placed, and we have to had all
+	 * "fonction [...]" text we can encontered in all sectors.
+	 */
+	onimm.init_color_node = function(d) {
+		
+		if (d.MET_DOMAINE["#text"] == "102892") {
+			return '#558DB4';
+		}
+
+		if (d.MET_DOMAINE["#text"] == "100174") {
+			return '#FF00CB';
+		}
+
+		if (d.MET_DOMAINE["#text"] == "102876") {
+			return "#AA104D";
+		}
+
+		if (d.MET_DOMAINE["#text"] == "100154") {
+			return '#D458B4';
+		}
+
+		if (d.MET_DOMAINE["#text"] == "100158") {
+			return '#998DB4';
+		}
+
+		if (d.MET_DOMAINE["#text"] == "100156") {
+			return '#EEC012';
+		}
+
+		if (d.MET_DOMAINE["#text"] == "102869") {
+			return '#77FF8F';
+		}
+
+		if (d.MET_DOMAINE["#text"] == "100145") {
+			return '#770000';
+		}
+
+	};
 
 	onimm.init_behavior = function() {
 		// When moving the background
@@ -626,7 +678,7 @@ function Onimm(id, met_id, data_uri) {
 					.attr("class", "info-hover")
 					.html("<p class='info-hover-text'>"+d.Thesaurus.CSTM_T.record[j].CSLABELFLD["#text"]+"</p>");
 
-			}			
+			}
 		}
 	};
 
