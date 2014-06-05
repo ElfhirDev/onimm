@@ -249,161 +249,21 @@ function Onimm(id, met_id, data_uri) {
 			onimm.jobs.call(onimm.vars.drag);
 			onimm.svg.call(onimm.vars.zoom);
 
-			// Keydown arrow control for testing
-			$(document).ready(function() {
-				$(document).live("keydown.modale", function(event) {
-					onimm.keydownlistener(event);
-				});
-			});
-
 			onimm.set_legend();
-
-			// TODO : REMOVE HOVER BECAUSE NOT MOBILE COMPLIENT
-			// onimm.jobs.on("mouseenter", function(d,i) {
-			// 	var x = d3.mouse(this)[0];
-			// 	var y = d3.mouse(this)[1];
-			// 	onimm.display_info_hover_node(d, i, onimm.vars.data, x, y);
-			// });
-
-			// onimm.jobs.on("mouseleave", function(d,i) {
-			// 	onimm.hide_info_hover_node(d,i);
-			// });
-
-
-			// When double click on jobs node (since simple click might be blocked)
-			onimm.jobs.on("dblclick", function(d){
-
-				//console.dir(d);
-
-				// Stop behavior zoom when modale window
-				onimm.vars.zoom.on("zoom", null);
-				onimm.vars.zoom = function() {};
-
-				onimm.modale = onimm.svg.append("svg:svg");
-
-				onimm.modale
-					.attr("width", onimm.vars.width)
-					.attr("height", onimm.vars.height)
-					.attr("align", "center")
-					.style("fill", "#bbb")
-					.attr("id", id + "modale_"+d.MET_ID["#text"]);
-
-				// -- Create container of elements -----
-				onimm.modale_rect = onimm.modale.append("svg:rect")
-					.attr("transform", "translate(" + 20 + "," + 20 + ")")
-					.attr("width", onimm.vars.width)
-					.attr("height", onimm.vars.height)
-					.style("fill", "rgba(255,255,255,1)");
-
-				// -- elastic animation ----- 
-				onimm.modale_rect
-					.attr("width", (onimm.vars.width-40))
-					.attr("height", (onimm.vars.height-40));	
-
-				onimm.modale_foreignObject = onimm.modale.append("svg:foreignObject").attr("class", "modale-foreignObject");
-
-				// Load the content
-				onimm.modale_window = onimm.modale_foreignObject
-					.attr("width", (onimm.vars.width-40))
-					.attr("height", (onimm.vars.height-40))
-					.attr("x", function(d,i) {return 20;})
-					.attr("y", function(d,i) {return 20;})
-						.append("xhtml:body").attr("class", "modale-body");
-
-				onimm.modale_content = onimm.modale_window.append("xhtml:div").attr("class", "modale-container")
-				onimm.modale_overflow = onimm.modale_content
-					.append("xhtml:div").attr("class", "modale-overflow")
-						.html(function() { return onimm.init_modale_window(d);});
-
-				onimm.modale_overflow.style("width", ($(".modale-div").length*(onimm.vars.width-46)+"px"))
-					.style("height", (onimm.vars.height-60)+"px");
-
-				$(".modale-container, .modale-body").css({
-					"width" : (onimm.vars.width-52),
-					"height": (onimm.vars.height-52)
-				});
-
-				$(".modale-div").css({
-					"width": (onimm.vars.width-46),
-					"height": (onimm.vars.height)
-				});
-
-
-				onimm.modale_leave = onimm.createForeignObject(onimm.modale, "modale-close", 30, 30, onimm.vars.width-30, 0);
-				onimm.createImg(onimm.modale_leave, "modale-close-icon", "./img/close-icon.png");
-
-				onimm.arrow_left = onimm.createForeignObject(onimm.modale, "modale-left-arrow", 28, 178, 0, onimm.vars.half_height-89);
-				onimm.createImg(onimm.arrow_left, "modale-arrow-icon", "./img/arrow-left.png");
-
-				onimm.arrow_right = onimm.createForeignObject(onimm.modale, "modale-right-arrow", 28, 178, onimm.vars.width - 30, onimm.vars.half_height-89);
-				onimm.createImg(onimm.arrow_right, "modale-arrow-icon", "./img/arrow-right.png");
-
-				onimm.arrow_down = onimm.createForeignObject(onimm.modale, "modale-down-arrow", 178, 28, onimm.vars.half_width-89, onimm.vars.height-28);
-				onimm.createImg(onimm.arrow_down, "modale-arrow-icon", "./img/arrow-down.png");
-
-				onimm.arrow_up = onimm.createForeignObject(onimm.modale, "modale-up-arrow", 178, 28, onimm.vars.half_width-89, 0);
-				onimm.createImg(onimm.arrow_up, "modale-arrow-icon", "./img/arrow-up.png");
-
-				$(".modale-left-arrow-foreignObject img").css("display","none");
-
-				$(".modale-div").children().each(function(){
-					onimm.vars.current_height_modale = onimm.vars.current_height_modale + $(this).outerHeight();
-				});
-
-				onimm.arrow_left.on("click", function(d) {
-					if (onimm.vars.positionSlide > 0) {
-						$(".modale-overflow").css({
-							"left": parseFloat($(".modale-overflow").css("left")) + (onimm.vars.width-46) +"px"
-						});
-						onimm.vars.positionSlide--;
-						onimm.display_arrow_navigation();
-					}
-				});
-
-				onimm.arrow_right.on("click", function(d){
-					if (onimm.vars.positionSlide < $(".modale-div").length-1) {
-						$(".modale-overflow").css({
-							"left": parseFloat($(".modale-overflow").css("left")) - (onimm.vars.width-46) +"px"
-						});
-						onimm.vars.positionSlide++;
-						onimm.display_arrow_navigation();
-					}
-				});
-
-				onimm.arrow_down.on("click", function(d) {
-					if ( parseFloat($(".modale-div").css("top")) > -(onimm.vars.half_height-100)) {
-						$(".modale-div").css({
-							"top": parseFloat($(".modale-div").css("top"))-25+"px"
-						});
-					}
-				});
-				
-				onimm.arrow_up.on("click", function(d) {
-					if ( parseFloat($(".modale-div").css("top")) < 0) {
-						$(".modale-div").css({
-							"top": parseFloat($(".modale-div").css("top"))+25+"px"
-						});
-					}
-				});
-
-				// If we click on the close button
-				onimm.modale_leave.on("click", function(d) {
-					onimm.leave_modale(d);
-				});
-
-			});
 	
 			onimm.init_bonds(onimm.vars.data);
 
 			d3.select(".bubble-body")
 				.html("<img class='bubble-info-icon' src='./img/bubble-info.png'>");
 
-
 			// Set legend again when clicking on help
 			d3.select(".bubble-info-icon").on("click", function(d,i) {
 				onimm.display_info_job(d, i, onimm.vars.data);
 			});
 
+			onimm.jobs.on("click", function(d,i) {
+				onimm.move_to_node(d,i,onimm.vars.data);
+			});
 
 			
 		}); // End d3.json(uri, met_id, function)
@@ -538,49 +398,6 @@ function Onimm(id, met_id, data_uri) {
 
 	onimm.dragended = function(d) {
 		d3.select(this).classed("dragging", false);
-	};
-
-	onimm.keydownlistener = function(event) {
-		switch(event.which) {
-			case 39://right
-				event.preventDefault();
-				if (onimm.vars.positionSlide < $(".modale-div").length-1) {
-					$(".modale-overflow").css({
-						"left": parseFloat($(".modale-overflow").css("left")) - (onimm.vars.width-46) +"px"
-					});
-					onimm.vars.positionSlide++;
-				}
-			break;
-			case 37://left
-				event.preventDefault();
-				if (onimm.vars.positionSlide > 0) {
-					$(".modale-overflow").css({
-						"left": parseFloat($(".modale-overflow").css("left")) + (onimm.vars.width-46) +"px"
-					});
-					onimm.vars.positionSlide--;
-				}
-			break;
-			case 38://up
-				if ( parseFloat($(".modale-div").css("top")) < 0) {
-					event.preventDefault();
-					$(".modale-div").css({
-						"top": parseFloat($(".modale-div").css("top"))+25+"px"
-					});
-				}
-			break;
-			case 40://down
-				if ( parseFloat($(".modale-div").css("top")) > -(onimm.vars.half_height-100)) {
-					event.preventDefault();
-					$(".modale-div").css({
-						"top": parseFloat($(".modale-div").css("top"))-25+"px"
-					});
-				}
-			break;
-			case 27://escape
-				// If we click on the close button
-				onimm.leave_modale();
-			break;
-		}
 	};
 
 	onimm.set_legend = function() {
@@ -778,53 +595,6 @@ function Onimm(id, met_id, data_uri) {
 		d3.selectAll(".info-hover-foreignObject").remove();
 	}
 
-	// Arrow of modale window for navigating (tablette-friendly ?)
-	onimm.display_arrow_navigation = function() {
-		//left
-		if (onimm.vars.positionSlide == 0) {
-			$(".modale-left-arrow-foreignObject img").css("display","none");
-		}
-		else if (onimm.vars.positionSlide > 0) {
-			$(".modale-left-arrow-foreignObject img").css("display","block");
-		}
-		//right
-		if (onimm.vars.positionSlide < $(".modale-div").length-1) {
-			$(".modale-right-arrow-foreignObject img").css("display","block");
-		}
-		else {
-			$(".modale-right-arrow-foreignObject img").css("display","none");
-		}
-		//up and down
-		if (onimm.vars.current_height_modale > 2*onimm.vars.height) {
-			$(".modale-up-arrow-foreignObject img").css("display","block");
-			$(".modale-down-arrow-foreignObject img").css("display","block");
-		}
-		else {
-			$(".modale-up-arrow-foreignObject img").css("display","none");
-			$(".modale-down-arrow-foreignObject img").css("display","none");
-		}
-	};
-
-	onimm.leave_modale = function(d) {
-		onimm.vars.positionSlide = 0;
-		$(".modale-overflow").css("left", "0px");
-		$(".modale-div").css("top", "0px");
-		onimm.vars.current_height_modale = 0;
-
-		onimm.modale.remove();
-
-		if (!document.getElementById("g_help_text")){
-			onimm.set_help_legend();
-		}
-
-		onimm.vars.zoom = d3.behavior.zoom()
-			.scaleExtent([1, 1])
-			.on("zoomstart", onimm.zoomstart)
-			.on("zoom", onimm.zoomed)
-			.on("zoomend", onimm.zoomend);
-
-		onimm.svg.call(onimm.vars.zoom);
-	};
 	
 	/**
 	 * Initiate the jobs position with coordinates from polar
@@ -988,242 +758,21 @@ function Onimm(id, met_id, data_uri) {
 		}// end for
 	};
 
-	// Content of modale window
-	onimm.init_modale_window = function(data) {
 
-		onimm.close_legend();
+	// TODO 
+	/**
+	 * Changing to other node
+	 * @param  d3.selection d the previous clicked node
+	 * @param  integer i the number of the element
+	 * @param  big json data onimm.vars.data from xml
+	 */
+	onimm.move_to_node = function(d,i,data) {
 
-		var modale_window = "";
-		var div_modale = "<div class='modale-div'>"
+		$("#onimm_svg_").fadeOut(500, function() {
+			$("#onimm_svg_").remove();
+		})
 
-		// slide 1 le métier
-		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
-		modale_window += "<h3 class='modale-h3 modale-text'>Le métier</h3>";
-		modale_window += "<h4 class='modale-h4 modale-text'>Nature du travail</h4>";
-
-		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
-			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_NATURE_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
-				for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.p.length; j<m; j++) {
-					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.inter[j] != undefined) {
-						modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.inter[j]["#text"]+ "</h5>";
-					}
-					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.p[j] != undefined) {
-						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_NATURE_DESCRIPTIF.p[j]["#text"]+ "</p>";
-					}	
-				}
-			}
-		}
-
-		modale_window += "<h4 class='modale-h4'>Compétences requises</h4>";
-
-		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
-			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_COMPETENCE_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
-				for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.p.length; j<m; j++) {
-					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.inter[j] != undefined) {
-						modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.inter[j]["#text"]+ "</h5>";
-					}
-					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.p[j] != undefined) {
-						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_COMPETENCE_DESCRIPTIF.p[j]["#text"]+ "</p>";
-					}
-				}
-			}
-		}
-
-		modale_window += "</div>";
-
-		// slide 2 où l'exercer
-		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
-		modale_window += "<h3 class='modale-h3 modale-text'>Où l'exercer ?</h3>";
-		modale_window += "<h4 class='modale-h4 modale-text'>Lieux d'exercice et statuts</h4>";
-
-		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
-			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_CONDITION_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
-				for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.p.length; j<m; j++) {
-					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.inter[j] != undefined) {
-						modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.inter[j]["#text"]+ "</h5>";
-					}
-					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.p[j] != undefined) {
-						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_CONDITION_DESCRIPTIF.p[j]["#text"]+ "</p>";
-					}
-				}
-			}
-		}
-
-		modale_window += "</div>";
-
-		// slide 3 Carrière et Salaire
-		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
-		modale_window += "<h3 class='modale-h3 modale-text'>Carrière et salaire</h3>";
-
-		modale_window += "<h4 class='modale-h4 modale-text'>Salaire</h4>";
-
-		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
-			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_VIE_PRO_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
-				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.inter != undefined) {
-					modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.inter["#text"]+ "</h5>";
-				}
-				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p != undefined) {
-					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p)) {
-						if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal != undefined) {
-							modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p[0]["#text"][0]
-							+ " " +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p[1].sal['#text']
-							+ " " +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p[0]['#text'][1]+"</p>";
-						}
-						else {
-							modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p["#text"]+ "</p>";
-						}
-					}
-					else {
-						if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal != undefined) {
-							modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p["#text"][0]
-							+ " " +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p.sal['#text']
-							+data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p['#text'][1]+"</p>";
-						}
-						else {
-							modale_window += "<p class='modale-bloc-p modale-text'>Pas de données.</p>";
-						}
-					}
-				}
-				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit != undefined) {
-					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.p)) {
-						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit.p["#text"][0]
-						+ data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit.p.exp
-						+ data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit.p["#text"][1] +"</p>";
-					}
-					else {
-						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.remun.postit.p["#text"]+"</p>";
-					}
-				}
-			}
-		}
-
-		modale_window += "<h4 class='modale-h4 modale-text'>Intégrer le marché du travail</h4>";
-
-		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
-			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_VIE_PRO_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
-				for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.p.length; j<m; j++) {
-					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.inter[j] != undefined) {
-						modale_window += "<h5 class='modale-h5 modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.inter[j]["#text"]+ "</h5>";
-					}
-					if (data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.p[j] != undefined) {
-						modale_window += "<p class='modale-bloc-p modale-text'>" +data.XML.XMLCONTENT.record[i].XC_XML.MET_VIE_PRO_DESCRIPTIF.p[j]["#text"]+ "</p>";
-					}	
-				}
-			}
-		}
-
-		modale_window += "</div>";
-
-		// slide 5 Carrière et Salaire
-		modale_window += div_modale+"<h2 class='modale-h2 modale-text'>"+data.CSLABELFLD['#text']+"</h2>";
-		modale_window += "<h3 class='modale-h3 modale-text'>En savoir plus</h3>";
-		modale_window += "<h4 class='modale-h4 modale-text'>Ressources utiles</h4>";
-
-
-
-		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
-			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_REFERENCES_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
-				modale_window += "<h5 class='modale-h5'>Ressources utiles</h5>";
-				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr != undefined) {
-					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr)) {
-						for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.length; j<m; j++) {
-							modale_window += "<p class='modale-bloc-p modale-text'>";
-							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].nom_adr['#text'] + "</p>";
-							if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].sigle != undefined) {
-								modale_window += "<p class='modale-bloc-p modale-text'>";
-								modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].sigle['#text'] + "</p>";
-							}
-							modale_window += "<p class='modale-bloc-p modale-text'>"
-							modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].voie['#text'] + "</p>";
-
-							modale_window += "<p class='modale-bloc-p modale-text'>";
-							modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].cp['#text'];
-							modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].com['#text'] + "</p>";
-							modale_window += "<p class='modale-bloc-p modale-text'>";
-							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].tel_elt['#text'] + "</p>";
-							if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].url_elt != undefined) {
-								modale_window += "<p class='modale-bloc-p modale-text'><a href='http://"+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].url_elt['#text']+"'>";
-								modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr[j].url_elt['#text'] + "</a></p>";
-							}
-						}
-					}
-					else {
-						modale_window += "<p class='modale-bloc-p modale-text'>";
-						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.nom_adr['#text'] + "</p>";
-						modale_window += "<p class='modale-bloc-p modale-text'>";
-						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.sigle['#text'];
-						modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.voie['#text'] + "</p>";
-						modale_window += "<p class='modale-bloc-p modale-text'>";
-						modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.cp['#text'];
-						modale_window += " " + data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.com['#text'] + "</p>";
-						modale_window += "<p class='modale-bloc-p modale-text'>";
-						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.tel_elt['#text'] + "</p>";
-						modale_window += "<p class='modale-bloc-p modale-text'><a href='http://"+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.url_elt['#text']+"'>";
-						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_adr.adr.url_elt['#text'] + "</a></p>";
-					}
-				}
-
-				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web != undefined) {
-					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web)) {
-						for (var j = 0, m = data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web.length; j<m; j++) {
-							if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web[j].url_elt != undefined) {
-								modale_window += "<p class='modale-bloc-p modale-text'><a href='http://"+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web[j].url_elt['#text']+"'>";
-								modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web[j].url_elt['#text'] + "</a></p>";
-							}
-							if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web[j].descr != undefined) {
-								modale_window += "<p class='modale-bloc-p modale-text'>"+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web[j].descr.p['#text'];
-								modale_window += "</p>";
-							}
-						}
-					}
-					else {
-						if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web.url_elt != undefined) {
-							modale_window += "<p class='modale-bloc-p modale-text'><a href='http://"+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web.url_elt['#text']+"'>";
-							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web.url_elt['#text'] + "</a></p>";
-						}
-						if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web.descr != undefined) {
-							modale_window += "<p class='modale-bloc-p modale-text'>"+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_web.web.descr.p['#text'];
-							modale_window += "</p>";
-						}
-					}
-				}
-			}
-		}
-
-		modale_window += "<h4 class='modale-h4 modale-text'>Publications</h4>";
-
-		for (var i = 0, l = data.XML.XMLCONTENT.record.length; i<l; i++) {
-
-			if (data.XML.XMLCONTENT.record[i].XC_XML.hasOwnProperty("MET_REFERENCES_DESCRIPTIF") && data.XML.XMLCONTENT.record[i] != undefined) {
-				if (data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub != undefined) {
-					modale_window += "<h5 class='modale-h5'>Publications Onisep</h5>";
-					if ($.isArray(data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep)) {
-						for (var j=0, m=data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.length; j<m; j++) {
-							modale_window += "<p class='modale-bloc-p modale-text'>";
-							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep[j].nom_pub["#text"]+"</p>";
-							modale_window += "<p class='modale-bloc-p modale-text'>Collection ";
-							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep[j].coll["#text"]
-							+", "+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep[j].edit["#text"]+"</p>";
-							modale_window += "<p class='modale-bloc-p modale-text'>parution ";
-							modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep[j].annee["#text"]+"</p>";
-						}
-					}
-					else {
-						modale_window += "<p class='modale-bloc-p modale-text'>";
-						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.nom_pub["#text"]+"</p>";
-						modale_window += "<p class='modale-bloc-p modale-text'>Collection ";
-						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.coll["#text"]
-						+", "+data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.edit["#text"]+"</p>";
-						modale_window += "<p class='modale-bloc-p modale-text'>parution ";
-						modale_window += data.XML.XMLCONTENT.record[i].XC_XML.MET_REFERENCES_DESCRIPTIF.liste_pub.liste_pub_onisep.pub_onisep.annee["#text"]+"</p>";
-					}
-				}
-			}
-		}
-
-		modale_window += "</div>";
-
-		return modale_window;
+		Onimm("onimm_", d.MET_ID["#text"], "./data/carte_heuristique.xml");
 	};
 
 	onimm.createForeignObject = function(container, name, width, height, x, y) {
