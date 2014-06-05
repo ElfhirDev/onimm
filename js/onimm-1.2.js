@@ -588,10 +588,10 @@ function Onimm(id, met_id, data_uri) {
 			.attr("class","g_container_legend");
 
 		onimm.rect_legend = onimm.container_legend.append("svg:rect")
-			.attr("x", 0.82*onimm.vars.width)
+			.attr("x", 0.80*onimm.vars.width)
 			.attr("y", 0.05*onimm.vars.half_height)
-			.attr("width", 0.15*onimm.vars.width)
-			.attr("height", 0.20*onimm.vars.height)
+			.attr("width", 0.17*onimm.vars.width)
+			.attr("height", 0.35*onimm.vars.height)
 			.style("fill", "rgba(255,255,255,1)");
 
 		onimm.legend_1 = onimm.container_legend.append("svg:line")
@@ -639,6 +639,18 @@ function Onimm(id, met_id, data_uri) {
 			.append("xhtml:body").attr("class", "jobs-text-body")
 				.html(function(d,i) {
 					return "<p class='text-legend'>Collaboration</p>";
+				});
+
+		onimm.legend_3_text = onimm.container_legend.append("svg:foreignObject")
+			.attr("class", "jobs-text-foreignObject")
+			.attr("width", 120)
+			.attr("height", 100)
+			.attr("x", 0.81*onimm.vars.width)
+			.attr("y", 0.40*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "jobs-text-body")
+				.html(function(d,i) {
+					return "<p class='instruction-legend'>Cliquez sur le noeud central pour avoir des informations</p>"
+						+"<p class='instruction-legend'>Cliquez sur les autres noeuds pour naviguer vers eux.</p>";
 				});
 
 		onimm.legend_leave = onimm.createForeignObject(onimm.container_legend, "legend-close", 30, 30, onimm.vars.width-40, 0);

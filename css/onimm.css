@@ -203,6 +203,11 @@ img.modale-arrow-icon {
   text-align: center;
 }
 
+.instruction-legend {
+  font-style: italic;
+  font-size: 10px;
+}
+
 .info-foreignObject {
     cursor: pointer;
 }
