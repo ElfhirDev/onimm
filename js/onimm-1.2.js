@@ -610,7 +610,7 @@ function Onimm(id, met_id, data_uri) {
 			.attr("y", 0.12*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "jobs-text-body")
 				.html(function(d,i) {
-					return "<p class='text-legend'>Coordonination</p>";
+					return "<p class='text-legend'>Coordination</p>";
 				});
 
 		onimm.legend_2 = onimm.container_legend.append("svg:line")
