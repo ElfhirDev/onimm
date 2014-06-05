@@ -2,7 +2,7 @@
  * 2014 © Onisep - tous droits réservés - version 1.2
  * 
  * Created by <jta@onisep.fr> 2014-04-14
- * Last update on 2014-02-06 by <jta@onisep.fr>
+ * Last update on 2014-05-06 by <jta@onisep.fr>
  *
  * Script aiming to render the mind map for a job
  *
@@ -184,7 +184,6 @@ function Onimm(id, met_id, data_uri) {
 			onimm.vars.all_data = onimm.vars.data;
 			onimm.vars.data = onimm.vars.used_data;
 
-			//console.dir(onimm.vars.data);
 
 			onimm.jobs = onimm.container.selectAll("g")
 				.data(onimm.vars.data);
@@ -209,12 +208,10 @@ function Onimm(id, met_id, data_uri) {
 				.attr("csKeyFld", function(d) {return d.MET_DOMAINE["#text"];})
 				.style("stroke", function(d,i) {
 					
-					console.log(d.MET_DOMAINE["#text"]);
-
 					return onimm.init_color_node(d);
 				});
 
-			// onimm.init_bonds();
+			onimm.circles.data(onimm.vars.data);
 
 			onimm.jobs_text = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "jobs-text-foreignObject")
@@ -247,6 +244,7 @@ function Onimm(id, met_id, data_uri) {
 				.append("xhtml:body").attr("class", "bubble-body")
 					.html("<img class='bubble' src='./img/bubble.png'>");
 
+			onimm.bubble.data(onimm.vars.data);
 
 			onimm.jobs.call(onimm.vars.drag);
 			onimm.svg.call(onimm.vars.zoom);
@@ -260,17 +258,16 @@ function Onimm(id, met_id, data_uri) {
 
 			onimm.set_legend();
 
-			// TODO
-			onimm.jobs.on("mouseenter", function(d,i) {
-				var x = d3.mouse(this)[0];
-       			var y = d3.mouse(this)[1];
-				onimm.display_info_hover_node(d, i, onimm.vars.data, x, y);
-			});
+			// TODO : REMOVE HOVER BECAUSE NOT MOBILE COMPLIENT
+			// onimm.jobs.on("mouseenter", function(d,i) {
+			// 	var x = d3.mouse(this)[0];
+			// 	var y = d3.mouse(this)[1];
+			// 	onimm.display_info_hover_node(d, i, onimm.vars.data, x, y);
+			// });
 
-			onimm.jobs.on("mouseleave", function(d,i) {
-				onimm.hide_info_hover_node(d,i);
-			});
-
+			// onimm.jobs.on("mouseleave", function(d,i) {
+			// 	onimm.hide_info_hover_node(d,i);
+			// });
 
 
 			// When double click on jobs node (since simple click might be blocked)
@@ -397,17 +394,24 @@ function Onimm(id, met_id, data_uri) {
 			});
 	
 			onimm.init_bonds(onimm.vars.data);
+
+			d3.select(".bubble-body")
+				.html("<img class='bubble-info-icon' src='./img/bubble-info.png'>");
+
+
+			// Set legend again when clicking on help
+			d3.select(".bubble-info-icon").on("click", function(d,i) {
+				onimm.display_info_job(d, i, onimm.vars.data);
+			});
+
+
 			
 		}); // End d3.json(uri, met_id, function)
 	};
 
 	/* ------ methods ------- */
 
-	/**
-	 * color the circle based on a fonction record in xml
-	 * The main PROBLEM is that the field with "fonction [...]"
-	 * text is not standard, not well placed, and we have to had all
-	 * "fonction [...]" text we can encontered in all sectors.
+	/** color circle stroke based on the fonction of the job
 	 */
 	onimm.init_color_node = function(d) {
 		
@@ -441,6 +445,9 @@ function Onimm(id, met_id, data_uri) {
 
 		if (d.MET_DOMAINE["#text"] == "100145") {
 			return '#770000';
+		}
+		else {
+			return '#000000';
 		}
 
 	};
@@ -521,6 +528,12 @@ function Onimm(id, met_id, data_uri) {
 				}
 			}
 		}
+	};
+
+	onimm.dragged_modale = function(d) {
+		d3.select('.info-job-foreignObject')
+			.attr("x", d3.event.x -100)
+			.attr("y", d3.event.y -180);
 	};
 
 	onimm.dragended = function(d) {
@@ -662,24 +675,91 @@ function Onimm(id, met_id, data_uri) {
 	};
 
 	// TODO :The location is sometimes not appropriate
-	onimm.display_info_hover_node = function(d, i, data, x, y) {
-		d3.selectAll(".info-hover-foreignObject").remove();
+	onimm.display_info_job = function(d, i , data) {
 
-		for (var j = 0, l = data.length; j<l; j++) {
+		onimm.container.transition()
+			.duration(750)
+			.attr("transform","translate(80,300)");
 
-			if (d.MET_DOMAINE["#text"] === d.Thesaurus.CSTM_T.record[j].DKEY["#text"]) {
+		onimm.bond_container.transition()
+			.duration(750)
+			.attr("transform","translate(80,300)");
 
-				onimm.container.append("svg:foreignObject").attr("class","info-hover-foreignObject")
-					.attr("width", 120).attr("height", 120)
-					.attr("x", x)
-					.attr("y", y)
-					.append("xhtml:body").attr("class", "info-hover-body")
+		var content = "";
+		for (var j = 0, l = data[i].Thesaurus.CSTM_T.record.length; j<l; j++) {
+			if (data[i].MET_DOMAINE["#text"] === data[i].Thesaurus.CSTM_T.record[j].DKEY["#text"]) {
+				onimm.container.append("svg:foreignObject").attr("class","info-job-foreignObject")
+					.attr("width", 500).attr("height", 400)
+					.attr("x", 50)
+					.attr("y", -150)
+					.append("xhtml:body").attr("class", "info-job-body")
 					.append("div")
-					.attr("class", "info-hover")
-					.html("<p class='info-hover-text'>"+d.Thesaurus.CSTM_T.record[j].CSLABELFLD["#text"]+"</p>");
-
+					.attr("class", "info-job")
+					.html("<img class='modale-close-icon' src='./img/close-icon.png'>"
+						+"<p class='modale-h4'>Informations</p>"
+						+"<p class='info-job-text'>Métier ayant une "+data[i].Thesaurus.CSTM_T.record[j].CSLABELFLD["#text"]+".</p>");
 			}
 		}
+
+
+		for (var k = 0, m = data[i].Thesaurus.CSTM_T.record.length; k<m; k++) {
+			if (data[i].MET_CATEGORIE_SOCIO_PRO["#text"] === data[i].Thesaurus.CSTM_T.record[k].DKEY["#text"]) {
+				content = d3.select(".info-job").html();
+				d3.select(".info-job").html(content
+					+"<p class='info-job-text'><em>Statut</em> : "+data[i].Thesaurus.CSTM_T.record[k].CSLABELFLD["#text"]+"</p>");
+			}
+		}
+
+		content = d3.select(".info-job").html();
+		d3.select(".info-job").html(content
+			+"<p class='info-job-text'><em>Niveaux d'étude</em> : "+data[i].Niveaux_d_étude_requis.NIVEAU_ETUDE.record.CSLABELFLD["#text"]+"</p>");
+
+		var centre_interets = data[i].MET_CENTRE_INTERET["#text"].split("/");
+
+		content = d3.select(".info-job").html();
+		d3.select(".info-job").html(content
+			+"<p class='info-job-text'><em>Intérêt(s)</em> : </p><p class='info-job-text-interet'>");
+
+		for (var v = 0 , q = data[i].Thesaurus.CSTM_T.record.length; v<q; v++) {
+			for (var u = 0, p = centre_interets.length; u<p; u++) {
+				if (centre_interets[u] == data[i].Thesaurus.CSTM_T.record[v].DKEY["#text"]) {
+					content = d3.select(".info-job-text-interet").html();
+					d3.select(".info-job-text-interet").html(content
+						+data[i].Thesaurus.CSTM_T.record[v].CSLABELFLD["#text"]+" - ");
+				}
+			}
+		}
+
+		content = d3.select(".info-job").html();
+		d3.select(".info-job").html(content);
+
+		content = d3.select(".info-job").html();
+		d3.select(".info-job").html(content
+			+"<p class='info-job-more'>Cliquez ici pour "
+			+"<a target='_blank' href='http://www.onisep.fr/http/redirection/metier/identifiant/"+data[i].MET_ID['#text']+"'>en savoir plus</a></p>");
+
+		// +"<img class='bubble-triangle-icon' src='./img/bubble-triangle.png'>");
+
+		d3.select(".modale-close-icon").on("click", function() {
+			d3.select(".info-job-foreignObject").remove();
+
+			onimm.container.transition()
+				.duration(750)
+				.attr("transform","translate(400,300)");
+
+			onimm.bond_container.transition()
+				.duration(750)
+				.attr("transform","translate(400,300)");
+
+
+		});
+
+		onimm.vars.drag_modale = d3.behavior.drag()
+			.on("dragstart", onimm.dragstarted)
+			.on("drag", onimm.dragged_modale)
+			.on("dragend", onimm.dragended);
+
+		d3.select(".info-job-foreignObject").call(onimm.vars.drag_modale);
 	};
 
 	onimm.hide_info_hover_node = function(d,i) {

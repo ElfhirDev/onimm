@@ -92,6 +92,8 @@ body.info-hover-body {
 }
 
 img.modale-close-icon {
+  position: relative;
+  left: 90%;
   padding: 0;
   cursor: pointer;
 }
@@ -125,7 +127,7 @@ img.modale-arrow-icon {
   text-align: left;
   font-size: 12.5px;
   color: #0D7B92;
-  margin: 10px 0 10px;
+  margin: -15px 0 10px;
 }
 
 .modale-h5 {
@@ -168,7 +170,7 @@ img.modale-arrow-icon {
 .circle {
   fill: #ccc;
   stroke: #12BD55;
-  stroke-width: 1.5px;
+  stroke-width: 2.5px;
   cursor: move;
 }
 
@@ -201,19 +203,48 @@ img.modale-arrow-icon {
   text-align: center;
 }
 
-.info-hover {
+.info-foreignObject {
+    cursor: pointer;
+}
+
+.info-icon {
+  width: 24px !important;
+  height: 22px !important;
+}
+
+.info-job-foreignObject {
+  overflow: visible;
+}
+
+.info-job {
+  margin: 5px 0 5px 30px;
   padding: 5px;
   background-color: #fff;
 
-  -webkit-box-shadow: inset 0 0 5px 1px rgba(0,0,0,0.2);
-          box-shadow: inset 0 0 5px 1px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
+          box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
 
   -webkit-border-radius: 10px 10px 10px 10px;
           border-radius: 10px 10px 10px 10px;
 }
 
-.info-hover-text {
+.info-job-text {
   font-size: 10px;
+}
+
+.info-job-text-interet {
+  font-size: 10px;
+}
+
+.info-job-more {
+  font-weight: bolder;
+  font-size: 8px;
+}
+
+.bubble-triangle-icon {
+  position: relative;
+  bottom: -40px;
+  left: -30px;
 }
 
 .active_node img, .active_node .bubble-foreignObject{
@@ -223,4 +254,8 @@ img.modale-arrow-icon {
 
 .active_node .jobs-text {
   font-weight: bold;
+}
+
+.bubble-info-icon {
+  cursor: help;
 }
