@@ -12,7 +12,7 @@
 
 "use strict";
 
-function Onimm(id, met_id, data_uri) {
+function Onimm(id, met_id, data_uri, historic) {
 
 	// internal object
 	var onimm = {};
@@ -45,7 +45,8 @@ function Onimm(id, met_id, data_uri) {
 		positionSlide:0,
 		new_y : 0,
 		new_x : 0,
-		current_height_modale: 0
+		current_height_modale: 0,
+		historic : historic
 	};
 
 	/**
@@ -208,7 +209,7 @@ function Onimm(id, met_id, data_uri) {
 				})
 				.append("xhtml:body").attr("class", "jobs-text-body")
 					.html(function(d,i) {
-						return "<p class='jobs-text'>"+d.CSLABELFLD["#text"]+"</p>";
+						return "<p class='jobs-text'>"+d.CSLABELFLD["#text"]+ "  " + d.MET_ID["#text"] +"</p>";
 					});
 
 			onimm.bubble = onimm.jobs.append("svg:foreignObject")
@@ -246,6 +247,8 @@ function Onimm(id, met_id, data_uri) {
 			});
 
 			onimm.set_historic();
+
+			onimm.update_historic(met_id);
 
 		}); // End d3.json(uri, met_id, function)
 	};
@@ -563,6 +566,10 @@ function Onimm(id, met_id, data_uri) {
 		});
 	};
 
+	onimm.update_historic = function(previous_met_id) {
+		onimm.vars.historic.push(previous_met_id);
+	};
+
 	// TODO :The location is sometimes not appropriate
 	onimm.display_info_job = function(d, i , data) {
 
@@ -831,12 +838,20 @@ function Onimm(id, met_id, data_uri) {
 	onimm.move_to_node = function(d,i,data) {
 		if (i != 0 ) {
 
-			d3.selectAll(".jobs").transition().duration(750)
-				.attr("transform", "translate(400,500");
+			d3.selectAll(".g_bond_container_").transition().duration(200)
+				.style("opacity", 0);
 
-			$("#onimm_svg_").fadeOut(1500, function() {
+			d3.selectAll(".jobs").transition().duration(750)
+				.attr("transform", function(d,i) {
+					return "translate("+onimm.vars.x_coordinates[i]+","+onimm.vars.y_coordinates[i]+")";
+				});
+
+			// Keep historic of navigation in the Mind Map
+			// onimm.update_historic(data[0].MET_ID["#text"]);
+
+			$("#onimm_svg_").fadeOut(1000, function() {
 				$("#onimm_svg_").remove();
-				Onimm("onimm_", d.MET_ID["#text"], "./data/carte_heuristique.xml");
+				Onimm("onimm_", d.MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
 			});
 		}
 	};
@@ -897,6 +912,7 @@ function Onimm(id, met_id, data_uri) {
 
 	// Let it go, let it go !
 	onimm.init();
+	console.log(onimm.vars.historic);
 
 	return onimm;
 };
