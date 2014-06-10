@@ -66,7 +66,16 @@ body.modale-body {
   color: #FC8C2E;
 }
 
+.historic-text {
+  color: #FC8C2E;
+}
+
 .help-text-legend:hover {
+  font-weight: bold;
+  cursor: help;
+}
+
+.historic-text:hover {
   font-weight: bold;
   cursor: help;
 }
@@ -93,7 +102,8 @@ body.info-hover-body {
 
 img.modale-close-icon {
   position: relative;
-  left: 94%;
+  left: 100%;
+  top: -25px;
   padding: 0;
   cursor: pointer;
 }
@@ -105,6 +115,10 @@ img.modale-close-icon {
 
 img.modale-arrow-icon {
   cursor: pointer;
+}
+
+img.historic-close-icon {
+  cursor: default;
 }
 
 /* Modale Window */
@@ -219,6 +233,10 @@ img.modale-arrow-icon {
 
 .info-job-foreignObject {
   overflow: visible;
+}
+
+.info-job-body {
+  margin: 25px;
 }
 
 .info-job {

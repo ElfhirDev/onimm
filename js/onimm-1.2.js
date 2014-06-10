@@ -65,26 +65,6 @@ function Onimm(id, met_id, data_uri) {
 			.attr("id", id + "svg_");
 
 		/* ---- Define markers for design the bonds ---- */
-		// // end of bonds
-		// onimm.marker_end = onimm.svg.append("svg:defs")
-		// 	.append("svg:marker")
-		// 		.attr("id", "marker_arrow_end").attr("markerWidth", 10).attr("markerHeight", 10)
-		// 		.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
-
-		// onimm.marker_end.append("svg:polygon")
-		// 		.attr("points", "0,0 -12,3 -12,-3")
-		// 		.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:1px");
-		
-		// // start of bonds
-		// onimm.marker_start = onimm.svg.append("svg:defs")
-		// 	.append("svg:marker")
-		// 		.attr("id", "marker_arrow_start").attr("markerWidth", 10).attr("markerHeight", 10)
-		// 		.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
-
-		// onimm.marker_start.append("svg:polygon")
-		// 		.attr("points", "0,0 12,3 12,-3")
-		// 		.attr("style", "fill:"+onimm.vars.coordination_color+"; stroke:"+onimm.vars.coordination_color+"; stroke-width:1px");
-
 		// mid of bonds
 		onimm.marker_handshake = onimm.svg.append("svg:defs")
 			.append("svg:marker")
@@ -94,7 +74,7 @@ function Onimm(id, met_id, data_uri) {
 		onimm.marker_handshake.append("svg:path")
 			.attr("d", "M-19,2 -19,-2 -18.5,-2 -18.5,2 Z M-8,2 -8,-2 -7.5,-2 -7.5,2 Z M -8.9,1.4 -13,2.5 -13,2.2 -11.5,2 -12,-1 -15,0 -13,-2.5 -9,-1 Z M -17.5,2 -17.0,2.3 -13,1.4 -13.1,0.7 -16.4,1.0 -16.4,0 -14.3,-2.6 -16,-2.4 -17.6,-1.1 Z")
 			.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:0.5px")
-			.attr("transform", "translate(-11.5,0) scale(0.7)")
+			.attr("transform", "translate(-20,0) scale(0.4)")
 
 		// onimm.marker_handshake.append('svg:polygon')
 		// 	.attr("points","-10,0 -5,3 -5,-3")
@@ -215,7 +195,7 @@ function Onimm(id, met_id, data_uri) {
 
 			onimm.jobs_text = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "jobs-text-foreignObject")
-				.attr("width", 140)
+				.attr("width", 150)
 				.attr("height", 100)
 				.attr("x", function(d,i) {
 					return d.x = onimm.vars.x_coordinates[i] - 3*onimm.vars.radius;
@@ -265,47 +245,82 @@ function Onimm(id, met_id, data_uri) {
 				onimm.move_to_node(d,i,onimm.vars.data);
 			});
 
-			
+			onimm.set_historic();
+
 		}); // End d3.json(uri, met_id, function)
 	};
 
-	/* ------ methods ------- */
+	/* -----------------------------------------------------=== methods ===---------------------------------------- */
 
 	/** color circle stroke based on the fonction of the job
 	 */
 	onimm.init_color_node = function(d) {
 		
 		if (d.MET_DOMAINE["#text"] == "102892") {
-			return '#558DB4';
+			return '#15C06F';
 		}
 
 		if (d.MET_DOMAINE["#text"] == "100174") {
-			return '#FF00CB';
+			return '#FF6FEF';
 		}
 
 		if (d.MET_DOMAINE["#text"] == "102876") {
-			return "#AA104D";
+			return "#B2FF48";
 		}
 
 		if (d.MET_DOMAINE["#text"] == "100154") {
-			return '#D458B4';
+			return '#9A82FF';
 		}
 
 		if (d.MET_DOMAINE["#text"] == "100158") {
-			return '#998DB4';
+			return '#FD6A8B';
 		}
 
 		if (d.MET_DOMAINE["#text"] == "100156") {
-			return '#EEC012';
+			return '#488BFE';
 		}
 
 		if (d.MET_DOMAINE["#text"] == "102869") {
-			return '#77FF8F';
+			return '#BAB3FF';
 		}
 
 		if (d.MET_DOMAINE["#text"] == "100145") {
-			return '#770000';
+			return '#FCD919';
 		}
+
+		// ---
+		// if (d.MET_DOMAINE["#text"] == "1001") {
+		// 	return '#33DDD0';
+		// }
+
+		// if (d.MET_DOMAINE["#text"] == "1001") {
+		// 	return '#FD4F84';
+		// }
+
+		// if (d.MET_DOMAINE["#text"] == "1001") {
+		// 	return '#BAB3FF';
+		// }
+
+		// if (d.MET_DOMAINE["#text"] == "1001") {
+		// 	return '#7DCAFE';
+		// }
+
+		// if (d.MET_DOMAINE["#text"] == "1001") {
+		// 	return '#D3FFC1';
+		// }
+
+		// if (d.MET_DOMAINE["#text"] == "100") {
+		// 	return '#FDD580';
+		// }
+
+		// if (d.MET_DOMAINE["#text"] == "100") {
+		// 	return '#91ACE6';
+		// }
+
+		// if (d.MET_DOMAINE["#text"] == "100") {
+		// 	return '#FCA145';
+		// }
+
 		else {
 			return '#000000';
 		}
@@ -436,7 +451,7 @@ function Onimm(id, met_id, data_uri) {
 			.attr("y2", 0.30*onimm.vars.half_height)
 			.attr("x1", 0.90*onimm.vars.width)
 			.attr("y1", 0.30*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke", onimm.vars.collaboration_color).attr("stroke-dasharray", "5,5");
+			.attr("stroke-width","5").attr("stroke", onimm.vars.collaboration_color).attr("stroke-dasharray", "5,10");
 
 		// onimm.legend_2.attr("marker-end", "url(#handshake)");
 
@@ -475,7 +490,28 @@ function Onimm(id, met_id, data_uri) {
 
 		onimm.legend_leave.on("click", function(d) {
 			onimm.close_legend();
-			onimm.set_help_legend();
+			onimm.set_legend_helper();
+		});
+	};
+
+	onimm.set_historic = function() {
+		onimm.container_historic = onimm.svg.append("svg:g")
+			.attr("transform", "translate(-150,0)")
+			.attr("class", "g_container_historic");
+
+		onimm.historic_rect = onimm.container_historic.append("svg:rect")
+			.attr("x", 0.20*onimm.vars.width)
+			.attr("y", 0.05*onimm.vars.half_height)
+			.attr("width", 0.30*onimm.vars.width)
+			.attr("height", 0.15*onimm.vars.height)
+			.style("fill", "rgba(255,255,255,0.9)");
+
+		onimm.historic_leave = onimm.createForeignObject(onimm.container_historic, "historic-close", 30, 30, 0.96*onimm.vars.half_width, 0);
+		onimm.createImg(onimm.historic_leave, "historic-close-icon", "./img/close-icon.png");
+
+		onimm.historic_leave.on("click", function(d) {
+			onimm.close_historic();
+			onimm.set_historic_helper();
 		});
 	};
 
@@ -483,7 +519,11 @@ function Onimm(id, met_id, data_uri) {
 		onimm.container_legend.remove();
 	};
 
-	onimm.set_help_legend = function() {
+	onimm.close_historic = function() {
+		onimm.container_historic.remove();
+	};
+
+	onimm.set_legend_helper = function() {
 		onimm.help_legend_container = onimm.svg.append("svg:g").attr("id", "g_help_text");
 		onimm.help_legend = onimm.help_legend_container.append("svg:foreignObject")
 			.attr("class", "help-text-foreignObject")
@@ -493,13 +533,33 @@ function Onimm(id, met_id, data_uri) {
 			.attr("y", 0.05*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "help-text-body")
 				.html(function(d,i) {
-					return "<p class='help-text-legend'>Help</p>";
+					return "<p class='help-text-legend'>Aide</p>";
 				});	
 
 		// Set legend again when clicking on help
 		onimm.help_legend.on("click", function(d) {
 			onimm.help_legend_container.remove();
 			onimm.set_legend();
+		});
+	};
+
+	onimm.set_historic_helper = function() {
+		onimm.historic_helper_container = onimm.svg.append("svg:g").attr("id", "g_historic_text");
+		onimm.historic_helper = onimm.historic_helper_container.append("svg:foreignObject")
+			.attr("class", "historic-text-foreignObject")
+			.attr("width", 100)
+			.attr("height", 50)
+			.attr("x", 20)
+			.attr("y", 0.05*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "historic-text-body")
+				.html(function(d,i) {
+					return "<p class='historic-text'>Historique</p>";
+				});	
+
+		// Set legend again when clicking on help
+		onimm.historic_helper.on("click", function(d) {
+			onimm.historic_helper_container.remove();
+			onimm.set_historic();
 		});
 	};
 
@@ -517,10 +577,16 @@ function Onimm(id, met_id, data_uri) {
 		var content = "";
 		for (var j = 0, l = data[i].Thesaurus.CSTM_T.record.length; j<l; j++) {
 			if (data[i].MET_DOMAINE["#text"] === data[i].Thesaurus.CSTM_T.record[j].DKEY["#text"]) {
-				onimm.container.append("svg:foreignObject").attr("class","info-job-foreignObject")
+				onimm.info_job = onimm.container.append("svg:foreignObject");
+
+				onimm.info_job.transition()
+					.duration(1000).ease('linear')
+					.attr("class","info-job-foreignObject")
 					.attr("width", 500).attr("height", 400)
 					.attr("x", 50)
-					.attr("y", -150)
+					.attr("y", -150);
+
+				onimm.info_job
 					.append("xhtml:body").attr("class", "info-job-body")
 					.append("div")
 					.attr("class", "info-job")
@@ -707,14 +773,12 @@ function Onimm(id, met_id, data_uri) {
 						for (var j = 0, l = onimm.vars.coordinated.METIER.record.length; j<l ; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.coordinated.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.bonds[b].attr("stroke", onimm.vars.coordination_color);
-								//.attr("marker-start", "url(#marker_arrow_start)");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.coordinated.METIER.record.MET_MET_ID['#text']) {
 							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color);
-							//.attr("marker-start", "url(#marker_arrow_start)");
 						}
 					}
 				}
@@ -724,14 +788,12 @@ function Onimm(id, met_id, data_uri) {
 						for (var j = 0, l = onimm.vars.is_coordinated.METIER.record.length; j<l; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
-								//.attr("marker-end", "url(#marker_arrow_end)");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record.MET_MET_ID['#text']) {
 							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color);
-							//.attr("marker-end", "url(#marker_arrow_end)");
 						}
 					}	
 				}
@@ -741,7 +803,7 @@ function Onimm(id, met_id, data_uri) {
 						for (var j = 0, l = onimm.vars.collaboration.METIER.record.length; j<l; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.bonds[b].attr("stroke", onimm.vars.collaboration_color)
-								.attr("stroke-dasharray", "5,5")
+								.attr("stroke-dasharray", "5,17")
 								.attr("marker-end", "url(#handshake)");
 							}
 						}
@@ -749,7 +811,7 @@ function Onimm(id, met_id, data_uri) {
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record.MET_MET_ID['#text']) {
 							onimm.bonds[b].attr("stroke", onimm.vars.collaboration_color)
-							.attr("stroke-dasharray", "5,5")
+							.attr("stroke-dasharray", "5,17")
 							.attr("marker-end", "url(#handshake)");
 						}
 					}
@@ -767,12 +829,16 @@ function Onimm(id, met_id, data_uri) {
 	 * @param  big json data onimm.vars.data from xml
 	 */
 	onimm.move_to_node = function(d,i,data) {
+		if (i != 0 ) {
 
-		$("#onimm_svg_").fadeOut(500, function() {
-			$("#onimm_svg_").remove();
-		})
+			d3.selectAll(".jobs").transition().duration(750)
+				.attr("transform", "translate(400,500");
 
-		Onimm("onimm_", d.MET_ID["#text"], "./data/carte_heuristique.xml");
+			$("#onimm_svg_").fadeOut(1500, function() {
+				$("#onimm_svg_").remove();
+				Onimm("onimm_", d.MET_ID["#text"], "./data/carte_heuristique.xml");
+			});
+		}
 	};
 
 	onimm.createForeignObject = function(container, name, width, height, x, y) {
