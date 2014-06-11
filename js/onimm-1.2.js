@@ -502,20 +502,20 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("transform", "translate(-150,0)")
 			.attr("class", "g_container_historic");
 
-		onimm.historic_rect = onimm.container_historic.append("svg:rect")
-			.attr("x", 0.20*onimm.vars.width)
-			.attr("y", 0.05*onimm.vars.half_height)
-			.attr("width", 0.30*onimm.vars.width)
-			.attr("height", 0.15*onimm.vars.height)
-			.style("fill", "rgba(255,255,255,0.9)");
+		// onimm.historic_rect = onimm.container_historic.append("svg:rect")
+		// 	.attr("x", 0.20*onimm.vars.width)
+		// 	.attr("y", 0.05*onimm.vars.half_height)
+		// 	.attr("width", 0.10*onimm.vars.width)
+		// 	.attr("height", 0.85*onimm.vars.height)
+		// 	.style("fill", "rgba(255,255,255,0.9)");
 
-		onimm.historic_leave = onimm.createForeignObject(onimm.container_historic, "historic-close", 30, 30, 0.96*onimm.vars.half_width, 0);
-		onimm.createImg(onimm.historic_leave, "historic-close-icon", "./img/close-icon.png");
+		// onimm.historic_leave = onimm.createForeignObject(onimm.container_historic, "historic-close", 30, 30, 0.96*onimm.vars.half_width, 0);
+		// onimm.createImg(onimm.historic_leave, "historic-close-icon", "./img/close-icon.png");
 
-		onimm.historic_leave.on("click", function(d) {
-			onimm.close_historic();
-			onimm.set_historic_helper();
-		});
+		// onimm.historic_leave.on("click", function(d) {
+		// 	onimm.close_historic();
+		// 	onimm.set_historic_helper();
+		// });
 	};
 
 	onimm.close_legend = function() {
@@ -559,15 +559,66 @@ function Onimm(id, met_id, data_uri, historic) {
 					return "<p class='historic-text'>Historique</p>";
 				});	
 
-		// Set legend again when clicking on help
-		onimm.historic_helper.on("click", function(d) {
-			onimm.historic_helper_container.remove();
-			onimm.set_historic();
-		});
+		// Set historic again when clicking on historique
+		// onimm.historic_helper.on("click", function(d) {
+		// 	onimm.historic_helper_container.remove();
+		// 	onimm.set_historic();
+		// });
 	};
 
-	onimm.update_historic = function(previous_met_id) {
-		onimm.vars.historic.push(previous_met_id);
+	onimm.update_historic = function(new_met_id) {
+
+		console.log("New met_id : " + new_met_id);
+		if (!$.isEmptyObject(onimm.vars.historicundefined)) {
+			console.log("Previous last id : " + onimm.vars.historic[onimm.vars.historic.length-1]["met_id"])
+		}
+
+
+		// if (onimm.vars.historic !== undefined) {
+		// 	if (new_met_id === onimm.vars.historic[onimm.vars.historic.length-2].met_id) {
+		// 		console.log("Hey Jude");
+		// 	}
+		// }
+
+		onimm.hist_nodes = onimm.container_historic.selectAll(".hist_nodes")
+			.data(onimm.vars.historic);
+
+		// onimm.hist_nodes = onimm.hist_nodes.enter().append("svg:circle")
+		// 	.attr("class", "hist_nodes")
+		// 	.attr("r", 0.5*onimm.vars.radius)
+		// 	.attr("cx", function(d,i) {
+		// 		return 180;
+		// 	})
+		// 	.attr("cy", function(d,i) {
+		// 		return 15 + onimm.vars.historic[i]["y"];
+		// 	})
+		// 	.attr("met_id", function(d) {return new_met_id;})
+		// 	.style("stroke", function(d,i) {
+		// 		return "#111222";
+		// 	});
+
+
+		onimm.hist_nodes = onimm.hist_nodes.enter().append("svg:foreignObject")
+			.attr("class", "hist-nodes")
+			.attr("width", 0.5*onimm.vars.radius)
+			.attr("height", 0.5*onimm.vars.radius)
+			.attr("x", function(d,i) {
+				return 180;
+			})
+			.attr("y", function(d,i) {
+				return 15 + onimm.vars.historic[i]["y"];
+			})
+			.append("xhtml:body").attr("class", "bubble-body")
+				.html("<img class='bubble-' src='./img/bubble-hist.png'>");
+
+
+		var node_hist = {
+			met_id : new_met_id, 
+			x : 20,
+			y : 20 + 30*onimm.vars.historic.length
+		};
+
+		onimm.vars.historic.push(node_hist);
 	};
 
 	// TODO :The location is sometimes not appropriate
@@ -652,7 +703,6 @@ function Onimm(id, met_id, data_uri, historic) {
 			onimm.bond_container.transition()
 				.duration(750)
 				.attr("transform","translate(400,300)");
-
 
 		});
 
@@ -846,9 +896,7 @@ function Onimm(id, met_id, data_uri, historic) {
 					return "translate("+onimm.vars.x_coordinates[i]+","+onimm.vars.y_coordinates[i]+")";
 				});
 
-			// Keep historic of navigation in the Mind Map
-			// onimm.update_historic(data[0].MET_ID["#text"]);
-
+			// Change node with historic
 			$("#onimm_svg_").fadeOut(1000, function() {
 				$("#onimm_svg_").remove();
 				Onimm("onimm_", d.MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
