@@ -46,7 +46,9 @@ function Onimm(id, met_id, data_uri, historic) {
 		new_y : 0,
 		new_x : 0,
 		current_height_modale: 0,
-		historic : historic
+		historic : historic,
+		csKeyFld : [],
+		stroke_colors : []
 	};
 
 	/**
@@ -171,7 +173,10 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			onimm.jobs = onimm.jobs.enter().append("svg:g")
 				.attr("class", function(d){return "draggable jobs";})
-				.attr("csKeyFld", function(d) {return d.MET_DOMAINE["#text"];});
+				.attr("csKeyFld", function(d) {
+					onimm.vars.csKeyFld.push(d.MET_DOMAINE["#text"]);
+					return d.MET_DOMAINE["#text"];
+				});
 
 			onimm.vars.totalNodes = onimm.jobs.size();
 
@@ -186,11 +191,19 @@ function Onimm(id, met_id, data_uri, historic) {
 					onimm.vars.y_coordinates.push(onimm.init_y_coordinates(d,i));
 					return d.y = onimm.init_y_coordinates(d,i);
 				})
-				.attr("csKeyFld", function(d) {return d.MET_DOMAINE["#text"];})
+				.attr("csKeyFld", function(d) {
+					onimm.vars.csKeyFld.push(d.MET_DOMAINE["#text"]);
+					return d.MET_DOMAINE["#text"];
+				})
 				.style("stroke", function(d,i) {
-					
+					onimm.vars.stroke_colors.push(onimm.init_color_node(d));
+					return onimm.init_color_node(d);
+				})
+				.attr("color_node", function(d,i) {
 					return onimm.init_color_node(d);
 				});
+
+			//console.dir(onimm.vars.stroke_color);
 
 			onimm.circles.data(onimm.vars.data);
 
@@ -248,6 +261,22 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			onimm.set_historic();
 
+			if (onimm.vars.historic.length < 1) {
+				var node_hist = {
+					met_id : met_id,
+					met_domaine : onimm.vars.csKeyFld[0],
+					stroke_color :  onimm.vars.stroke_colors[0],
+					stroke_colors : onimm.vars.stroke_colors,
+					x : 20,
+					y : 20 + 30*onimm.vars.historic.length
+				};
+
+				onimm.vars.historic.push(node_hist);
+			}
+
+			console.log(onimm.vars.historic.length);
+
+			// Historic is udpdated after building all nodes
 			onimm.update_historic(met_id);
 
 		}); // End d3.json(uri, met_id, function)
@@ -568,12 +597,9 @@ function Onimm(id, met_id, data_uri, historic) {
 
 	onimm.update_historic = function(new_met_id) {
 
-		console.log("New met_id : " + new_met_id);
-		if (!$.isEmptyObject(onimm.vars.historicundefined)) {
-			console.log("Previous last id : " + onimm.vars.historic[onimm.vars.historic.length-1]["met_id"])
-		}
-
-
+		// if (!$.isEmptyObject(onimm.vars.historic) !== undefined) {
+		// 	//console.log("Previous last id : " + onimm.vars.historic[onimm.vars.historic.length-1]["met_id"])
+		// }
 		// if (onimm.vars.historic !== undefined) {
 		// 	if (new_met_id === onimm.vars.historic[onimm.vars.historic.length-2].met_id) {
 		// 		console.log("Hey Jude");
@@ -583,42 +609,44 @@ function Onimm(id, met_id, data_uri, historic) {
 		onimm.hist_nodes = onimm.container_historic.selectAll(".hist_nodes")
 			.data(onimm.vars.historic);
 
-		// onimm.hist_nodes = onimm.hist_nodes.enter().append("svg:circle")
-		// 	.attr("class", "hist_nodes")
-		// 	.attr("r", 0.5*onimm.vars.radius)
-		// 	.attr("cx", function(d,i) {
-		// 		return 180;
-		// 	})
-		// 	.attr("cy", function(d,i) {
-		// 		return 15 + onimm.vars.historic[i]["y"];
-		// 	})
-		// 	.attr("met_id", function(d) {return new_met_id;})
-		// 	.style("stroke", function(d,i) {
-		// 		return "#111222";
-		// 	});
+		onimm.hist_nodes = onimm.hist_nodes.enter().append("svg:g")
+			.classed("hist_nodes", function(d) {return d;})
 
+		console.dir(onimm.vars.historic);
 
-		onimm.hist_nodes = onimm.hist_nodes.enter().append("svg:foreignObject")
-			.attr("class", "hist-nodes")
-			.attr("width", 0.5*onimm.vars.radius)
-			.attr("height", 0.5*onimm.vars.radius)
-			.attr("x", function(d,i) {
+		onimm.hist_nodes.append("svg:circle")
+			.attr("class", "circle")
+			.attr("r", 0.5*onimm.vars.radius)
+			.attr("cx", function(d,i) {
 				return 180;
 			})
-			.attr("y", function(d,i) {
+			.attr("cy", function(d,i) {
 				return 15 + onimm.vars.historic[i]["y"];
+			})
+			.attr("met_domaine", function(d,i) {
+				return onimm.vars.historic[i]["met_domaine"];
+			})
+			.attr("met_id", function(d,i) {
+				return onimm.vars.historic[i]["met_id"];
+			})
+			.style("stroke", function(d,i) {
+				return onimm.vars.historic[i]["stroke_color"];
+			});
+
+
+		onimm.bubble_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
+			.attr("class", "bubble-hist-nodes")
+			.attr("width", 1*onimm.vars.radius)
+			.attr("height", 1*onimm.vars.radius)
+			.attr("x", function(d,i) {
+				return 170;
+			})
+			.attr("y", function(d,i) {
+				return 5 + onimm.vars.historic[i]["y"];
 			})
 			.append("xhtml:body").attr("class", "bubble-body")
 				.html("<img class='bubble-' src='./img/bubble-hist.png'>");
 
-
-		var node_hist = {
-			met_id : new_met_id, 
-			x : 20,
-			y : 20 + 30*onimm.vars.historic.length
-		};
-
-		onimm.vars.historic.push(node_hist);
 	};
 
 	// TODO :The location is sometimes not appropriate
@@ -885,8 +913,19 @@ function Onimm(id, met_id, data_uri, historic) {
 	 * @param  integer i the number of the element
 	 * @param  big json data onimm.vars.data from xml
 	 */
-	onimm.move_to_node = function(d,i,data) {
-		if (i != 0 ) {
+	onimm.move_to_node = function(e,j,data) {
+		if (j != 0 ) {
+
+			var node_hist = {
+				met_id : e.MET_ID["#text"],
+				met_domaine : e.MET_DOMAINE["#text"],
+				stroke_color :  onimm.init_color_node(e),
+				stroke_colors : onimm.vars.stroke_color,
+				x : 20,
+				y : 20 + 30*onimm.vars.historic.length
+			};
+
+			onimm.vars.historic.push(node_hist);
 
 			d3.selectAll(".g_bond_container_").transition().duration(200)
 				.style("opacity", 0);
@@ -899,7 +938,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			// Change node with historic
 			$("#onimm_svg_").fadeOut(1000, function() {
 				$("#onimm_svg_").remove();
-				Onimm("onimm_", d.MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
+				Onimm("onimm_", e.MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
 			});
 		}
 	};
@@ -960,7 +999,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 	// Let it go, let it go !
 	onimm.init();
-	console.log(onimm.vars.historic);
+	//console.log(onimm.vars.historic);
 
 	return onimm;
 };
