@@ -261,6 +261,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			onimm.set_historic();
 
+			// Add first hist_node
 			if (onimm.vars.historic.length < 1) {
 				var node_hist = {
 					name : onimm.vars.data[0].CSLABELFLD["#text"],
@@ -275,10 +276,20 @@ function Onimm(id, met_id, data_uri, historic) {
 				onimm.vars.historic.push(node_hist);
 			}
 
-			console.log(onimm.vars.historic.length);
-
 			// Historic is udpdated after building all nodes
+			// Adding new node only if it is not already in historic
+			if (onimm.vars.historic.length > 1) {
+				for (var i = 0, l = onimm.vars.historic.length; i < l-1; i++) {
+					if (onimm.vars.historic[i].met_id === onimm.vars.historic[l-1].met_id) {
+						onimm.vars.historic.pop();
+						break;
+					}
+				}
+			}
+
 			onimm.update_historic(met_id);
+
+			console.log(onimm.vars.historic);
 
 		}); // End d3.json(uri, met_id, function)
 	};
@@ -531,21 +542,6 @@ function Onimm(id, met_id, data_uri, historic) {
 		onimm.container_historic = onimm.svg.append("svg:g")
 			.attr("transform", "translate(-150,0)")
 			.attr("class", "g_container_historic");
-
-		// onimm.historic_rect = onimm.container_historic.append("svg:rect")
-		// 	.attr("x", 0.20*onimm.vars.width)
-		// 	.attr("y", 0.05*onimm.vars.half_height)
-		// 	.attr("width", 0.10*onimm.vars.width)
-		// 	.attr("height", 0.85*onimm.vars.height)
-		// 	.style("fill", "rgba(255,255,255,0.9)");
-
-		// onimm.historic_leave = onimm.createForeignObject(onimm.container_historic, "historic-close", 30, 30, 0.96*onimm.vars.half_width, 0);
-		// onimm.createImg(onimm.historic_leave, "historic-close-icon", "./img/close-icon.png");
-
-		// onimm.historic_leave.on("click", function(d) {
-		// 	onimm.close_historic();
-		// 	onimm.set_historic_helper();
-		// });
 	};
 
 	onimm.close_legend = function() {
@@ -598,22 +594,13 @@ function Onimm(id, met_id, data_uri, historic) {
 
 	onimm.update_historic = function(new_met_id) {
 
-		// if (!$.isEmptyObject(onimm.vars.historic) !== undefined) {
-		// 	//console.log("Previous last id : " + onimm.vars.historic[onimm.vars.historic.length-1]["met_id"])
-		// }
-		// if (onimm.vars.historic !== undefined) {
-		// 	if (new_met_id === onimm.vars.historic[onimm.vars.historic.length-2].met_id) {
-		// 		console.log("Hey Jude");
-		// 	}
-		// }
-
 		onimm.hist_nodes = onimm.container_historic.selectAll(".hist_nodes")
 			.data(onimm.vars.historic);
 
 		onimm.hist_nodes = onimm.hist_nodes.enter().append("svg:g")
-			.classed("hist_nodes", function(d) {return d;})
+			.classed("hist-nodes", function(d) {return d;})
 
-		console.dir(onimm.vars.historic);
+		//console.dir(onimm.vars.historic);
 
 		onimm.hist_nodes.append("svg:circle")
 			.attr("class", "circle")
@@ -622,7 +609,7 @@ function Onimm(id, met_id, data_uri, historic) {
 				return 180;
 			})
 			.attr("cy", function(d,i) {
-				return 15 + onimm.vars.historic[i]["y"];
+				return 1.5*onimm.vars.historic[i]["y"];
 			})
 			.attr("met_domaine", function(d,i) {
 				return onimm.vars.historic[i]["met_domaine"];
@@ -636,13 +623,13 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.text_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
 			.attr("class", "hist-nodes-foreignObject")
-			.attr("width", 100)
+			.attr("width", 130)
 			.attr("height", 80)
 			.attr("x", function(d,i) {
 				return 200;
 			})
 			.attr("y", function(d,i) {
-				return onimm.vars.historic[i]["y"];
+				return -20 + 1.5*onimm.vars.historic[i]["y"];
 			})
 			.append("xhtml:body").attr("class", "hist-nodes-text-body")
 				.html(function(d,i) {
@@ -657,10 +644,31 @@ function Onimm(id, met_id, data_uri, historic) {
 				return 170;
 			})
 			.attr("y", function(d,i) {
-				return 5 + onimm.vars.historic[i]["y"];
+				return -10 + 1.5*onimm.vars.historic[i]["y"];
 			})
 			.append("xhtml:body").attr("class", "bubble-body")
 				.html("<img class='bubble-' src='./img/bubble-hist.png'>");
+
+		// Click on historic node will change the central node
+		onimm.hist_nodes.on("click", function(d,i) {
+			
+			//console.dir(d);
+			//console.dir(onimm.vars.data);
+
+			d3.selectAll(".g_bond_container_").transition().duration(200)
+				.style("opacity", 0);
+
+			d3.selectAll(".jobs").transition().duration(750)
+				.attr("transform", function(d,i) {
+					return "translate("+onimm.vars.x_coordinates[i]+","+onimm.vars.y_coordinates[i]+")";
+				});
+
+			// Change node with historic
+			$("#onimm_svg_").fadeOut(1000, function() {
+				$("#onimm_svg_").remove();
+				Onimm("onimm_", onimm.vars.data[0].MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
+			});
+		});
 
 	};
 

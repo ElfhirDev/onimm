@@ -283,6 +283,10 @@ img.historic-close-icon {
   cursor: help;
 }
 
+.hist-nodes:hover {
+  cursor: default;
+}
+
 .hist-nodes-text {
-  font-size: 8px;
+  font-size: 9px;
 }
