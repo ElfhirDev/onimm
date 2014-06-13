@@ -282,3 +282,7 @@ img.historic-close-icon {
 .bubble-info-icon {
   cursor: help;
 }
+
+.hist-nodes-text {
+  font-size: 8px;
+}

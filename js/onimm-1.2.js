@@ -263,6 +263,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			if (onimm.vars.historic.length < 1) {
 				var node_hist = {
+					name : onimm.vars.data[0].CSLABELFLD["#text"],
 					met_id : met_id,
 					met_domaine : onimm.vars.csKeyFld[0],
 					stroke_color :  onimm.vars.stroke_colors[0],
@@ -633,6 +634,20 @@ function Onimm(id, met_id, data_uri, historic) {
 				return onimm.vars.historic[i]["stroke_color"];
 			});
 
+		onimm.text_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
+			.attr("class", "hist-nodes-foreignObject")
+			.attr("width", 100)
+			.attr("height", 80)
+			.attr("x", function(d,i) {
+				return 200;
+			})
+			.attr("y", function(d,i) {
+				return onimm.vars.historic[i]["y"];
+			})
+			.append("xhtml:body").attr("class", "hist-nodes-text-body")
+				.html(function(d,i) {
+					return "<p class='hist-nodes-text'>"+d.name+"</p>";
+				});
 
 		onimm.bubble_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
 			.attr("class", "bubble-hist-nodes")
@@ -917,6 +932,7 @@ function Onimm(id, met_id, data_uri, historic) {
 		if (j != 0 ) {
 
 			var node_hist = {
+				name : e.CSLABELFLD["#text"],
 				met_id : e.MET_ID["#text"],
 				met_domaine : e.MET_DOMAINE["#text"],
 				stroke_color :  onimm.init_color_node(e),
