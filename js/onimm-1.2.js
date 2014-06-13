@@ -284,14 +284,17 @@ function Onimm(id, met_id, data_uri, historic) {
 						onimm.vars.historic.pop();
 						break;
 					}
-					// Only display 5 nodes of historic
-					if (onimm.vars.historic.length > 3) {
-						onimm.vars.historic.pop();
-						break;
-					}
+				}
+
+				// TODO : Limit historic
+				// Only display 3 nodes of historic
+				if (onimm.vars.historic.length > 3) {
+					var shifted = onimm.vars.historic.shift();
+					onimm.vars.historic[onimm.vars.historic.length-1].y = shifted.y;
 				}
 			}
 
+			console.dir(onimm.vars.historic);
 			
 			onimm.update_historic(met_id);
 
