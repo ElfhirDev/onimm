@@ -6,7 +6,7 @@ body {
   background-color: transparent;
 }
 
-#onimm_ {
+#onimm- {
   position: relative;
   left: 125px;
 }
@@ -157,7 +157,7 @@ img.historic-close-icon {
   margin: 8px 0 8px;
 }
 
-#onimm_svg_ {
+#onimm-svg- {
   background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
   background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
   background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
@@ -203,7 +203,7 @@ img.historic-close-icon {
   text-align: center;
 }
 
-.g_container_legend {
+.g-container-legend {
   cursor: default;
 }
 
@@ -270,12 +270,12 @@ img.historic-close-icon {
   left: -30px;
 }
 
-.active_node img, .active_node .bubble-foreignObject{
+.active-node img, .active-node .bubble-foreignObject{
   width: 60px;
   height: 60px;
 }
 
-.active_node .jobs-text {
+.active-node .jobs-text {
   font-weight: bold;
 }
 

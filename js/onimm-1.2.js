@@ -65,7 +65,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("height", onimm.vars.height)
 			.attr("align", "center")
 			.style("border", "1px solid black")
-			.attr("id", id + "svg_");
+			.attr("id", id + "svg-");
 
 		/* ---- Define markers for design the bonds ---- */
 		// mid of bonds
@@ -87,12 +87,12 @@ function Onimm(id, met_id, data_uri, historic) {
 		// Create sub-container of Bond(s), James Bond
 		onimm.bond_container = onimm.svg.append("g")
 			.attr("transform", "translate(" + onimm.vars.half_width + "," + onimm.vars.half_height + ")")
-			.attr("class", "g_bond_container_");
+			.attr("class", "g-bond-container-");
 
 		// Create sub-container of other elements
 		onimm.container = onimm.svg.append("g")
 			.attr("transform", "translate(" + onimm.vars.half_width + "," + onimm.vars.half_height + ")")
-			.attr("class", "g_container_");
+			.attr("class", "g-container-");
 
 		// Load our resources
 		d3.xml(data_uri, "application/xml", function(error, xml) {
@@ -284,12 +284,16 @@ function Onimm(id, met_id, data_uri, historic) {
 						onimm.vars.historic.pop();
 						break;
 					}
+					// Only display 5 nodes of historic
+					if (onimm.vars.historic.length > 3) {
+						onimm.vars.historic.pop();
+						break;
+					}
 				}
 			}
 
+			
 			onimm.update_historic(met_id);
-
-			console.log(onimm.vars.historic);
 
 		}); // End d3.json(uri, met_id, function)
 	};
@@ -422,7 +426,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		if(d.MET_ID["#text"] === met_id) {
 			for(var a = 0, l = onimm.vars.totalNodes; a<l; a++) {
-				d3.select("#bond_"+a)
+				d3.select("#bond-"+a)
 					.attr("d", "M "+d3.event.x+","+d3.event.y+" C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
 				if (onimm.bonds[a][0][0].attributes[3].nodeValue === d.MET_ID["#text"]) {
 					onimm.vars.x_coordinates[onimm.bonds[a][0][0].attributes[2].nodeValue] = d3.event.x;
@@ -442,7 +446,7 @@ function Onimm(id, met_id, data_uri, historic) {
 				if (onimm.bonds[a][0][0].attributes[3].nodeValue === d.MET_ID["#text"]) {
 					onimm.vars.x_coordinates[a] = d3.event.x;
 					onimm.vars.y_coordinates[a] = d3.event.y;
-					d3.select("#bond_"+a)
+					d3.select("#bond-"+a)
 						.attr("d", "M"+ onimm.vars.xCentral+","+onimm.vars.yCentral +"C 0,0 0,0 "+ onimm.vars.x_coordinates[a]+","+ onimm.vars.y_coordinates[a] +"");
 				}
 			}
@@ -461,7 +465,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 	onimm.set_legend = function() {
 		onimm.container_legend = onimm.svg.append("svg:g")
-			.attr("class","g_container_legend");
+			.attr("class","g-container-legend");
 
 		onimm.rect_legend = onimm.container_legend.append("svg:rect")
 			.attr("x", 0.80*onimm.vars.width)
@@ -541,7 +545,7 @@ function Onimm(id, met_id, data_uri, historic) {
 	onimm.set_historic = function() {
 		onimm.container_historic = onimm.svg.append("svg:g")
 			.attr("transform", "translate(-150,0)")
-			.attr("class", "g_container_historic");
+			.attr("class", "g-container-historic");
 	};
 
 	onimm.close_legend = function() {
@@ -553,7 +557,7 @@ function Onimm(id, met_id, data_uri, historic) {
 	};
 
 	onimm.set_legend_helper = function() {
-		onimm.help_legend_container = onimm.svg.append("svg:g").attr("id", "g_help_text");
+		onimm.help_legend_container = onimm.svg.append("svg:g").attr("id", "g-help-text");
 		onimm.help_legend = onimm.help_legend_container.append("svg:foreignObject")
 			.attr("class", "help-text-foreignObject")
 			.attr("width", 50)
@@ -573,7 +577,7 @@ function Onimm(id, met_id, data_uri, historic) {
 	};
 
 	onimm.set_historic_helper = function() {
-		onimm.historic_helper_container = onimm.svg.append("svg:g").attr("id", "g_historic_text");
+		onimm.historic_helper_container = onimm.svg.append("svg:g").attr("id", "g-historic-text");
 		onimm.historic_helper = onimm.historic_helper_container.append("svg:foreignObject")
 			.attr("class", "historic-text-foreignObject")
 			.attr("width", 100)
@@ -594,7 +598,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 	onimm.update_historic = function(new_met_id) {
 
-		onimm.hist_nodes = onimm.container_historic.selectAll(".hist_nodes")
+		onimm.hist_nodes = onimm.container_historic.selectAll(".hist-nodes")
 			.data(onimm.vars.historic);
 
 		onimm.hist_nodes = onimm.hist_nodes.enter().append("svg:g")
@@ -655,7 +659,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			//console.dir(d);
 			//console.dir(onimm.vars.data);
 
-			d3.selectAll(".g_bond_container_").transition().duration(200)
+			d3.selectAll(".g-bond-container-").transition().duration(200)
 				.style("opacity", 0);
 
 			d3.selectAll(".jobs").transition().duration(750)
@@ -664,11 +668,13 @@ function Onimm(id, met_id, data_uri, historic) {
 				});
 
 			// Change node with historic
-			$("#onimm_svg_").fadeOut(1000, function() {
-				$("#onimm_svg_").remove();
-				Onimm("onimm_", onimm.vars.data[0].MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
+			$("#onimm-svg-").fadeOut(1000, function() {
+				$("#onimm-svg-").remove();
+				Onimm("onimm-", onimm.vars.data[0].MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
 			});
 		});
+
+
 
 	};
 
@@ -819,7 +825,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			if (data[a].MET_ID["#text"] !== met_id){
 				onimm.bonds[a] = onimm.bond_container.append("path")
 					.attr("class", function(d,i) {return "bond"})
-					.attr("id", function(d,i) {return "bond_"+a})
+					.attr("id", function(d,i) {return "bond-"+a})
 					.attr("num", function(d,i) {return a})
 					.attr("met_id", function(d,i) {return data[a].MET_ID["#text"]})
 					.attr("fill", "none").attr("stroke-width", "5").attr("stroke", "none")
@@ -827,7 +833,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			}
 			else {		
 				onimm.bonds[a] = onimm.bond_container.append("path")
-					.attr("class", function(d,i) {return "active_bond"})
+					.attr("class", function(d,i) {return "active-bond"})
 					.attr("id", function(d,i) {return "bond_"+a})
 					.attr("num", function(d,i) {return a})
 					.attr("met_id", function(d,i) {return data[a].MET_ID["#text"]})
@@ -843,7 +849,7 @@ function Onimm(id, met_id, data_uri, historic) {
 				d3.select("circle").attr("r", onimm.vars.radius+10);
 				onimm.jobs.attr("class", function(d,i) { 
 					if (i==0) {
-						return "active_node draggable jobs";
+						return "active-node draggable jobs";
 					}
 					else return "draggable jobs";
 				});
@@ -874,7 +880,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		for (var b = 0, le = onimm.vars.totalNodes; b<le; b++) {
 
-			if (onimm.bonds[b].classed("active_bond", true)) {
+			if (onimm.bonds[b].classed("active-bond", true)) {
 				// Since the record in xml may be an array we have to test
 				if (onimm.vars.coordinated.METIER.record != undefined) {
 					if ($.isArray(onimm.vars.coordinated.METIER.record)) {
@@ -951,7 +957,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			onimm.vars.historic.push(node_hist);
 
-			d3.selectAll(".g_bond_container_").transition().duration(200)
+			d3.selectAll(".g-bond-container-").transition().duration(200)
 				.style("opacity", 0);
 
 			d3.selectAll(".jobs").transition().duration(750)
@@ -960,9 +966,9 @@ function Onimm(id, met_id, data_uri, historic) {
 				});
 
 			// Change node with historic
-			$("#onimm_svg_").fadeOut(1000, function() {
-				$("#onimm_svg_").remove();
-				Onimm("onimm_", e.MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
+			$("#onimm-svg-").fadeOut(1000, function() {
+				$("#onimm-svg-").remove();
+				Onimm("onimm-", e.MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
 			});
 		}
 	};
