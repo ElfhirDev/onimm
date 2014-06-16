@@ -252,11 +252,11 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			// Set legend again when clicking on help
 			d3.select(".bubble-info-icon").on("dblclick", function(d,i) {});
-
 			d3.select(".bubble-info-icon").on("click", function(d,i) {
 				onimm.display_info_job(d, i, onimm.vars.data);
 			});
 
+			onimm.jobs.on("dblclick", function(d,i) {});
 			onimm.jobs.on("click", function(d,i) {
 				onimm.move_to_node(d,i,onimm.vars.data);
 			});
@@ -1004,6 +1004,8 @@ function Onimm(id, met_id, data_uri, historic) {
 	 */
 	onimm.move_to_node = function(e,j,data) {
 		if (j != 0 ) {
+
+			onimm.jobs.on("click", function(d,i) {});
 
 			var node_hist = {
 				name : e.CSLABELFLD["#text"],
