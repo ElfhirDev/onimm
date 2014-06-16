@@ -286,17 +286,16 @@ function Onimm(id, met_id, data_uri, historic) {
 					}
 				}
 
-				// TODO : Limit historic
 				// Only display 3 nodes of historic
-				if (onimm.vars.historic.length > 3) {
+				if (onimm.vars.historic.length > 5) {
 					var shifted = onimm.vars.historic.shift();
 					onimm.vars.historic[onimm.vars.historic.length-1].y = shifted.y;
 				}
 			}
 
-			console.dir(onimm.vars.historic);
-			
 			onimm.update_historic(met_id);
+
+			console.dir(onimm.vars.historic);
 
 		}); // End d3.json(uri, met_id, function)
 	};
@@ -549,6 +548,22 @@ function Onimm(id, met_id, data_uri, historic) {
 		onimm.container_historic = onimm.svg.append("svg:g")
 			.attr("transform", "translate(-150,0)")
 			.attr("class", "g-container-historic");
+
+		onimm.historic_image = onimm.createForeignObject(onimm.container_historic, "historic-image", 30, 30, 0.21*onimm.vars.width, 10);
+		onimm.createImg(onimm.historic_image, "historic-icon", "./img/historic-icon.png");
+
+		onimm.historic_title = onimm.container_historic.append("svg:foreignObject")
+			.attr("class", "historic-title-foreignObject")
+			.attr("width", 120)
+			.attr("height", 100)
+			.attr("x", 0.25*onimm.vars.width)
+			.attr("y", 0.001*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "historic-title-body")
+				.html(function(d,i) {
+					return "<p class='historic-title'>Historique</p>";
+				});
+
+
 	};
 
 	onimm.close_legend = function() {
@@ -606,17 +621,18 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.hist_nodes = onimm.hist_nodes.enter().append("svg:g")
 			.classed("hist-nodes", function(d) {return d;})
+			.attr("hist", function(d,i) {return i;})
 
 		//console.dir(onimm.vars.historic);
 
 		onimm.hist_nodes.append("svg:circle")
-			.attr("class", "circle")
+			.attr("class", "circle hist-nodes-bubbles")
 			.attr("r", 0.5*onimm.vars.radius)
 			.attr("cx", function(d,i) {
 				return 180;
 			})
 			.attr("cy", function(d,i) {
-				return 1.5*onimm.vars.historic[i]["y"];
+				return 30 + 1.5*onimm.vars.historic[i]["y"];
 			})
 			.attr("met_domaine", function(d,i) {
 				return onimm.vars.historic[i]["met_domaine"];
@@ -630,31 +646,55 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.text_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
 			.attr("class", "hist-nodes-foreignObject")
-			.attr("width", 130)
+			.attr("width", 160)
 			.attr("height", 80)
-			.attr("x", function(d,i) {
-				return 200;
-			})
-			.attr("y", function(d,i) {
-				return -20 + 1.5*onimm.vars.historic[i]["y"];
-			})
-			.append("xhtml:body").attr("class", "hist-nodes-text-body")
-				.html(function(d,i) {
-					return "<p class='hist-nodes-text'>"+d.name+"</p>";
-				});
-
-		onimm.bubble_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
-			.attr("class", "bubble-hist-nodes")
-			.attr("width", 1*onimm.vars.radius)
-			.attr("height", 1*onimm.vars.radius)
 			.attr("x", function(d,i) {
 				return 170;
 			})
 			.attr("y", function(d,i) {
-				return -10 + 1.5*onimm.vars.historic[i]["y"];
+				return 10 + 1.5*onimm.vars.historic[i]["y"];
+			})
+			.attr("met_domaine", function(d,i) {
+				return onimm.vars.historic[i]["met_domaine"];
+			})
+			.attr("met_id", function(d,i) {
+				return onimm.vars.historic[i]["met_id"];
+			})
+			.append("xhtml:body").attr("class", "hist-nodes-text-body")
+				.html(function(d,i) {
+					return "<div class='hist-nodes-div'>"
+					+"<p class='hist-nodes-text'>"+d.name+"</p>";
+				});
+
+		d3.selectAll(".hist-nodes-text-body").each(function(d,i) {
+			d3.select(this)
+				.attr("met_domaine", function(d,i) {
+					return onimm.vars.historic[i]["met_domaine"];
+				})
+				.attr("met_id", function(d,i) {
+					return onimm.vars.historic[i]["met_id"];
+				});
+		});
+
+		onimm.bubble_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
+			.attr("class", "bubble-hist-nodes")
+			.attr("width", onimm.vars.radius)
+			.attr("height", onimm.vars.radius)
+			.attr("x", function(d,i) {
+				return 170;
+			})
+			.attr("y", function(d,i) {
+				return 20 + 1.5*onimm.vars.historic[i]["y"];
 			})
 			.append("xhtml:body").attr("class", "bubble-body")
 				.html("<img class='bubble-' src='./img/bubble-hist.png'>");
+
+
+		d3.selectAll(".hist-nodes-text-body").each(function(d,i) {
+			if (d.met_id == met_id) {
+				d3.select(this).style("font-weight", "bold");
+			}
+		});
 
 		// Click on historic node will change the central node
 		onimm.hist_nodes.on("click", function(d,i) {
@@ -691,6 +731,9 @@ function Onimm(id, met_id, data_uri, historic) {
 		onimm.bond_container.transition()
 			.duration(750)
 			.attr("transform","translate(80,300)");
+
+		d3.selectAll(".g-container-historic").transition().duration(200)
+			.style("opacity", 0);
 
 		var content = "";
 		for (var j = 0, l = data[i].Thesaurus.CSTM_T.record.length; j<l; j++) {
@@ -763,6 +806,9 @@ function Onimm(id, met_id, data_uri, historic) {
 			onimm.bond_container.transition()
 				.duration(750)
 				.attr("transform","translate(400,300)");
+
+			d3.selectAll(".g-container-historic").transition().duration(200)
+				.style("opacity", 1);
 
 		});
 

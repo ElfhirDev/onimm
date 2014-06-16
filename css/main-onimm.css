@@ -201,6 +201,7 @@ img.historic-close-icon {
   padding: 2px;
   width: 120px;
   text-align: center;
+  text-shadow: 0 2px 2px #8B87FF;
 }
 
 .g-container-legend {
@@ -283,10 +284,29 @@ img.historic-close-icon {
   cursor: help;
 }
 
+.hist-nodes body{
+  overflow: visible;
+}
+
+.hist-nodes-bubbles {
+  stroke-width: 2.5px;
+}
+
+.hist-nodes-div {
+  overflow: visible;
+  margin: 0 0 0 30px;
+  padding: 3px;
+}
+
 .hist-nodes:hover {
   cursor: default;
+}
+
+.hist-nodes-text-body p {
+text-shadow: 0 2px 2px #8B87FF; 
 }
 
 .hist-nodes-text {
   font-size: 9px;
 }
+
