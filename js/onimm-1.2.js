@@ -251,6 +251,8 @@ function Onimm(id, met_id, data_uri, historic) {
 				.html("<img class='bubble-info-icon' src='./img/bubble-info.png'>");
 
 			// Set legend again when clicking on help
+			d3.select(".bubble-info-icon").on("dblclick", function(d,i) {});
+
 			d3.select(".bubble-info-icon").on("click", function(d,i) {
 				onimm.display_info_job(d, i, onimm.vars.data);
 			});
@@ -724,6 +726,8 @@ function Onimm(id, met_id, data_uri, historic) {
 	// TODO :The location is sometimes not appropriate
 	onimm.display_info_job = function(d, i , data) {
 
+		d3.select(".bubble-info-icon").on("click", function() {});
+
 		onimm.container.transition()
 			.duration(750)
 			.attr("transform","translate(80,300)");
@@ -795,6 +799,8 @@ function Onimm(id, met_id, data_uri, historic) {
 			+"<a target='_blank' href='http://www.onisep.fr/http/redirection/metier/identifiant/"+data[i].MET_ID['#text']+"'>en savoir plus</a></p>");
 
 		// +"<img class='bubble-triangle-icon' src='./img/bubble-triangle.png'>");
+		
+		d3.select(".modale-close-icon").on("dblclick", function() {});
 
 		d3.select(".modale-close-icon").on("click", function() {
 			d3.select(".info-job-foreignObject").remove();
@@ -807,8 +813,12 @@ function Onimm(id, met_id, data_uri, historic) {
 				.duration(750)
 				.attr("transform","translate(400,300)");
 
-			d3.selectAll(".g-container-historic").transition().duration(200)
+			d3.selectAll(".g-container-historic").transition().duration(400)
 				.style("opacity", 1);
+
+			d3.select(".bubble-info-icon").on("click", function(d,i) {
+				onimm.display_info_job(d, i, onimm.vars.data);
+			});
 
 		});
 
@@ -818,6 +828,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			.on("dragend", onimm.dragended);
 
 		d3.select(".info-job-foreignObject").call(onimm.vars.drag_modale);
+
 	};
 
 	onimm.hide_info_hover_node = function(d,i) {
