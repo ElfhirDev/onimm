@@ -4,6 +4,7 @@
 body {
   /*background-color: rgba(0,210,210,0.8);*/
   background-color: transparent;
+  font-family: Times,Verdana,sans-serif;
 }
 
 #onimm- {
@@ -194,6 +195,7 @@ img.historic-close-icon {
 }
 
 .jobs-text {
+  font-family: 'exoregular';
   cursor: move;
   font-size: 15px;
   position: relative;
@@ -201,7 +203,11 @@ img.historic-close-icon {
   padding: 2px;
   width: 120px;
   text-align: center;
-  text-shadow: 0 2px 2px #8B87FF;
+  text-shadow: 0 1px 2px #8B87FF;
+}
+
+.jobs-text::first-letter {
+  text-transform: uppercase;
 }
 
 .g-container-legend {
@@ -212,15 +218,18 @@ img.historic-close-icon {
   cursor: default;
   font-size: 13px;
   position: relative;
-  margin: 0 1px;
+  margin: 0 24px;
   padding: 2px;
   width: 120px;
-  text-align: center;
+  text-align: left;
+
 }
 
 .instruction-legend {
   font-style: italic;
-  font-size: 10px;
+  font-size: 10.5px;
+  color: #111;
+  text-shadow: 0 1px 0.5px #000000;
 }
 
 .info-foreignObject {
@@ -302,11 +311,17 @@ img.historic-close-icon {
   cursor: default;
 }
 
-.hist-nodes-text-body p {
-text-shadow: 0 2px 2px #8B87FF; 
-}
-
 .hist-nodes-text {
+  font-family: 'exoregular', Verdana, sans-serif;
+  text-shadow: 0 1px 2px #8B87FF; 
   font-size: 9px;
 }
 
+.hist-nodes-text::first-letter {
+  text-transform: uppercase;
+}
+
+.historic-title {
+  font-family: Times, serif;
+  font-weight: bold;
+}

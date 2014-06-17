@@ -478,20 +478,23 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("height", 0.35*onimm.vars.height)
 			.style("fill", "rgba(255,255,255,1)");
 
+		onimm.legend_image = onimm.createForeignObject(onimm.container_legend, "legend-image", 30, 30, 0.87*onimm.vars.width, 16.5);
+		onimm.createImg(onimm.legend_image, "legend-icon", "./img/legend-icon.png");
+
 		onimm.legend_1 = onimm.container_legend.append("svg:line")
 			.attr("class", function(d,i) {return "bond"})
-			.attr("x1", 0.85*onimm.vars.width)
-			.attr("y1", 0.1*onimm.vars.half_height)
-			.attr("x2", 0.92*onimm.vars.width)
-			.attr("y2", 0.1*onimm.vars.half_height)
+			.attr("x1", 0.805*onimm.vars.width)
+			.attr("y1", 0.20*onimm.vars.half_height)
+			.attr("x2", 0.84*onimm.vars.width)
+			.attr("y2", 0.20*onimm.vars.half_height)
 			.attr("stroke-width","5").attr("stroke", onimm.vars.coordination_color);
 
 		onimm.legend_1_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "jobs-text-foreignObject")
 			.attr("width", 120)
 			.attr("height", 100)
-			.attr("x", 0.81*onimm.vars.width)
-			.attr("y", 0.12*onimm.vars.half_height)
+			.attr("x", 0.83*onimm.vars.width)
+			.attr("y", 0.16*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "jobs-text-body")
 				.html(function(d,i) {
 					return "<p class='text-legend'>Coordination</p>";
@@ -499,11 +502,11 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.legend_2 = onimm.container_legend.append("svg:line")
 			.attr("class", function(d,i) {return "bond"})
-			.attr("x2", 0.85*onimm.vars.width)
-			.attr("y2", 0.30*onimm.vars.half_height)
-			.attr("x1", 0.90*onimm.vars.width)
-			.attr("y1", 0.30*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke", onimm.vars.collaboration_color).attr("stroke-dasharray", "5,10");
+			.attr("x2", 0.80*onimm.vars.width)
+			.attr("y2", 0.35*onimm.vars.half_height)
+			.attr("x1", 0.82*onimm.vars.width)
+			.attr("y1", 0.35*onimm.vars.half_height)
+			.attr("stroke-width","5").attr("stroke", onimm.vars.collaboration_color).attr("stroke-dasharray", "5,3");
 
 		// onimm.legend_2.attr("marker-end", "url(#handshake)");
 
@@ -511,14 +514,13 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("d", "M-19,2 -19,-2 -18.5,-2 -18.5,2 Z M-8,2 -8,-2 -7.5,-2 -7.5,2 Z M -8.9,1.4 -13,2.5 -13,2.2 -11.5,2 -12,-1 -15,0 -13,-2.5 -9,-1 Z M -17.5,2 -17.0,2.3 -13,1.4 -13.1,0.7 -16.4,1.0 -16.4,0 -14.3,-2.6 -16,-2.4 -17.6,-1.1 Z")
 			.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:0.5px");
 
-		onimm.marker_handshake_legend.attr("transform", "scale(1.8) translate("+1.06*onimm.vars.half_width+","+0.084*onimm.vars.height+")");
-
+		onimm.marker_handshake_legend.attr("transform", "scale(1.3) translate("+1.32*onimm.vars.half_width+","+0.135*onimm.vars.height+")");
 
 		onimm.legend_2_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "jobs-text-foreignObject")
 			.attr("width", 120)
 			.attr("height", 100)
-			.attr("x", 0.81*onimm.vars.width)
+			.attr("x", 0.83*onimm.vars.width)
 			.attr("y", 0.32*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "jobs-text-body")
 				.html(function(d,i) {
@@ -534,6 +536,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			.append("xhtml:body").attr("class", "jobs-text-body")
 				.html(function(d,i) {
 					return "<p class='instruction-legend'>Cliquez sur le noeud central pour avoir des informations</p>"
+						+ "<hr>"
 						+"<p class='instruction-legend'>Cliquez sur les autres noeuds pour naviguer vers eux.</p>";
 				});
 
@@ -715,7 +718,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			// Change node with historic
 			$("#onimm-svg-").fadeOut(1000, function() {
 				$("#onimm-svg-").remove();
-				Onimm("onimm-", onimm.vars.data[0].MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
+				Onimm("onimm-", d.met_id, "./data/carte_heuristique.xml", onimm.vars.historic);
 			});
 		});
 
@@ -726,7 +729,8 @@ function Onimm(id, met_id, data_uri, historic) {
 	// TODO :The location is sometimes not appropriate
 	onimm.display_info_job = function(d, i , data) {
 
-		d3.select(".bubble-info-icon").on("click", function() {});
+		d3.
+		select(".bubble-info-icon").on("click", function() {});
 
 		onimm.container.transition()
 			.duration(750)
