@@ -10,4 +10,8 @@
 ehthumbs.db
 Thumbs.db
 
+# Old html template pages
+/old
 
+# Sass cache files
+.sass-cache/
