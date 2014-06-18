@@ -1,0 +1,33 @@
+/* main layout and display of onisep mind map - last update 18/06/2014 by <jta@onisep.fr> */
+/* Common and useful mixins - last update 18/06/2014 by <jta@onisep.fr> */
+.onimm-container {
+  position: relative;
+  margin: auto;
+  min-width: 800px;
+  width: 800px; }
+  .onimm-container .onimm-svg .bonds-container .active_node {
+    display: none; }
+  .onimm-container .onimm-svg .jobs-container .jobs .jobs-text-foreignObject .jobs-text-body .jobs-text {
+    position: relative;
+    margin: 0 10px 0 0;
+    padding: 2px;
+    width: 120px;
+    text-align: center; }
+  .onimm-container .onimm-svg .jobs-container .jobs .bubble-foreignObject .bubble-body .bubble {
+    position: relative;
+    margin: -8px 0 0 -8px;
+    width: 40px;
+    height: 40px; }
+  .onimm-container .onimm-svg .jobs-container .jobs .bubble-foreignObject .bubble-body .bubble-info-icon {
+    position: relative;
+    margin: -8px 0 0 -8px;
+    width: 60px;
+    height: 60px; }
+  .onimm-container .onimm-svg .legend-container .legend-text-foreignObject .legend-text-body .legend-text {
+    position: relative;
+    margin: 50px; }
+  .onimm-container .onimm-svg .legend-container .legend-instructions-foreignObject .legend-instructions-legend .legend-instructions {
+    position: relative;
+    margin: 50px; }
+  .onimm-container .onimm-svg .historic-container .historic-image-foreignObject .historic-image-body {
+    margin: 0; }

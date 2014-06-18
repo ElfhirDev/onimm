@@ -1,0 +1,42 @@
+/* theme of onisep mind map - last update 18/06/2014 by <jta@onisep.fr> */
+/* Common and useful mixins - last update 18/06/2014 by <jta@onisep.fr> */
+@font-face {
+  font-family: "exoregular";
+  src: url("../fonts/exo/exoregular.eot");
+  src: url("../fonts/exo/exoregular.eot?#iefix") format("embedded-opentype"), url("../fonts/exo/exoregular.woff") format("woff"), url("../fonts/exo/exoregular.ttf") format("truetype"), url("../fonts/exo/exoregular.svg#exoregular") format("svg");
+  font-style: normal;
+  font-weight: normal; }
+.onimm-container {
+  font-family: 'exoregular', Verdana, sans-serif; }
+  .onimm-container .onimm-svg {
+    background: #ffffff;
+    background: -moz-radial-gradient(center, ellipse cover, white 0%, #b8e2f6 88%, #d9edfc 100%);
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, white), color-stop(88%, #b8e2f6), color-stop(100%, #d9edfc));
+    background: -webkit-radial-gradient(center, ellipse cover, white 0%, #b8e2f6 88%, #d9edfc 100%);
+    background: -o-radial-gradient(center, ellipse cover, white 0%, #b8e2f6 88%, #d9edfc 100%);
+    background: -ms-radial-gradient(center, ellipse cover, white 0%, #b8e2f6 88%, #d9edfc 100%);
+    background: radial-gradient(ellipse at center, white 0%, #b8e2f6 88%, #d9edfc 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#d9edfc',GradientType=1 ); }
+    .onimm-container .onimm-svg .bonds-container .active_node {
+      display: none; }
+    .onimm-container .onimm-svg .bonds-container .bond {
+      fill: none; }
+    .onimm-container .onimm-svg .jobs-container .jobs .is-draggable {
+      cursor: move; }
+    .onimm-container .onimm-svg .jobs-container .jobs .is-dragging {
+      cursor: grabbing; }
+    .onimm-container .onimm-svg .jobs-container .jobs .jobs-circle {
+      fill: #aaaaaa;
+      stroke-width: 2.5px; }
+    .onimm-container .onimm-svg .jobs-container .jobs .jobs-text-foreignObject .jobs-text-body {
+      background: transparent; }
+      .onimm-container .onimm-svg .jobs-container .jobs .jobs-text-foreignObject .jobs-text-body .jobs-text {
+        font-size: 15px;
+        text-shadow: 0 1px 2px #8B87FF; }
+        .onimm-container .onimm-svg .jobs-container .jobs .jobs-text-foreignObject .jobs-text-body .jobs-text::first-letter {
+          text-transform: uppercase; }
+    .onimm-container .onimm-svg .legend-container .legend-text-foreignObject .legend-text-body .legend-text {
+      /* TODO */ }
+    .onimm-container .onimm-svg .legend-container .legend-instructions-foreignObject .legend-instructions-body .legend-instructions {
+      /* TODO */
+      font-size: 10px; }

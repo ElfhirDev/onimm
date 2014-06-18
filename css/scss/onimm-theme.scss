@@ -1,0 +1,105 @@
+/* theme of onisep mind map - last update 18/06/2014 by <jta@onisep.fr> */
+
+@import "framework";
+
+@include font_face('exoregular','../fonts/exo/exoregular');
+
+$orange : #FF400D;
+$background_color_jobs_circle : #AAA;
+
+.onimm-container {
+	font-family: 'exoregular', Verdana, sans-serif;
+
+	.onimm-svg {
+		@include onimm_gradient();
+
+		.bonds-container {
+			.active_node {
+				display: none;
+			}
+
+			.bond {
+				fill: none;
+			}
+		}
+
+		.jobs-container {
+			.jobs {
+				.is-draggable {
+					cursor: move;
+				}
+
+				.is-dragging {
+					cursor: grabbing;
+				}
+
+				.jobs-circle {
+					fill: $background_color_jobs_circle;
+					stroke-width: 2.5px;
+				}
+
+				.jobs-text-foreignObject{
+					.jobs-text-body {
+						background: transparent;
+
+						.jobs-text {
+							font-size: 15px;
+							text-shadow: 0 1px 2px #8B87FF;
+							&::first-letter {
+								text-transform: uppercase;
+							}
+						}
+					}
+				}
+				.bubble-foreignObject {
+
+					.bubble-body {
+						.bubble {
+						}
+						.bubble-info-icon {
+						}
+					}
+				}
+			}
+		}
+
+		.legend-container {
+			.legend-image-foreignObject {
+				.legend-image-body {
+					.legend-image {
+
+					}
+				}
+			}
+
+			.legend-text-foreignObject {
+				.legend-text-body {
+					.legend-text {
+						/* TODO */
+					}
+				}
+			}
+
+			.legend-instructions-foreignObject {
+				.legend-instructions-body {
+					.legend-instructions {
+						/* TODO */
+						font-size: 10px;
+					}
+				}
+			}
+
+			.legend-close-foreignObject {
+				.legend-close-body {
+					.legend-close-icon {
+
+					}
+				}
+			}
+		}
+
+		.historic-container {
+
+		}
+	}
+}

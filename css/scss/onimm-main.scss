@@ -1,0 +1,107 @@
+/* main layout and display of onisep mind map - last update 18/06/2014 by <jta@onisep.fr> */
+
+@import "framework";
+
+.onimm-container {
+	position: relative;
+	margin: auto;
+	min-width: 800px;
+	width: 800px;
+
+	.onimm-svg {
+
+		.bonds-container {
+			.active_node {
+				display: none;
+			}
+		}
+
+		.jobs-container {
+			.jobs {
+				.jobs-text-foreignObject {
+					.jobs-text-body {
+						.jobs-text {
+							position: relative;
+							margin: 0 10px 0 0;
+							padding: 2px;
+							width: 120px;
+							text-align: center;
+						}
+					}
+				}
+				.bubble-foreignObject {
+					.bubble-body {
+						.bubble {
+							position: relative;
+							margin:-8px 0 0 -8px;
+							width:40px;
+							height:40px;
+						}
+
+						.bubble-info-icon {
+							position: relative;
+							margin:-8px 0 0 -8px;
+							width:60px;
+							height:60px;
+						}
+					}
+				}
+			}
+		}
+
+		.legend-container {
+			.legend-image-foreignObject {
+				.legend-image-body {
+					.legend-image {
+
+					}
+				}
+			}
+
+			.legend-text-foreignObject {
+				.legend-text-body {
+					.legend-text {
+						position: relative;
+						margin: 50px;
+					}
+				}
+			}
+
+			.legend-instructions-foreignObject {
+				.legend-instructions-legend {
+					.legend-instructions{
+						position: relative;
+						margin: 50px;
+					}
+				}
+			}
+
+			.legend-close-foreignObject {
+				.legend-close-body {
+					.legend-close-icon {
+
+					}
+				}
+			}
+		}
+
+		.historic-container {
+
+			.historic-image-foreignObject {
+
+				.historic-image-body {
+					margin: 0;
+					.historic-image {
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+}
+
