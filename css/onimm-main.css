@@ -5,7 +5,7 @@
   margin: auto;
   min-width: 800px;
   width: 800px; }
-  .onimm-container .onimm-svg .bonds-container .active_node {
+  .onimm-container .onimm-svg .bonds-container .is-active-node {
     display: none; }
   .onimm-container .onimm-svg .jobs-container .jobs .jobs-text-foreignObject .jobs-text-body .jobs-text {
     position: relative;
@@ -23,11 +23,33 @@
     margin: -8px 0 0 -8px;
     width: 60px;
     height: 60px; }
+  .onimm-container .onimm-svg .info-job-foreignObject .info-job-body {
+    margin: 25px; }
+    .onimm-container .onimm-svg .info-job-foreignObject .info-job-body .info-job {
+      margin: 5px 0 5px 30px;
+      padding: 5px; }
+      .onimm-container .onimm-svg .info-job-foreignObject .info-job-body .info-job .info-job-title {
+        margin: -15px 0 10px;
+        text-align: left; }
+      .onimm-container .onimm-svg .info-job-foreignObject .info-job-body .info-job .info-close-icon {
+        position: relative;
+        margin: -15px 0 0 96%; }
+  .onimm-container .onimm-svg .legend-container .legend-image-foreignObject .legend-image-body {
+    margin: 0; }
   .onimm-container .onimm-svg .legend-container .legend-text-foreignObject .legend-text-body .legend-text {
     position: relative;
-    margin: 50px; }
-  .onimm-container .onimm-svg .legend-container .legend-instructions-foreignObject .legend-instructions-legend .legend-instructions {
+    margin: -10px 0 0 12px; }
+  .onimm-container .onimm-svg .legend-container .legend-instructions-foreignObject .legend-instructions-body .legend-instructions {
     position: relative;
-    margin: 50px; }
+    margin: -5px 0 0 0; }
+  .onimm-container .onimm-svg .legend-container .legend-close-foreignObject .legend-close-body {
+    margin: 0; }
   .onimm-container .onimm-svg .historic-container .historic-image-foreignObject .historic-image-body {
     margin: 0; }
+  .onimm-container .onimm-svg .historic-container .hist-nodes .hist-nodes-foreignObject .hist-nodes-body .hist-nodes-div {
+    margin: -10px 0 0 25px; }
+  .onimm-container .onimm-svg .historic-container .hist-nodes .hist-bubble-foreignObject .hist-bubble-body .hist-bubble {
+    position: relative;
+    margin: -40px 0 6px -8px;
+    width: 20px;
+    height: 20px; }

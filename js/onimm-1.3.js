@@ -219,7 +219,7 @@ function Onimm(id, met_id, data_uri, historic) {
 				})
 				.append("xhtml:body").attr("class", "jobs-text-body")
 					.html(function(d,i) {
-						return "<p class='jobs-text'>"+d.CSLABELFLD["#text"]+ "  " + d.MET_ID["#text"] +"</p>";
+						return "<p class='jobs-text'>"+d.CSLABELFLD["#text"]+"</p>";
 					});
 
 			onimm.bubble = onimm.jobs.append("svg:foreignObject")
@@ -410,7 +410,7 @@ function Onimm(id, met_id, data_uri, historic) {
 	// ---- Drag'n'Drop elements ---
 	onimm.dragstarted = function(d) {
 		d3.event.sourceEvent.stopPropagation();
-		d3.select(this).classed("dragging", true);
+		d3.select(this).classed("is-dragging", true);
 	};
 
 	// Admitted the dragged element is a svg group g with internal circle and text
@@ -463,7 +463,7 @@ function Onimm(id, met_id, data_uri, historic) {
 	};
 
 	onimm.dragended = function(d) {
-		d3.select(this).classed("dragging", false);
+		d3.select(this).classed("is-dragging", false);
 	};
 
 	onimm.set_legend = function() {
@@ -474,7 +474,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("x", 0.80*onimm.vars.width)
 			.attr("y", 0.05*onimm.vars.half_height)
 			.attr("width", 0.17*onimm.vars.width)
-			.attr("height", 0.35*onimm.vars.height)
+			.attr("height", 0.37*onimm.vars.height)
 			.style("fill", "rgba(255,255,255,1)");
 
 		onimm.legend_image = onimm.createForeignObject(onimm.container_legend, "legend-image", 30, 30, 0.87*onimm.vars.width, 16.5);
@@ -529,7 +529,7 @@ function Onimm(id, met_id, data_uri, historic) {
 		onimm.legend_3_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "legend-instructions-foreignObject")
 			.attr("width", 120)
-			.attr("height", 100)
+			.attr("height", 125)
 			.attr("x", 0.81*onimm.vars.width)
 			.attr("y", 0.40*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "legend-instructions-body")
@@ -579,7 +579,7 @@ function Onimm(id, met_id, data_uri, historic) {
 	};
 
 	onimm.set_legend_helper = function() {
-		onimm.help_legend_container = onimm.svg.append("svg:g").attr("id", "g-help-text");
+		onimm.help_legend_container = onimm.svg.append("svg:g").attr("class", "help");
 		onimm.help_legend = onimm.help_legend_container.append("svg:foreignObject")
 			.attr("class", "help-text-foreignObject")
 			.attr("width", 50)
@@ -669,7 +669,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("met_id", function(d,i) {
 				return onimm.vars.historic[i]["met_id"];
 			})
-			.append("xhtml:body").attr("class", "hist-nodes-text-body")
+			.append("xhtml:body").attr("class", "hist-nodes-body")
 				.html(function(d,i) {
 					return "<div class='hist-nodes-div'>"
 					+"<p class='hist-nodes-text'>"+d.name+"</p>";
@@ -686,7 +686,7 @@ function Onimm(id, met_id, data_uri, historic) {
 		});
 
 		onimm.bubble_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
-			.attr("class", "bubble-hist-nodes")
+			.attr("class", "hist-bubble-foreignObject")
 			.attr("width", onimm.vars.radius)
 			.attr("height", onimm.vars.radius)
 			.attr("x", function(d,i) {
@@ -695,11 +695,11 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("y", function(d,i) {
 				return 20 + 1.5*onimm.vars.historic[i]["y"];
 			})
-			.append("xhtml:body").attr("class", "bubble-body")
-				.html("<img class='bubble-' src='./img/bubble-hist.png'>");
+			.append("xhtml:body").attr("class", "hist-bubble-body")
+				.html("<img class='hist-bubble' src='./img/bubble-hist.png'>");
 
 		// Set bold style for the current jobs/nodes we are displaying at the center
-		d3.selectAll(".hist-nodes-text-body").each(function(d,i) {
+		d3.selectAll(".hist-nodes-body").each(function(d,i) {
 			if (d.met_id == met_id) {
 				d3.select(this).style("font-weight", "bold");
 			}
@@ -765,8 +765,8 @@ function Onimm(id, met_id, data_uri, historic) {
 					.append("xhtml:body").attr("class", "info-job-body")
 					.append("div")
 					.attr("class", "info-job")
-					.html("<img class='modale-close-icon' src='./img/close-icon.png'>"
-						+"<p class='modale-h4'>Informations</p>"
+					.html("<img class='info-close-icon' src='./img/close-icon.png'>"
+						+"<p class='info-job-title'>Informations</p>"
 						+"<p class='info-job-text'>Métier ayant une "+data[i].Thesaurus.CSTM_T.record[j].CSLABELFLD["#text"]+".</p>");
 			}
 		}
@@ -810,9 +810,9 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		// +"<img class='bubble-triangle-icon' src='./img/bubble-triangle.png'>");
 		
-		d3.select(".modale-close-icon").on("dblclick", function() {});
+		d3.select(".info-close-icon").on("dblclick", function() {});
 
-		d3.select(".modale-close-icon").on("click", function() {
+		d3.select(".info-close-icon").on("click", function() {
 			d3.select(".info-job-foreignObject").remove();
 
 			onimm.container.transition()
@@ -919,7 +919,7 @@ function Onimm(id, met_id, data_uri, historic) {
 				d3.select(".jobs-circle").attr("r", onimm.vars.radius+10);
 				onimm.jobs.attr("class", function(d,i) { 
 					if (i==0) {
-						return "is-active-node is-draggable jobs";
+						return "is-active-jobs is-draggable jobs";
 					}
 					else return "is-draggable jobs";
 				});

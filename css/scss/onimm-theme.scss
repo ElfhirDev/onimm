@@ -5,6 +5,7 @@
 @include font_face('exoregular','../fonts/exo/exoregular');
 
 $orange : #FF400D;
+$blue_text_shadow: #8B87FF;
 $background_color_jobs_circle : #AAA;
 
 .onimm-container {
@@ -14,7 +15,7 @@ $background_color_jobs_circle : #AAA;
 		@include onimm_gradient();
 
 		.bonds-container {
-			.active_node {
+			.is-active-node {
 				display: none;
 			}
 
@@ -25,12 +26,13 @@ $background_color_jobs_circle : #AAA;
 
 		.jobs-container {
 			.jobs {
+				cursor: move;
+
 				.is-draggable {
-					cursor: move;
+					cursor: pointer;
 				}
 
 				.is-dragging {
-					cursor: grabbing;
 				}
 
 				.jobs-circle {
@@ -43,8 +45,8 @@ $background_color_jobs_circle : #AAA;
 						background: transparent;
 
 						.jobs-text {
-							font-size: 15px;
-							text-shadow: 0 1px 2px #8B87FF;
+							font-size: 14.5px;
+							text-shadow: 0 1px 2px $blue_text_shadow;
 							&::first-letter {
 								text-transform: uppercase;
 							}
@@ -58,6 +60,50 @@ $background_color_jobs_circle : #AAA;
 						}
 						.bubble-info-icon {
 						}
+					}
+				}
+			}
+
+			.is-active-jobs {
+				font-weight: bold;
+				cursor:help;
+			}
+		}
+
+		.info-job-foreignObject {
+			.info-job-body {
+				.info-job {
+
+					cursor: text;
+
+					background-color: #fff;
+
+					-webkit-box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
+				     		box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
+
+					-webkit-border-radius: 10px 10px 10px 10px;
+				    		border-radius: 10px 10px 10px 10px;
+
+					.info-job-title {
+						font-family: Verdana, sans-serif;
+						font-size: 12.5px;
+						color: #0D7B92;
+					}
+					.info-job-text {
+						font-family: Verdana, sans-serif;
+						font-size: 10px;
+					}
+					.info-job-text-interet {
+						font-family: Verdana, sans-serif;
+						font-size: 10px;
+					}
+					.info-job-more {
+						font-family: Verdana, sans-serif;
+						font-weight: bolder;
+						font-size: 8px;
+					}
+					.info-close-icon {
+						cursor: default;
 					}
 				}
 			}
@@ -75,7 +121,7 @@ $background_color_jobs_circle : #AAA;
 			.legend-text-foreignObject {
 				.legend-text-body {
 					.legend-text {
-						/* TODO */
+						font-size: 14px;
 					}
 				}
 			}
@@ -83,8 +129,7 @@ $background_color_jobs_circle : #AAA;
 			.legend-instructions-foreignObject {
 				.legend-instructions-body {
 					.legend-instructions {
-						/* TODO */
-						font-size: 10px;
+						font-size: 11px;
 					}
 				}
 			}
@@ -92,7 +137,7 @@ $background_color_jobs_circle : #AAA;
 			.legend-close-foreignObject {
 				.legend-close-body {
 					.legend-close-icon {
-
+						cursor: default;
 					}
 				}
 			}
@@ -100,6 +145,69 @@ $background_color_jobs_circle : #AAA;
 
 		.historic-container {
 
+			.historic-image-foreignObject {
+
+				.historic-image-body {
+					.historic-image {
+						cursor:help;
+					}
+
+				}
+
+			}
+
+			.historic-title-foreignObject {
+				.historic-title-body {
+					.historic-title {
+						font-weight: bold;
+						font-size: 15px;
+					}
+				}
+			}
+
+			.hist-nodes {
+				.hist-circle {
+					fill: $background_color_jobs_circle;
+					stroke-width: 2.5px;
+				}
+
+				.hist-nodes-foreignObject {
+					.hist-nodes-body {
+						.hist-nodes-div {
+							.hist-nodes-text {
+								font-size: 11px;
+								text-shadow: 0 1px 2px $blue_text_shadow;
+								&::first-letter {
+									text-transform: uppercase;
+								}
+							}
+						}
+					}
+				}
+
+				.hist-bubble-foreignObject {
+					.hist-bubble-body {
+						.hist-bubble {
+
+						}
+					}
+				}
+
+			}
+		}
+
+		.help {
+			.help-text-foreignObject {
+				.help-text-body {
+					.help-text-legend {
+						cursor:help;
+						color: $orange;
+						&:hover {
+							font-weight: bold;
+						}
+					}
+				}
+			}
 		}
 	}
 }
