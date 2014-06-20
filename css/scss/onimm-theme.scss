@@ -7,6 +7,8 @@
 $orange : #FF400D;
 $blue_text_shadow: #8B87FF;
 $background_color_jobs_circle : #AAA;
+$background_color_other_jobs : rgba(240,240,240,0.7);
+$color_other_jobs_text: rgba(0,0,0,0.9);
 
 .onimm-container {
 	font-family: 'exoregular', Verdana, sans-serif;
@@ -207,6 +209,36 @@ $background_color_jobs_circle : #AAA;
 						}
 					}
 				}
+			}
+		}
+
+		.other-jobs-container {
+
+			.other-jobs {
+
+				.other-jobs-circle {
+					fill: $background_color_other_jobs;
+					stroke-width: 1.5px;
+				}
+
+				.other-jobs-text-foreignObject {
+					.other-jobs-text-body {
+						.other-jobs-text {
+							display: none;
+							color: $color_other_jobs_text;
+							font-size: 10px;
+						}
+					}
+				}
+
+				.other-jobs-bubble-foreignObject {
+					.other-jobs-bubble-body {
+						.other-jobs-bubble {
+
+						}
+					}
+				}
+				
 			}
 		}
 	}

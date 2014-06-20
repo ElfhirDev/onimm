@@ -165,9 +165,46 @@
 						}
 					}
 				}
+			}
+		}
+
+		.help {
+			.help-text-foreignObject {
+				.help-text-body {
+					.help-text-legend {
+					
+					}
+				}
+			}
+		}
+
+		.other-jobs-container {
+
+			.other-jobs {
+
+				.other-jobs-circle {
+
+				}
+
+				.other-jobs-text-foreignObject {
+					.other-jobs-text-body {
+						.other-jobs-text {
+
+						}
+					}
+				}
+
+				.other-jobs-bubble-foreignObject {
+					.other-jobs-bubble-body {
+							margin:0;
+						.other-jobs-bubble {
+							position: relative;
+							margin: 0;
+						}
+					}
+				}
 
 			}
-
 		}
 
 	}

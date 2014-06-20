@@ -22,6 +22,7 @@ function Onimm(id, met_id, data_uri, historic) {
 		id : "#"+id,
 		data_uri : data_uri,
 		used_data: [],
+		unused_data: [],
 		x_coordinates : [],
 		y_coordinates : [],
 		xCentral: 0,
@@ -99,6 +100,8 @@ function Onimm(id, met_id, data_uri, historic) {
 			onimm.vars.data = onimm.xmlToJson(xml);
 			onimm.vars.data = onimm.vars.data.CARTE_HEURISTIQUE.METIER.record;
 
+
+
 			// Get arrays only for the job at the center and for convenience define arrays for bond relation
 			for (var a = 0, l = onimm.vars.data.length; a<l; a++) {
 				if (onimm.vars.data[a].MET_ID["#text"] === met_id) {	
@@ -146,7 +149,6 @@ function Onimm(id, met_id, data_uri, historic) {
 					if ($.isArray(onimm.vars.collaboration.METIER.record)) {
 						for (var j = 0, l = onimm.vars.collaboration.METIER.record.length; j<l; j++) {
 							if (onimm.vars.data[k].MET_ID['#text'] == onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']) {
-								//console.log(onimm.vars.data[k].MET_ID['#text'] + " == " + onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']);
 								onimm.vars.used_data.push(onimm.vars.data[k]);
 							}
 						}
@@ -163,7 +165,19 @@ function Onimm(id, met_id, data_uri, historic) {
 			// used_data (and then data) are only the jobs we display
 			onimm.vars.all_data = onimm.vars.data;
 			onimm.vars.data = onimm.vars.used_data;
-
+			
+			// We get in unused_data array the jobs we don't display in the node shape
+			for (var i = 0, l = onimm.vars.all_data.length; i<l; i++) {
+				var is_in_array = 0;
+				for (var j = 0, m = onimm.vars.used_data.length; j<m; j++) {
+					if (onimm.vars.all_data[i].MET_ID["#text"] == onimm.vars.used_data[j].MET_ID["#text"]) {
+						is_in_array++;
+					}
+				}
+				if (is_in_array == 0) {
+					onimm.vars.unused_data.push(onimm.vars.all_data[i]);
+				}
+			}
 
 			onimm.jobs = onimm.container.selectAll("g")
 				.data(onimm.vars.data);
@@ -296,7 +310,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			onimm.update_historic(met_id);
 
-			console.dir(onimm.vars.historic);
+			onimm.other_jobs(onimm.vars.unused_data);
 
 		}); // End d3.json(uri, met_id, function)
 	};
@@ -307,70 +321,113 @@ function Onimm(id, met_id, data_uri, historic) {
 	 */
 	onimm.init_color_node = function(d) {
 		
+		// fonction exploitation
 		if (d.MET_DOMAINE["#text"] == "102892") {
 			return '#15C06F';
 		}
-
+		// fonction maintenance
 		if (d.MET_DOMAINE["#text"] == "100174") {
 			return '#FF6FEF';
 		}
-
+		// fonction marketing
 		if (d.MET_DOMAINE["#text"] == "102876") {
 			return "#B2FF48";
 		}
-
+		// fonction information - communication
 		if (d.MET_DOMAINE["#text"] == "100154") {
 			return '#9A82FF';
 		}
-
+		// fonction conception
 		if (d.MET_DOMAINE["#text"] == "100158") {
 			return '#FD6A8B';
 		}
-
+		// fonction création artistique
 		if (d.MET_DOMAINE["#text"] == "100156") {
 			return '#488BFE';
 		}
-
+		// fonction études développement informatique
 		if (d.MET_DOMAINE["#text"] == "102869") {
 			return '#BAB3FF';
 		}
-
+		// fonction conseil, audit, expertise
 		if (d.MET_DOMAINE["#text"] == "100145") {
 			return '#FCD919';
 		}
 
-		// ---
-		// if (d.MET_DOMAINE["#text"] == "1001") {
-		// 	return '#33DDD0';
-		// }
-
-		// if (d.MET_DOMAINE["#text"] == "1001") {
-		// 	return '#FD4F84';
-		// }
-
-		// if (d.MET_DOMAINE["#text"] == "1001") {
-		// 	return '#BAB3FF';
-		// }
-
-		// if (d.MET_DOMAINE["#text"] == "1001") {
-		// 	return '#7DCAFE';
-		// }
-
-		// if (d.MET_DOMAINE["#text"] == "1001") {
-		// 	return '#D3FFC1';
-		// }
-
-		// if (d.MET_DOMAINE["#text"] == "100") {
-		// 	return '#FDD580';
-		// }
-
-		// if (d.MET_DOMAINE["#text"] == "100") {
-		// 	return '#91ACE6';
-		// }
-
-		// if (d.MET_DOMAINE["#text"] == "100") {
-		// 	return '#FCA145';
-		// }
+		// TODO : geth the id of MET_DOMAINE
+		// fonction adminsitrative
+		if (d.MET_DOMAINE["#text"] == "1001") {
+			return '#33DDD0';
+		}
+		// fonction animation
+		if (d.MET_DOMAINE["#text"] == "1001") {
+			return '#FD4F84';
+		}
+		// fonction achats approvisionnement
+		if (d.MET_DOMAINE["#text"] == "1001") {
+			return '#BAB3FF';
+		}
+		// fonction administratin des ventes
+		if (d.MET_DOMAINE["#text"] == "1001") {
+			return '#7DCAFE';
+		}
+		// fonction distribution
+		if (d.MET_DOMAINE["#text"] == "1001") {
+			return '#D3FFC1';
+		}
+		// fonction import-export
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FDD580';
+		}
+		// fonction marketing
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#91ACE6';
+		}
+		// fonction technico commercial
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// TODO : change the colors
+		// fonction vente
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// fonction développement agricole
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// fonction études développement BTP
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// fonction études développement industriel
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// fonction conduite de projet
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// fonction contrôle
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// fonction essais
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// fonction mesure, analyse
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// fonction direction commerciale
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
+		// fonction direction technique
+		if (d.MET_DOMAINE["#text"] == "100") {
+			return '#FCA145';
+		}
 
 		else {
 			return '#000000';
@@ -630,7 +687,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.hist_nodes = onimm.hist_nodes.enter().append("svg:g")
 			.classed("hist-nodes", function(d) {return d;})
-			.attr("hist", function(d,i) {return i;})
+			.attr("hist", function(d,i) {return i;});
 
 		//console.dir(onimm.vars.historic);
 
@@ -875,13 +932,24 @@ function Onimm(id, met_id, data_uri, historic) {
 			return y_coordinates;
 		}
 		else if (d.MET_ID["#text"] !== met_id && false === onimm.vars.isNodeCentralY) {
-			y_coordinates = 0.4*(onimm.vars.height*Math.sin((i)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
+			y_coordinates = 0.3*(onimm.vars.height*Math.sin((i)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));
 			return y_coordinates;
 		}
 		else if (d.MET_ID["#text"] !== met_id && true === onimm.vars.isNodeCentralY) {
-			y_coordinates = 0.4*(onimm.vars.height*Math.sin((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));	
+			y_coordinates = 0.3*(onimm.vars.height*Math.sin((i-1)*(2*Math.PI)/(onimm.vars.totalNodes - 1)));	
 			return y_coordinates;
 		}
+	};
+
+	/**
+	 * Initiate x and y coordinates for the other_jobs, rendering
+	 * an arc.
+	 */
+	onimm.x_coordinates_other_jobs = function(d,i) {
+		return (20*onimm.vars.radius)*Math.cos((i+4)*(2*Math.PI/3)/(onimm.vars.unused_data.length));
+	};
+	onimm.y_coordinates_other_jobs = function(d,i) {
+		return (14*onimm.vars.radius)*Math.sin((i+4)*(2*Math.PI/3)/(onimm.vars.unused_data.length));
 	};
 
 	/** 
@@ -1004,8 +1072,6 @@ function Onimm(id, met_id, data_uri, historic) {
 		}// end for
 	};
 
-
-	// TODO 
 	/**
 	 * Changing to other node
 	 * @param  d3.selection d the previous clicked node
@@ -1044,6 +1110,80 @@ function Onimm(id, met_id, data_uri, historic) {
 			});
 		}
 	};
+
+	onimm.other_jobs = function(data) {
+
+		onimm.container_other_jobs = onimm.svg.append("svg:g")
+			.attr("transform", "translate(" + onimm.vars.half_width + "," + onimm.vars.half_height + ")")
+			.attr("class", "other-jobs-container");
+
+		onimm.other_jobs = onimm.container_other_jobs.selectAll(".other-jobs")
+			.data(data);
+
+		onimm.other_jobs = onimm.other_jobs.enter().append("svg:g")
+			.classed("other-jobs", function(d) {return d;})
+			.attr("other_jobs", function(d,i) {return i;});
+
+		onimm.other_jobs.append("svg:circle")
+			.attr("class", "other-jobs-circle")
+			.attr("r", 0.50*onimm.vars.radius)
+			.attr("cx", function(d,i) {
+				return onimm.x_coordinates_other_jobs(d,i);
+			})
+			.attr("cy", function(d,i) {
+				return onimm.y_coordinates_other_jobs(d,i);
+			})
+			.style("stroke", function(d,i) {
+				return "rgba(0,0,0,0.6)";
+			});
+
+			onimm.text_other_jobs = onimm.other_jobs.append("svg:foreignObject").data(data);
+			onimm.text_other_jobs
+				.attr("class", "other-jobs-text-foreignObject")
+				.attr("width", 160)
+				.attr("height", 80)
+				.attr("x", function(d,i) {
+					return -40 + onimm.x_coordinates_other_jobs(d,i);
+				})
+				.attr("y", function(d,i) {
+					return onimm.y_coordinates_other_jobs(d,i);
+				})
+				.append("xhtml:body").attr("class", "other-jobs-text-body")
+					.html(function(d,i) {
+						return "<p class='other-jobs-text'>"+d.CSLABELFLD["#text"]+"</p>";
+					});
+
+			onimm.bubble_other_jobs = onimm.other_jobs.append("svg:foreignObject")
+				.attr("class", "other-jobs-bubble-foreignObject")
+				.attr("width", onimm.vars.radius)
+				.attr("height", onimm.vars.radius)
+				.attr("x", function(d,i) {
+					return -10 + onimm.x_coordinates_other_jobs(d,i);
+				})
+				.attr("y", function(d,i) {
+					return -10 + onimm.y_coordinates_other_jobs(d,i);
+				})
+				.append("xhtml:body").attr("class", "other-jobs-bubble-body")
+					.html("<img class='other-jobs-bubble' src='./img/bubble-hist.png'>");
+
+			onimm.other_jobs.on("click", function(d,i) {
+					
+				d3.selectAll(".other-jobs-text")
+					.style("display", function(e,j) {
+						if (i==j) {
+							console.log(i+"   "+j)
+							return "block";
+						}
+						else return "none";
+					});
+			})
+
+		$('.other-jobs-container').insertBefore('.bonds-container');
+	};
+
+	onimm.randomInt = function(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
 
 	onimm.createForeignObject = function(container, name, width, height, x, y) {
 

@@ -85,3 +85,10 @@
       color: #ff400d; }
       .onimm-container .onimm-svg .help .help-text-foreignObject .help-text-body .help-text-legend:hover {
         font-weight: bold; }
+    .onimm-container .onimm-svg .other-jobs-container .other-jobs .other-jobs-circle {
+      fill: rgba(240, 240, 240, 0.7);
+      stroke-width: 1.5px; }
+    .onimm-container .onimm-svg .other-jobs-container .other-jobs .other-jobs-text-foreignObject .other-jobs-text-body .other-jobs-text {
+      display: none;
+      color: rgba(0, 0, 0, 0.9);
+      font-size: 10px; }
