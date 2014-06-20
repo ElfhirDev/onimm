@@ -268,8 +268,13 @@ function Onimm(id, met_id, data_uri, historic) {
 			});
 
 			// Prevent dblclick event
-			onimm.jobs.on("dblclick", function(d,i) {});
-			onimm.jobs.on("click", function(d,i) {
+			// onimm.jobs.on("dblclick", function(d,i) {});
+			// onimm.jobs.on("click", function(d,i) {
+			// 	onimm.move_to_node(d,i,onimm.vars.data);
+			// });
+
+			onimm.bubble.on("dblclick", function(d,i) {});
+			onimm.bubble.on("click", function(d,i) {
 				onimm.move_to_node(d,i,onimm.vars.data);
 			});
 
@@ -1166,6 +1171,14 @@ function Onimm(id, met_id, data_uri, historic) {
 				.append("xhtml:body").attr("class", "other-jobs-bubble-body")
 					.html("<img class='other-jobs-bubble' src='./img/bubble-hist.png'>");
 
+			$(".other-jobs-bubble").on("click", function() {
+				$(".other-jobs-text").fadeIn(800, function() {
+					$(".other-jobs-text").fadeOut(2800, function() {
+					
+					});
+				});
+			});
+
 			onimm.other_jobs.on("click", function(d,i) {
 					
 				d3.selectAll(".other-jobs-text")
@@ -1176,7 +1189,7 @@ function Onimm(id, met_id, data_uri, historic) {
 						}
 						else return "none";
 					});
-			})
+			});
 
 		$('.other-jobs-container').insertBefore('.bonds-container');
 	};
