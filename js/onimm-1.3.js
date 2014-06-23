@@ -244,7 +244,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			onimm.jobs_text = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "jobs-text-foreignObject")
 				.attr("width", 150)
-				.attr("height", 100)
+				//.attr("height", 100)
 				.attr("x", function(d,i) {
 					return d.x = onimm.vars.x_coordinates[i] - 3*onimm.vars.radius;
 				})
@@ -258,6 +258,16 @@ function Onimm(id, met_id, data_uri, historic) {
 					.html(function(d,i) {
 						return "<p class='jobs-text'>"+d.CSLABELFLD["#text"]+"</p>";
 					});
+
+			// Set jobs-text-foreignObject height to be what we need, not more nor less
+			var jobs_text_height = [];
+			$(".jobs-text").each(function(index, element) {
+				jobs_text_height.push(1.3*$(element).outerHeight());
+			});
+			d3.selectAll(".jobs-text-foreignObject").attr("height", function(d,i) {
+				return jobs_text_height[i];
+			});
+
 
 			onimm.bubble = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "bubble-foreignObject")
@@ -760,6 +770,15 @@ function Onimm(id, met_id, data_uri, historic) {
 					return "<div class='hist-nodes-div'>"
 					+"<p class='hist-nodes-text'>"+d.name+"</p>";
 				});
+
+		// Set hist-nodes-foreignObject height to be what we need, not more nor less
+		var hist_nodes_text_height = [];
+		$(".hist-nodes-text").each(function(index, element) {
+			hist_nodes_text_height.push(1.2*$(element).outerHeight());
+		});
+		d3.selectAll(".hist-nodes-foreignObject").attr("height", function(d,i) {
+			return hist_nodes_text_height[i];
+		});
 
 		d3.selectAll(".hist-nodes-text-body").each(function(d,i) {
 			d3.select(this)
