@@ -69,16 +69,39 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("class", id + "-svg");
 
 		/* ---- Define markers for design the bonds ---- */
-		// mid of bonds
+		// handshake mid bonds for collaboration bonds
 		onimm.marker_handshake = onimm.svg.append("svg:defs")
 			.append("svg:marker")
 				.attr("id", "handshake").attr("markerWidth", 64).attr("markerHeight", 49)
 				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
 
+		// The path is handmade and constructed empirically
 		onimm.marker_handshake.append("svg:path")
 			.attr("d", "M-19,2 -19,-2 -18.5,-2 -18.5,2 Z M-8,2 -8,-2 -7.5,-2 -7.5,2 Z M -8.9,1.4 -13,2.5 -13,2.2 -11.5,2 -12,-1 -15,0 -13,-2.5 -9,-1 Z M -17.5,2 -17.0,2.3 -13,1.4 -13.1,0.7 -16.4,1.0 -16.4,0 -14.3,-2.6 -16,-2.4 -17.6,-1.1 Z")
 			.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:0.5px")
-			.attr("transform", "translate(-20,0) scale(0.4)")
+			.attr("transform", "translate(-20,0) scale(0.4)");
+
+		// coordination mid bonds for coordination bonds (the central jobs coordinate them)
+		onimm.marker_coordinated = onimm.svg.append("svg:defs")
+			.append("svg:marker")
+				.attr("id", "coordinated").attr("markerWidth", 64).attr("markerHeight", 49)
+				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
+
+		onimm.marker_coordinated.append("svg:path")
+			.attr("d", "M -15,5 -15,-5 -21,0 Z")
+			.attr("style", "fill:"+onimm.vars.coordination_color+"; stroke:"+onimm.vars.coordination_color+"; stroke-width:0.5px")
+			.attr("transform", "translate(-20,0) scale(0.4)");
+
+		// coordination mid bonds for coordination bonds (the central jobs coordinate them)
+		onimm.marker_coordination = onimm.svg.append("svg:defs")
+			.append("svg:marker")
+				.attr("id", "coordination").attr("markerWidth", 64).attr("markerHeight", 49)
+				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
+
+		onimm.marker_coordination.append("svg:path")
+			.attr("d", "M -15,5 -15,-5 -9,0 Z")
+			.attr("style", "fill:"+onimm.vars.coordination_color+"; stroke:"+onimm.vars.coordination_color+"; stroke-width:0.5px")
+			.attr("transform", "translate(-20,0) scale(0.4)");
 
 		// Create sub-container of Bond(s), James Bond
 		onimm.bond_container = onimm.svg.append("g")
@@ -548,7 +571,8 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("y1", 0.20*onimm.vars.half_height)
 			.attr("x2", 0.84*onimm.vars.width)
 			.attr("y2", 0.20*onimm.vars.half_height)
-			.attr("stroke-width","5").attr("stroke", onimm.vars.coordination_color);
+			.attr("stroke-width","5").attr("stroke", onimm.vars.coordination_color).attr("stroke-dasharray", "5,3");
+
 
 		onimm.legend_1_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "legend-text-foreignObject")
@@ -811,6 +835,13 @@ function Onimm(id, met_id, data_uri, historic) {
 		d3.selectAll(".historic-container").transition().duration(200)
 			.style("opacity", 0);
 
+		d3.selectAll(".other-jobs-container").transition().duration(200)
+			.style("opacity", 0);
+
+		// Add marker on coordinated and coordination path
+		d3.selectAll(".coordination").attr("marker-end", "url(#coordination)");
+		d3.selectAll(".coordinated").attr("marker-end", "url(#coordinated)");
+
 		var content = "";
 		for (var j = 0, l = data[i].Thesaurus.CSTM_T.record.length; j<l; j++) {
 			if (data[i].MET_DOMAINE["#text"] === data[i].Thesaurus.CSTM_T.record[j].DKEY["#text"]) {
@@ -887,6 +918,12 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			d3.selectAll(".historic-container").transition().duration(400)
 				.style("opacity", 1);
+
+			d3.selectAll(".other-jobs-container").transition().duration(400)
+				.style("opacity", 1);
+
+			d3.selectAll(".coordination").attr("marker-end", "");
+			d3.selectAll(".coordinated").attr("marker-end", "");
 
 			d3.select(".bubble-info-icon").on("click", function(d,i) {
 				onimm.display_info_job(d, i, onimm.vars.data);
@@ -1029,13 +1066,19 @@ function Onimm(id, met_id, data_uri, historic) {
 					if ($.isArray(onimm.vars.coordinated.METIER.record)) {
 						for (var j = 0, l = onimm.vars.coordinated.METIER.record.length; j<l ; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.coordinated.METIER.record[j].MET_MET_ID['#text']) {
-								onimm.bonds[b].attr("stroke", onimm.vars.coordination_color);
+								onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
+									.attr("stroke-dasharray", "5,17");
+
+								onimm.bonds[b].attr("class","is-active-bond coordination");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.coordinated.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color);
+							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
+								.attr("stroke-dasharray", "5,17");
+
+							onimm.bonds[b].attr("class","is-active-bond coordination");
 						}
 					}
 				}
@@ -1045,12 +1088,18 @@ function Onimm(id, met_id, data_uri, historic) {
 						for (var j = 0, l = onimm.vars.is_coordinated.METIER.record.length; j<l; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
+									.attr("stroke-dasharray", "5,17");
+
+								onimm.bonds[b].attr("class","is-active-bond coordinated");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record.MET_MET_ID['#text']) {
-							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color);
+							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
+								.attr("stroke-dasharray", "5,17");
+
+							onimm.bonds[b].attr("class","is-active-bond coordinated");
 						}
 					}	
 				}
