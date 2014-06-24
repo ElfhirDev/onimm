@@ -52,6 +52,10 @@ function Onimm(id, met_id, data_uri, historic) {
 		stroke_colors : []
 	};
 
+	onimm.vars.radius = 0.025*onimm.vars.width;
+	onimm.vars.half_height = 0.5*onimm.vars.height;
+	onimm.vars.half_width = 0.5*onimm.vars.width;
+
 	/**
 	 * create svg elements, load data from xml, start all listener
 	 */
@@ -72,7 +76,7 @@ function Onimm(id, met_id, data_uri, historic) {
 		// handshake mid bonds for collaboration bonds
 		onimm.marker_handshake = onimm.svg.append("svg:defs")
 			.append("svg:marker")
-				.attr("id", "handshake").attr("markerWidth", 64).attr("markerHeight", 49)
+				.attr("id", "handshake").attr("markerWidth", 0.125*onimm.vars.width).attr("markerHeight", 0.125*onimm.vars.height)
 				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
 
 		// The path is handmade and constructed empirically
@@ -84,7 +88,7 @@ function Onimm(id, met_id, data_uri, historic) {
 		// coordination mid bonds for coordination bonds (the central jobs coordinate them)
 		onimm.marker_coordinated = onimm.svg.append("svg:defs")
 			.append("svg:marker")
-				.attr("id", "coordinated").attr("markerWidth", 64).attr("markerHeight", 49)
+				.attr("id", "coordinated").attr("markerWidth", 0.125*onimm.vars.width).attr("markerHeight", 0.125*onimm.vars.height)
 				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
 
 		onimm.marker_coordinated.append("svg:path")
@@ -95,7 +99,7 @@ function Onimm(id, met_id, data_uri, historic) {
 		// coordination mid bonds for coordination bonds (the central jobs coordinate them)
 		onimm.marker_coordination = onimm.svg.append("svg:defs")
 			.append("svg:marker")
-				.attr("id", "coordination").attr("markerWidth", 64).attr("markerHeight", 49)
+				.attr("id", "coordination").attr("markerWidth", 0.125*onimm.vars.width).attr("markerHeight", 0.125*onimm.vars.height)
 				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
 
 		onimm.marker_coordination.append("svg:path")
@@ -243,7 +247,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			// DEBUG : the d.MET_ID is not useful for production
 			onimm.jobs_text = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "jobs-text-foreignObject")
-				.attr("width", 150)
+				.attr("width", 0.165*onimm.vars.width)
 				//.attr("height", 100)
 				.attr("x", function(d,i) {
 					return d.x = onimm.vars.x_coordinates[i] - 3*onimm.vars.radius;
@@ -280,7 +284,7 @@ function Onimm(id, met_id, data_uri, historic) {
 					return onimm.vars.y_coordinates[i] - onimm.vars.radius;
 				})
 				.append("xhtml:body").attr("class", "bubble-body")
-					.html("<img class='bubble' src='./img/bubble.png'>");
+					.html("<img class='bubble' src='./img/bubble-flat.png'>");
 
 			onimm.bubble.data(onimm.vars.data);
 
@@ -292,7 +296,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			onimm.init_bonds(onimm.vars.data);
 
 			d3.select(".bubble-body")
-				.html("<img class='bubble-info-icon' src='./img/bubble-info.png'>");
+				.html("<img class='bubble-info-icon' src='./img/bubble-info-flat.png'>");
 
 			// Set legend again when clicking on help
 			d3.select(".bubble-info-icon").on("dblclick", function(d,i) {});
@@ -551,10 +555,10 @@ function Onimm(id, met_id, data_uri, historic) {
 		}
 	};
 
-	// TODO Drag and Drop modale window
 	onimm.dragged_modale = function(d) {
 		var moveX = d3.event.x - onimm.vars.half_width;
-		d3.select('.info-job-container').attr("transform","translate("+ moveX +","+ d3.event.y+")");
+		var moveY = d3.event.y - 0.5*onimm.vars.half_height;
+		d3.select('.info-job-container').attr("transform","translate("+ moveX +","+ moveY+")");
 	};
 
 	onimm.dragended = function(d) {
@@ -576,10 +580,10 @@ function Onimm(id, met_id, data_uri, historic) {
 				});
 
 
-		$(".legend-body, .legend-div").width(1.4*d3.select(".legend-foreignObject").attr("width"));
-		$(".legend-body, .legend-div").height(1.4*d3.select(".legend-foreignObject").attr("height"));
+		$(".legend-body, .legend-div").width(1*d3.select(".legend-foreignObject").attr("width"));
+		$(".legend-body, .legend-div").height(1*d3.select(".legend-foreignObject").attr("height"));
 
-		onimm.legend_image = onimm.createForeignObject(onimm.container_legend, "legend-image", 30, 30, 0.87*onimm.vars.width, 16.5);
+		onimm.legend_image = onimm.createForeignObject(onimm.container_legend, "legend-image", 0.05*onimm.vars.width, 0.05*onimm.vars.width, 0.87*onimm.vars.width, 0.0275*onimm.vars.height);
 		onimm.createImg(onimm.legend_image, "legend-image", "./img/legend-icon.png");
 
 		onimm.legend_1 = onimm.container_legend.append("svg:line")
@@ -593,8 +597,8 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.legend_1_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "legend-text-foreignObject")
-			.attr("width", 120)
-			.attr("height", 100)
+			.attr("width", 0.15*onimm.vars.width)
+			.attr("height", 0.15*onimm.vars.height)
 			.attr("x", 0.83*onimm.vars.width)
 			.attr("y", 0.16*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "legend-text-body")
@@ -620,8 +624,8 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.legend_2_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "legend-text-foreignObject")
-			.attr("width", 120)
-			.attr("height", 100)
+			.attr("width", 0.15*onimm.vars.width)
+			.attr("height", 0.15*onimm.vars.height)
 			.attr("x", 0.83*onimm.vars.width)
 			.attr("y", 0.32*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "legend-text-body")
@@ -631,8 +635,8 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.legend_3_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "legend-instructions-foreignObject")
-			.attr("width", 120)
-			.attr("height", 125)
+			.attr("width", 0.15*onimm.vars.width)
+			.attr("height", 0.21*onimm.vars.height)
 			.attr("x", 0.81*onimm.vars.width)
 			.attr("y", 0.40*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "legend-instructions-body")
@@ -642,7 +646,7 @@ function Onimm(id, met_id, data_uri, historic) {
 						+"<p class='legend-instructions'>Cliquez sur les autres noeuds pour naviguer vers eux.</p>";
 				});
 
-		onimm.legend_leave = onimm.createForeignObject(onimm.container_legend, "legend-close", 30, 30, onimm.vars.width-40, 0);
+		onimm.legend_leave = onimm.createForeignObject(onimm.container_legend, "legend-close", 0.05*onimm.vars.width, 0.05*onimm.vars.width, onimm.vars.width-40, 0);
 		onimm.createImg(onimm.legend_leave, "legend-close-icon", "./img/close-icon.png");
 
 		onimm.legend_leave.on("click", function(d) {
@@ -656,14 +660,14 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("transform", "translate(-150,0)")
 			.attr("class", "historic-container");
 
-		onimm.historic_image = onimm.createForeignObject(onimm.container_historic, "historic-image", 30, 30, 0.21*onimm.vars.width, 10);
-		onimm.createImg(onimm.historic_image, "historic-icon", "./img/historic-icon.png");
+		onimm.historic_image = onimm.createForeignObject(onimm.container_historic, "historic-image", 0.05*onimm.vars.width, 0.05*onimm.vars.width, 0.21*onimm.vars.width, 0.0175*onimm.vars.height);
+		onimm.createImg(onimm.historic_image, "historic-image", "./img/historic-icon.png");
 
 		onimm.historic_title = onimm.container_historic.append("svg:foreignObject")
 			.attr("class", "historic-title-foreignObject")
-			.attr("width", 120)
-			.attr("height", 100)
-			.attr("x", 0.25*onimm.vars.width)
+			.attr("width", 0.15*onimm.vars.width)
+			.attr("height", 0.15*onimm.vars.height)
+			.attr("x", 0.24*onimm.vars.width)
 			.attr("y", 0.001*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "historic-title-body")
 				.html(function(d,i) {
@@ -685,8 +689,8 @@ function Onimm(id, met_id, data_uri, historic) {
 		onimm.help_legend_container = onimm.svg.append("svg:g").attr("class", "help");
 		onimm.help_legend = onimm.help_legend_container.append("svg:foreignObject")
 			.attr("class", "help-text-foreignObject")
-			.attr("width", 50)
-			.attr("height", 50)
+			.attr("width", 0.05175*onimm.vars.width)
+			.attr("height", 0.085*onimm.vars.height)
 			.attr("x", 0.90*onimm.vars.width)
 			.attr("y", 0.05*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "help-text-body")
@@ -705,9 +709,9 @@ function Onimm(id, met_id, data_uri, historic) {
 		onimm.historic_helper_container = onimm.svg.append("svg:g").attr("id", "g-historic-text");
 		onimm.historic_helper = onimm.historic_helper_container.append("svg:foreignObject")
 			.attr("class", "historic-text-foreignObject")
-			.attr("width", 100)
-			.attr("height", 50)
-			.attr("x", 20)
+			.attr("width", 0.05175*onimm.vars.width)
+			.attr("height", 0.085*onimm.vars.height)
+			.attr("x", 0.025*onimm.vars.width)
 			.attr("y", 0.05*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "historic-text-body")
 				.html(function(d,i) {
@@ -758,13 +762,13 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.text_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
 			.attr("class", "hist-nodes-foreignObject")
-			.attr("width", 160)
-			.attr("height", 80)
+			.attr("width", 0.2*onimm.vars.width)
+			.attr("height", 0.13*onimm.vars.height)
 			.attr("x", function(d,i) {
-				return 170;
+				return 0.21*onimm.vars.width;
 			})
 			.attr("y", function(d,i) {
-				return 10 + 1.5*onimm.vars.historic[i]["y"];
+				return 0.0165*onimm.vars.height + 1.5*onimm.vars.historic[i]["y"];
 			})
 			.attr("met_domaine", function(d,i) {
 				return onimm.vars.historic[i]["met_domaine"];
@@ -799,16 +803,16 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.bubble_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
 			.attr("class", "hist-bubble-foreignObject")
-			.attr("width", onimm.vars.radius)
-			.attr("height", onimm.vars.radius)
+			.attr("width", 1.2*onimm.vars.radius)
+			.attr("height", 1.2*onimm.vars.radius)
 			.attr("x", function(d,i) {
-				return 170;
+				return 0.211*onimm.vars.width;
 			})
 			.attr("y", function(d,i) {
-				return 20 + 1.5*onimm.vars.historic[i]["y"];
+				return 0.032*onimm.vars.height + 1.5*onimm.vars.historic[i]["y"];
 			})
 			.append("xhtml:body").attr("class", "hist-bubble-body")
-				.html("<img class='hist-bubble' src='./img/bubble-hist.png'>");
+				.html("<img class='hist-bubble' src='./img/bubble-hist-flat.png'>");
 
 		// Set bold style for the current jobs/nodes we are displaying at the center
 		d3.selectAll(".hist-nodes-body").each(function(d,i) {
@@ -879,14 +883,14 @@ function Onimm(id, met_id, data_uri, historic) {
 			if (data[i].MET_DOMAINE["#text"] === data[i].Thesaurus.CSTM_T.record[j].DKEY["#text"]) {
 				onimm.info_job = onimm.svg.append("svg:g").attr("class","info-job-container").append("svg:foreignObject");
 
-				d3.select(".info-job-container").attr("transform", "translate("+0+","+onimm.vars.half_height+")");
+				d3.select(".info-job-container").attr("transform", "translate("+0+","+0.5*onimm.vars.half_height+")");
 
 				onimm.info_job.transition()
 					.duration(1000).ease('linear')
 					.attr("class","info-job-foreignObject")
 					.attr("width", 500).attr("height", 280)
-					.attr("x", 50)
-					.attr("y", -150);
+					.attr("x", 0.0625*onimm.vars.width)
+					.attr("y", -0,25*onimm.vars.height);
 
 				onimm.info_job
 					.append("xhtml:body").attr("class", "info-job-body")
@@ -1182,8 +1186,8 @@ function Onimm(id, met_id, data_uri, historic) {
 				met_domaine : e.MET_DOMAINE["#text"],
 				stroke_color :  onimm.init_color_node(e),
 				stroke_colors : onimm.vars.stroke_color,
-				x : 20,
-				y : 20 + 30*onimm.vars.historic.length
+				x : 0.025*onimm.vars.width,
+				y : 0.0333*onimm.vars.height + 30*onimm.vars.historic.length
 			};
 
 			onimm.vars.historic.push(node_hist);
@@ -1233,10 +1237,10 @@ function Onimm(id, met_id, data_uri, historic) {
 			onimm.text_other_jobs = onimm.other_jobs.append("svg:foreignObject").data(data);
 			onimm.text_other_jobs
 				.attr("class", "other-jobs-text-foreignObject")
-				.attr("width", 160)
-				.attr("height", 80)
+				.attr("width", 0.2*onimm.vars.width)
+				.attr("height", 0.13333*onimm.vars.height)
 				.attr("x", function(d,i) {
-					return -40 + onimm.x_coordinates_other_jobs(d,i);
+					return -0.05*onimm.vars.width + onimm.x_coordinates_other_jobs(d,i);
 				})
 				.attr("y", function(d,i) {
 					return onimm.y_coordinates_other_jobs(d,i);
@@ -1251,13 +1255,13 @@ function Onimm(id, met_id, data_uri, historic) {
 				.attr("width", onimm.vars.radius)
 				.attr("height", onimm.vars.radius)
 				.attr("x", function(d,i) {
-					return -10 + onimm.x_coordinates_other_jobs(d,i);
+					return -0.0125*onimm.vars.width + onimm.x_coordinates_other_jobs(d,i);
 				})
 				.attr("y", function(d,i) {
-					return -10 + onimm.y_coordinates_other_jobs(d,i);
+					return -0.016666*onimm.vars.height + onimm.y_coordinates_other_jobs(d,i);
 				})
 				.append("xhtml:body").attr("class", "other-jobs-bubble-body")
-					.html("<img class='other-jobs-bubble' src='./img/bubble-hist.png'>");
+					.html("<img class='other-jobs-bubble' src='./img/bubble-hist-flat.png'>");
 
 			$(".other-jobs-bubble").on("click", function() {
 				$(".other-jobs-text").fadeIn(800, function() {
@@ -1272,7 +1276,6 @@ function Onimm(id, met_id, data_uri, historic) {
 				d3.selectAll(".other-jobs-text")
 					.style("display", function(e,j) {
 						if (i==j) {
-							console.log(i+"   "+j)
 							return "block";
 						}
 						else return "none";

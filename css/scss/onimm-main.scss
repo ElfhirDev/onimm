@@ -33,9 +33,9 @@
 					.bubble-body {
 						.bubble {
 							position: relative;
-							margin:-8px 0 0 -8px;
-							width:40px;
-							height:40px;
+							margin:-7px 0 0 -7px;
+							width:38px;
+							height:38px;
 						}
 
 						.bubble-info-icon {
@@ -176,9 +176,9 @@
 					.hist-bubble-body {
 						.hist-bubble {
 							position: relative;
-							margin: -40px 0 6px -8px;
-							width:20px;
-							height:20px;
+							margin: -40px 0 0 -6.5px;
+							width:19px;
+							height:19px;
 						}
 					}
 				}
@@ -216,7 +216,9 @@
 							margin:0;
 						.other-jobs-bubble {
 							position: relative;
-							margin: 0;
+							margin: 0.8px 0 0 1.5px;
+							width:18px;
+							height:18px;
 						}
 					}
 				}
