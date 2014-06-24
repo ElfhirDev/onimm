@@ -79,7 +79,8 @@ $color_other_jobs_text: rgba(0,0,0,0.9);
 
 					cursor: text;
 
-					background-color: #fff;
+
+					background-color: rgba(255,255,255,0.6);
 
 					-webkit-box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
 				     		box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
@@ -105,14 +106,32 @@ $color_other_jobs_text: rgba(0,0,0,0.9);
 						font-weight: bolder;
 						font-size: 8px;
 					}
-					.info-close-icon {
-						cursor: default;
+					.info-close {
+						.info-close-icon {
+							cursor: default;
+							&:hover {
+								width:35px;
+							}
+						}
 					}
 				}
 			}
 		}
 
 		.legend-container {
+
+			.legend-foreignObject {
+				.legend-body {
+					.legend-div {
+						background-color: rgba(255,255,255,0.7);
+						-webkit-box-shadow: inset 0 0 5px 5px #FFF;
+								box-shadow: inset 0 0 5px 5px #FFF;
+						-webkit-border-radius: 15px 15px 15px 15px;
+								border-radius: 15px 15px 15px 15px;
+					}
+				}
+			}
+
 			.legend-image-foreignObject {
 				.legend-image-body {
 					.legend-image {
@@ -240,6 +259,31 @@ $color_other_jobs_text: rgba(0,0,0,0.9);
 					}
 				}
 				
+			}
+		}
+
+		.info-job-container {
+
+			.info-job-foreignObject {
+
+				.info-job-body {
+
+					.info-job {
+						cursor:move;
+
+						.info-job-title {
+
+						}
+
+						.info-job-text {
+
+						}
+
+						.info-close-icon {
+
+						}
+					}
+				}
 			}
 		}
 	}

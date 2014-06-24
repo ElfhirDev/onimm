@@ -551,10 +551,10 @@ function Onimm(id, met_id, data_uri, historic) {
 		}
 	};
 
+	// TODO Drag and Drop modale window
 	onimm.dragged_modale = function(d) {
-		d3.select('.info-job-foreignObject')
-			.attr("x", d3.event.x -100)
-			.attr("y", d3.event.y -180);
+		var moveX = d3.event.x - onimm.vars.half_width;
+		d3.select('.info-job-container').attr("transform","translate("+ moveX +","+ d3.event.y+")");
 	};
 
 	onimm.dragended = function(d) {
@@ -565,12 +565,19 @@ function Onimm(id, met_id, data_uri, historic) {
 		onimm.container_legend = onimm.svg.append("svg:g")
 			.attr("class","legend-container");
 
-		onimm.rect_legend = onimm.container_legend.append("svg:rect")
+		onimm.rect_legend = onimm.container_legend.append("svg:foreignObject").attr("class","legend-foreignObject")
 			.attr("x", 0.80*onimm.vars.width)
 			.attr("y", 0.05*onimm.vars.half_height)
 			.attr("width", 0.17*onimm.vars.width)
 			.attr("height", 0.37*onimm.vars.height)
-			.style("fill", "rgba(255,255,255,1)");
+			.append("xhtml:body").attr("class", "legend-body")
+				.html(function(d,i) {
+					return "<div class='legend-div'></div>";
+				});
+
+
+		$(".legend-body, .legend-div").width(1.4*d3.select(".legend-foreignObject").attr("width"));
+		$(".legend-body, .legend-div").height(1.4*d3.select(".legend-foreignObject").attr("height"));
 
 		onimm.legend_image = onimm.createForeignObject(onimm.container_legend, "legend-image", 30, 30, 0.87*onimm.vars.width, 16.5);
 		onimm.createImg(onimm.legend_image, "legend-image", "./img/legend-icon.png");
@@ -685,7 +692,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			.append("xhtml:body").attr("class", "help-text-body")
 				.html(function(d,i) {
 					return "<p class='help-text-legend'>Aide</p>";
-				});	
+				});
 
 		// Set legend again when clicking on help
 		onimm.help_legend.on("click", function(d) {
@@ -843,19 +850,25 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		d3.select(".bubble-info-icon").on("click", function() {});
 
-		onimm.container.transition()
-			.duration(750)
-			.attr("transform","translate(80,300)");
+		// onimm.container.transition()
+		// 	.duration(750)
+		// 	.attr("transform","translate(80,300)");
 
-		onimm.bond_container.transition()
-			.duration(750)
-			.attr("transform","translate(80,300)");
+		// onimm.bond_container.transition()
+		// 	.duration(750)
+		// 	.attr("transform","translate(80,300)");
 
 		d3.selectAll(".historic-container").transition().duration(200)
 			.style("opacity", 0);
 
 		d3.selectAll(".other-jobs-container").transition().duration(200)
 			.style("opacity", 0);
+
+		d3.selectAll(".jobs-container").transition().duration(200)
+			.style("opacity", 0.5);
+
+		d3.selectAll(".bonds-container").transition().duration(200)
+			.style("opacity", 0.5);
 
 		// Add marker on coordinated and coordination path
 		d3.selectAll(".coordination").attr("marker-end", "url(#coordination)");
@@ -864,12 +877,14 @@ function Onimm(id, met_id, data_uri, historic) {
 		var content = "";
 		for (var j = 0, l = data[i].Thesaurus.CSTM_T.record.length; j<l; j++) {
 			if (data[i].MET_DOMAINE["#text"] === data[i].Thesaurus.CSTM_T.record[j].DKEY["#text"]) {
-				onimm.info_job = onimm.container.append("svg:foreignObject");
+				onimm.info_job = onimm.svg.append("svg:g").attr("class","info-job-container").append("svg:foreignObject");
+
+				d3.select(".info-job-container").attr("transform", "translate("+0+","+onimm.vars.half_height+")");
 
 				onimm.info_job.transition()
 					.duration(1000).ease('linear')
 					.attr("class","info-job-foreignObject")
-					.attr("width", 500).attr("height", 400)
+					.attr("width", 500).attr("height", 280)
 					.attr("x", 50)
 					.attr("y", -150);
 
@@ -877,7 +892,7 @@ function Onimm(id, met_id, data_uri, historic) {
 					.append("xhtml:body").attr("class", "info-job-body")
 					.append("div")
 					.attr("class", "info-job")
-					.html("<img class='info-close-icon' src='./img/close-icon.png'>"
+					.html("<div class='info-close'><img class='info-close-icon' src='./img/close-icon.png'></div>"
 						+"<p class='info-job-title'>Informations</p>"
 						+"<p class='info-job-text'>Métier ayant une "+data[i].Thesaurus.CSTM_T.record[j].CSLABELFLD["#text"]+".</p>");
 			}
@@ -920,20 +935,39 @@ function Onimm(id, met_id, data_uri, historic) {
 			+"<p class='info-job-more'>Cliquez ici pour "
 			+"<a target='_blank' href='http://www.onisep.fr/http/redirection/metier/identifiant/"+data[i].MET_ID['#text']+"'>en savoir plus</a></p>");
 
-		// +"<img class='bubble-triangle-icon' src='./img/bubble-triangle.png'>");
-		
-		d3.select(".info-close-icon").on("dblclick", function() {});
+		d3.selectAll(".info-job-foreignObject")
+			.attr("height", 0.1*$(".info-job").outerHeight());
 
-		d3.select(".info-close-icon").on("click", function() {
-			d3.select(".info-job-foreignObject").remove();
+		d3.select(".info-close").on("dblclick", function() {});
 
-			onimm.container.transition()
-				.duration(750)
-				.attr("transform","translate(400,300)");
+		d3.select(".info-close").on("click", function() {
+			onimm.close_modale_window();
+		});
 
-			onimm.bond_container.transition()
-				.duration(750)
-				.attr("transform","translate(400,300)");
+		d3.select(".bubble-info-icon").on("dblclick", function() {});
+
+		d3.select(".bubble-info-icon").on("click", function() {
+			onimm.close_modale_window();
+		});
+
+		onimm.vars.drag_modale = d3.behavior.drag()
+			.on("dragstart", onimm.dragstarted)
+			.on("drag", onimm.dragged_modale)
+			.on("dragend", onimm.dragended);
+
+		d3.select(".info-job-container").call(onimm.vars.drag_modale);
+
+	};
+
+	onimm.close_modale_window = function() {
+		d3.select(".info-job-container").remove();
+
+			d3.selectAll(".jobs-container").transition().duration(200)
+				.style("opacity", 1);
+
+			d3.selectAll(".bonds-container").transition().duration(200)
+				.style("opacity", 1);
+
 
 			d3.selectAll(".historic-container").transition().duration(400)
 				.style("opacity", 1);
@@ -948,22 +982,8 @@ function Onimm(id, met_id, data_uri, historic) {
 				onimm.display_info_job(d, i, onimm.vars.data);
 			});
 
-		});
-
-		onimm.vars.drag_modale = d3.behavior.drag()
-			.on("dragstart", onimm.dragstarted)
-			.on("drag", onimm.dragged_modale)
-			.on("dragend", onimm.dragended);
-
-		d3.select(".info-job-foreignObject").call(onimm.vars.drag_modale);
-
 	};
 
-	onimm.hide_info_hover_node = function(d,i) {
-		d3.selectAll(".info-hover-foreignObject").remove();
-	}
-
-	
 	/**
 	 * Initiate the jobs position with coordinates from polar
 	 * @param  {integer} i zero-based index of element

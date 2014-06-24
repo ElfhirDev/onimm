@@ -72,15 +72,32 @@
 					.info-job-more {
 
 					}
-					.info-close-icon {
+					.info-close {
 						position: relative;
-						margin: -15px 0 0 96%;
+						margin: -30px 0 0 96%;
+						padding: 2px;
+						width: 50px;
+						height: 50px;
+						.info-close-icon {
+							position: relative;
+							margin: 5px;
+						}
 					}
 				}
 			}
 		}
 
 		.legend-container {
+
+			.legend-foreignObject {
+				.legend-body {
+					.legend-div {
+						position: relative;
+						margin: -10px;		
+					}
+				}
+			}
+
 			.legend-image-foreignObject {
 				.legend-image-body {
 					margin: 0;
