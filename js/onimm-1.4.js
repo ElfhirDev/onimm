@@ -1,8 +1,8 @@
 /**
- * 2014 © Onisep - tous droits réservés - version 1.3
+ * 2014 © Onisep - tous droits réservés - version 1.4
  * 
- * Created by <jta@onisep.fr> 2014-04-14 (2014-06-17 for version 1.3)
- * Last update on 2014-06-24 by <jta@onisep.fr>
+ * Created by <jta@onisep.fr> 2014-04-14 (2014-06-25 for version 1.4)
+ * Last update on 2014-06-26 by <jta@onisep.fr>
  *
  * Script aiming to render the mind map for a job
  *
