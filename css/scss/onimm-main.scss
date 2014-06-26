@@ -31,18 +31,15 @@
 				}
 				.bubble-foreignObject {
 					.bubble-body {
+						margin: 0;
 						.bubble {
 							position: relative;
-							margin:-7px 0 0 -7px;
-							width:38px;
-							height:38px;
+							width: 100%;
 						}
 
 						.bubble-info-icon {
 							position: relative;
-							margin:-8px 0 0 -8px;
-							width:60px;
-							height:60px;
+							width: 100%;
 						}
 					}
 				}
@@ -174,11 +171,9 @@
 
 				.hist-bubble-foreignObject {
 					.hist-bubble-body {
+						margin:0;
 						.hist-bubble {
 							position: relative;
-							margin: -40px 0 0 -6.5px;
-							width:19px;
-							height:19px;
 						}
 					}
 				}

@@ -12,7 +12,7 @@
 
 "use strict";
 
-function Onimm(id, met_id, data_uri, historic) {
+function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 
 	// internal object
 	var onimm = {};
@@ -20,6 +20,7 @@ function Onimm(id, met_id, data_uri, historic) {
 	// TODO : rassembler ici des settings
 	onimm.vars = {
 		id : "#"+id,
+		is_mind_map_embed : is_mind_map_embed,
 		data_uri : data_uri,
 		used_data: [],
 		unused_data: [],
@@ -27,11 +28,14 @@ function Onimm(id, met_id, data_uri, historic) {
 		y_coordinates : [],
 		xCentral: 0,
 		yCentral: 0,
-		width : 800,
+		width : 600,
 		half_width : 400,
-		height : 600,
+		height : 400,
 		half_height : 300,
-		radius: 20,
+		radius_job: 15,
+		radius_info_job: 25,
+		radius_hist_job: 10,
+		radius_other_job: 5,
 		coordination_color: "#C9D800",
 		collaboration_color: "#558DB4",
 		coordinated: {},
@@ -52,7 +56,10 @@ function Onimm(id, met_id, data_uri, historic) {
 		stroke_colors : []
 	};
 
-	onimm.vars.radius = 0.025*onimm.vars.width;
+	onimm.vars.radius_job = 0.0375*onimm.vars.width;
+	onimm.vars.radius_info_job = 0.0625*onimm.vars.width;
+	onimm.vars.radius_hist_job = 0.025*onimm.vars.width;
+	onimm.vars.radius_other_job = 0.0125*onimm.vars.width;
 	onimm.vars.half_height = 0.5*onimm.vars.height;
 	onimm.vars.half_width = 0.5*onimm.vars.width;
 
@@ -73,17 +80,6 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("class", id + "-svg");
 
 		/* ---- Define markers for design the bonds ---- */
-		// handshake mid bonds for collaboration bonds
-		onimm.marker_handshake = onimm.svg.append("svg:defs")
-			.append("svg:marker")
-				.attr("id", "handshake").attr("markerWidth", 0.125*onimm.vars.width).attr("markerHeight", 0.125*onimm.vars.height)
-				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
-
-		// The path is handmade and constructed empirically
-		onimm.marker_handshake.append("svg:path")
-			.attr("d", "M-19,2 -19,-2 -18.5,-2 -18.5,2 Z M-8,2 -8,-2 -7.5,-2 -7.5,2 Z M -8.9,1.4 -13,2.5 -13,2.2 -11.5,2 -12,-1 -15,0 -13,-2.5 -9,-1 Z M -17.5,2 -17.0,2.3 -13,1.4 -13.1,0.7 -16.4,1.0 -16.4,0 -14.3,-2.6 -16,-2.4 -17.6,-1.1 Z")
-			.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:0.5px")
-			.attr("transform", "translate(-20,0) scale(0.4)");
 
 		// coordination mid bonds for coordination bonds (the central jobs coordinate them)
 		onimm.marker_coordinated = onimm.svg.append("svg:defs")
@@ -92,9 +88,9 @@ function Onimm(id, met_id, data_uri, historic) {
 				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
 
 		onimm.marker_coordinated.append("svg:path")
-			.attr("d", "M -15,5 -15,-5 -21,0 Z")
+			.attr("d", "M -18,5 -18,-5 -23,0 Z")
 			.attr("style", "fill:"+onimm.vars.coordination_color+"; stroke:"+onimm.vars.coordination_color+"; stroke-width:0.5px")
-			.attr("transform", "translate(-20,0) scale(0.4)");
+			.attr("transform", "translate(-10,0) scale(0.4)");
 
 		// coordination mid bonds for coordination bonds (the central jobs coordinate them)
 		onimm.marker_coordination = onimm.svg.append("svg:defs")
@@ -103,9 +99,9 @@ function Onimm(id, met_id, data_uri, historic) {
 				.attr("refx", 0).attr("refy", 0).attr("orient", "auto").attr("style","overflow:visible");
 
 		onimm.marker_coordination.append("svg:path")
-			.attr("d", "M -15,5 -15,-5 -9,0 Z")
+			.attr("d", "M -18,5 -18,-5 -12,0 Z")
 			.attr("style", "fill:"+onimm.vars.coordination_color+"; stroke:"+onimm.vars.coordination_color+"; stroke-width:0.5px")
-			.attr("transform", "translate(-20,0) scale(0.4)");
+			.attr("transform", "translate(-10,0) scale(0.4)");
 
 		// Create sub-container of Bond(s), James Bond
 		onimm.bond_container = onimm.svg.append("g")
@@ -221,7 +217,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			onimm.circles = onimm.jobs.append("svg:circle")
 				.attr("class", "jobs-circle")
-				.attr("r", onimm.vars.radius)
+				.attr("r", onimm.vars.radius_job)
 				.attr("cx", function(d,i) {
 					onimm.vars.x_coordinates.push(onimm.init_x_coordinates(d,i));
 					return d.x = onimm.init_x_coordinates(d,i);
@@ -234,7 +230,7 @@ function Onimm(id, met_id, data_uri, historic) {
 					onimm.vars.csKeyFld.push(d.MET_DOMAINE["#text"]);
 					return d.MET_DOMAINE["#text"];
 				})
-				.style("stroke", function(d,i) {
+				.style("fill", function(d,i) {
 					onimm.vars.stroke_colors.push(onimm.init_color_node(d));
 					return onimm.init_color_node(d);
 				})
@@ -247,21 +243,23 @@ function Onimm(id, met_id, data_uri, historic) {
 			// DEBUG : the d.MET_ID is not useful for production
 			onimm.jobs_text = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "jobs-text-foreignObject")
-				.attr("width", 0.165*onimm.vars.width)
+				.attr("width", 0.215*onimm.vars.width)
 				//.attr("height", 100)
 				.attr("x", function(d,i) {
-					return d.x = onimm.vars.x_coordinates[i] - 3*onimm.vars.radius;
+					return d.x = onimm.vars.x_coordinates[i] - 3*onimm.vars.radius_job;
 				})
 				.attr("y", function(d,i) {
 					if (i==0) {
-						return d.y = onimm.vars.y_coordinates[i] + 1.2*onimm.vars.radius;
+						return d.y = onimm.vars.y_coordinates[i] + 1.2*onimm.vars.radius_job;
 					}
-					else return d.y = onimm.vars.y_coordinates[i] + 0.6*onimm.vars.radius;
+					else return d.y = onimm.vars.y_coordinates[i] + 0.6*onimm.vars.radius_job;
 				})
 				.append("xhtml:body").attr("class", "jobs-text-body")
 					.html(function(d,i) {
 						return "<p class='jobs-text'>"+d.CSLABELFLD["#text"]+"</p>";
 					});
+
+				d3.selectAll(".jobs-text").style("font-size", 0.018*onimm.vars.width+"px");
 
 			// Set jobs-text-foreignObject height to be what we need, not more nor less
 			var jobs_text_height = [];
@@ -275,13 +273,13 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			onimm.bubble = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "bubble-foreignObject")
-				.attr("width", 2*onimm.vars.radius)
-				.attr("height", 2*onimm.vars.radius)
+				.attr("width", 2*onimm.vars.radius_job)
+				.attr("height", 2*onimm.vars.radius_job)
 				.attr("x", function(d,i) {
-					return onimm.vars.x_coordinates[i] - onimm.vars.radius;
+					return onimm.vars.x_coordinates[i] - onimm.vars.radius_job;
 				})
 				.attr("y", function(d,i) {
-					return onimm.vars.y_coordinates[i] - onimm.vars.radius;
+					return onimm.vars.y_coordinates[i] - onimm.vars.radius_job;
 				})
 				.append("xhtml:body").attr("class", "bubble-body")
 					.html("<img class='bubble' src='./img/bubble-flat.png'>");
@@ -312,6 +310,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 			onimm.bubble.on("dblclick", function(d,i) {});
 			onimm.bubble.on("click", function(d,i) {
+				console.log(d);
 				onimm.move_to_node(d,i,onimm.vars.data);
 			});
 
@@ -517,11 +516,11 @@ function Onimm(id, met_id, data_uri, historic) {
 		d3.select(this).select('.jobs-circle').attr("cx", d3.event.x ).attr("cy", d3.event.y);
 		//d3.select(this).attr("transform", "translate("+ d3.event.x +","+ d3.event.y +")");
 		d3.select(this).select('.jobs-text-foreignObject')
-			.attr("x", d3.event.x - 3*onimm.vars.radius)
-			.attr("y", d3.event.y + 0.6*onimm.vars.radius)
+			.attr("x", d3.event.x - 3*onimm.vars.radius_job)
+			.attr("y", d3.event.y + 0.6*onimm.vars.radius_job)
 			.on("mousedown", function() { d3.event.stopPropagation(); });
 		d3.select(this).select('.bubble-foreignObject')
-			.attr("x", d3.event.x - onimm.vars.radius).attr("y", d3.event.y - onimm.vars.radius)
+			.attr("x", d3.event.x - onimm.vars.radius_job).attr("y", d3.event.y - onimm.vars.radius_job)
 
 		d.x = d3.event.x;
 		d.y = d3.event.y;
@@ -538,9 +537,9 @@ function Onimm(id, met_id, data_uri, historic) {
 				}
 			}
 			d3.select(this).select('.bubble-foreignObject')
-				.attr("x", d3.event.x - 10 - onimm.vars.radius).attr("y", d3.event.y - 10 - onimm.vars.radius);
+				.attr("x", d3.event.x - 10 - onimm.vars.radius_job).attr("y", d3.event.y - 10 - onimm.vars.radius_job);
 			d3.select(this).select('.jobs-text-foreignObject')
-				.attr("y", d3.event.y + 10 +onimm.vars.radius);
+				.attr("y", d3.event.y + 10 +onimm.vars.radius_job);
 
 		}
 		else {
@@ -588,7 +587,7 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.legend_1 = onimm.container_legend.append("svg:line")
 			.attr("class", function(d,i) {return "bond"})
-			.attr("x1", 0.805*onimm.vars.width)
+			.attr("x1", 0.81*onimm.vars.width)
 			.attr("y1", 0.20*onimm.vars.half_height)
 			.attr("x2", 0.84*onimm.vars.width)
 			.attr("y2", 0.20*onimm.vars.half_height)
@@ -600,34 +599,32 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("width", 0.15*onimm.vars.width)
 			.attr("height", 0.15*onimm.vars.height)
 			.attr("x", 0.83*onimm.vars.width)
-			.attr("y", 0.16*onimm.vars.half_height)
+			.attr("y", 0.17*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "legend-text-body")
 				.html(function(d,i) {
-					return "<p class='legend-text'>Coordination</p>";
+					return "<p class='legend-text'>Coordonne</p>";
 				});
+
+		onimm.marker_coordinated_legend = onimm.container_legend.append("svg:path")
+			.attr("d", "M -18,5 -18,-5 -23,0 Z")
+			.attr("style", "fill:"+onimm.vars.coordination_color+"; stroke:"+onimm.vars.coordination_color+"; stroke-width:0.5px");
+
+		onimm.marker_coordinated_legend.attr("transform", "scale(1.3) translate("+1.3*onimm.vars.half_width+","+0.077*onimm.vars.height+")");
 
 		onimm.legend_2 = onimm.container_legend.append("svg:line")
 			.attr("class", function(d,i) {return "bond"})
-			.attr("x2", 0.80*onimm.vars.width)
-			.attr("y2", 0.35*onimm.vars.half_height)
-			.attr("x1", 0.82*onimm.vars.width)
+			.attr("x1", 0.81*onimm.vars.width)
 			.attr("y1", 0.35*onimm.vars.half_height)
+			.attr("x2", 0.84*onimm.vars.width)
+			.attr("y2", 0.35*onimm.vars.half_height)
 			.attr("stroke-width","5").attr("stroke", onimm.vars.collaboration_color).attr("stroke-dasharray", "5,3");
-
-		// onimm.legend_2.attr("marker-end", "url(#handshake)");
-
-		onimm.marker_handshake_legend = onimm.container_legend.append("svg:path")
-			.attr("d", "M-19,2 -19,-2 -18.5,-2 -18.5,2 Z M-8,2 -8,-2 -7.5,-2 -7.5,2 Z M -8.9,1.4 -13,2.5 -13,2.2 -11.5,2 -12,-1 -15,0 -13,-2.5 -9,-1 Z M -17.5,2 -17.0,2.3 -13,1.4 -13.1,0.7 -16.4,1.0 -16.4,0 -14.3,-2.6 -16,-2.4 -17.6,-1.1 Z")
-			.attr("style", "fill:"+onimm.vars.collaboration_color+"; stroke:"+onimm.vars.collaboration_color+"; stroke-width:0.5px");
-
-		onimm.marker_handshake_legend.attr("transform", "scale(1.3) translate("+1.32*onimm.vars.half_width+","+0.135*onimm.vars.height+")");
 
 		onimm.legend_2_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "legend-text-foreignObject")
 			.attr("width", 0.15*onimm.vars.width)
 			.attr("height", 0.15*onimm.vars.height)
 			.attr("x", 0.83*onimm.vars.width)
-			.attr("y", 0.32*onimm.vars.half_height)
+			.attr("y", 0.325*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "legend-text-body")
 				.html(function(d,i) {
 					return "<p class='legend-text'>Collaboration</p>";
@@ -649,6 +646,8 @@ function Onimm(id, met_id, data_uri, historic) {
 		onimm.legend_leave = onimm.createForeignObject(onimm.container_legend, "legend-close", 0.05*onimm.vars.width, 0.05*onimm.vars.width, onimm.vars.width-40, 0);
 		onimm.createImg(onimm.legend_leave, "legend-close-icon", "./img/close-icon.png");
 
+		d3.selectAll(".legend-text, .legend-instructions").style("font-size", 0.018*onimm.vars.width+"px");
+
 		onimm.legend_leave.on("click", function(d) {
 			onimm.close_legend();
 			onimm.set_legend_helper();
@@ -657,18 +656,18 @@ function Onimm(id, met_id, data_uri, historic) {
 
 	onimm.set_historic = function() {
 		onimm.container_historic = onimm.svg.append("svg:g")
-			.attr("transform", "translate(-150,0)")
+			.attr("transform", "translate("+-0.25*onimm.vars.width+",0)")
 			.attr("class", "historic-container");
 
-		onimm.historic_image = onimm.createForeignObject(onimm.container_historic, "historic-image", 0.05*onimm.vars.width, 0.05*onimm.vars.width, 0.21*onimm.vars.width, 0.0175*onimm.vars.height);
+		onimm.historic_image = onimm.createForeignObject(onimm.container_historic, "historic-image", 0.05*onimm.vars.width, 0.05*onimm.vars.width, 0.28*onimm.vars.width, 0.0175*onimm.vars.height);
 		onimm.createImg(onimm.historic_image, "historic-image", "./img/historic-icon.png");
 
 		onimm.historic_title = onimm.container_historic.append("svg:foreignObject")
 			.attr("class", "historic-title-foreignObject")
 			.attr("width", 0.15*onimm.vars.width)
 			.attr("height", 0.15*onimm.vars.height)
-			.attr("x", 0.24*onimm.vars.width)
-			.attr("y", 0.001*onimm.vars.half_height)
+			.attr("x", 0.33*onimm.vars.width)
+			.attr("y", -0.02*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "historic-title-body")
 				.html(function(d,i) {
 					return "<p class='historic-title'>Historique</p>";
@@ -743,12 +742,12 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		onimm.hist_nodes.append("svg:circle")
 			.attr("class", "hist-circle")
-			.attr("r", 0.5*onimm.vars.radius)
+			.attr("r", 0.5*onimm.vars.radius_hist_job)
 			.attr("cx", function(d,i) {
-				return 180;
+				return 0.3*onimm.vars.width;
 			})
 			.attr("cy", function(d,i) {
-				return 30 + 1.5*onimm.vars.historic[i]["y"];
+				return 0.05*onimm.vars.height + 1.5*onimm.vars.historic[i]["y"];
 			})
 			.attr("met_domaine", function(d,i) {
 				return onimm.vars.historic[i]["met_domaine"];
@@ -756,7 +755,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("met_id", function(d,i) {
 				return onimm.vars.historic[i]["met_id"];
 			})
-			.style("stroke", function(d,i) {
+			.style("fill", function(d,i) {
 				return onimm.vars.historic[i]["stroke_color"];
 			});
 
@@ -765,7 +764,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			.attr("width", 0.2*onimm.vars.width)
 			.attr("height", 0.13*onimm.vars.height)
 			.attr("x", function(d,i) {
-				return 0.21*onimm.vars.width;
+				return 0.29*onimm.vars.width;
 			})
 			.attr("y", function(d,i) {
 				return 0.0165*onimm.vars.height + 1.5*onimm.vars.historic[i]["y"];
@@ -781,6 +780,8 @@ function Onimm(id, met_id, data_uri, historic) {
 					return "<div class='hist-nodes-div'>"
 					+"<p class='hist-nodes-text'>"+d.name+"</p>";
 				});
+
+		d3.selectAll(".hist-nodes-text").style("font-size", 0.018*onimm.vars.width+"px");
 
 		// Set hist-nodes-foreignObject height to be what we need, not more nor less
 		var hist_nodes_text_height = [];
@@ -801,18 +802,18 @@ function Onimm(id, met_id, data_uri, historic) {
 				});
 		});
 
-		onimm.bubble_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
-			.attr("class", "hist-bubble-foreignObject")
-			.attr("width", 1.2*onimm.vars.radius)
-			.attr("height", 1.2*onimm.vars.radius)
-			.attr("x", function(d,i) {
-				return 0.211*onimm.vars.width;
-			})
-			.attr("y", function(d,i) {
-				return 0.032*onimm.vars.height + 1.5*onimm.vars.historic[i]["y"];
-			})
-			.append("xhtml:body").attr("class", "hist-bubble-body")
-				.html("<img class='hist-bubble' src='./img/bubble-hist-flat.png'>");
+		// onimm.bubble_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
+		// 	.attr("class", "hist-bubble-foreignObject")
+		// 	.attr("width", 1*onimm.vars.radius_hist_job)
+		// 	.attr("height", 1*onimm.vars.radius_hist_job)
+		// 	.attr("x", function(d,i) {
+		// 		return 0.3333*onimm.vars.width;
+		// 	})
+		// 	.attr("y", function(d,i) {
+		// 		return 0.0322*onimm.vars.height + 1.5*onimm.vars.historic[i]["y"];
+		// 	})
+		// 	.append("xhtml:body").attr("class", "hist-bubble-body")
+		// 		.html("<img class='hist-bubble' src='./img/bubble-hist-flat.png'>");
 
 		// Set bold style for the current jobs/nodes we are displaying at the center
 		d3.selectAll(".hist-nodes-body").each(function(d,i) {
@@ -838,7 +839,7 @@ function Onimm(id, met_id, data_uri, historic) {
 			// Change node with historic
 			$(".onimm-svg").fadeOut(1000, function() {
 				$(".onimm-svg").remove();
-				Onimm("onimm", d.met_id, "./data/carte_heuristique.xml", onimm.vars.historic);
+				Onimm("onimm", d.met_id, "./data/carte_heuristique.xml", onimm.vars.historic, onimm.vars.is_mind_map_embed);
 			});
 		});
 
@@ -873,10 +874,6 @@ function Onimm(id, met_id, data_uri, historic) {
 
 		d3.selectAll(".bonds-container").transition().duration(200)
 			.style("opacity", 0.5);
-
-		// Add marker on coordinated and coordination path
-		d3.selectAll(".coordination").attr("marker-end", "url(#coordination)");
-		d3.selectAll(".coordinated").attr("marker-end", "url(#coordinated)");
 
 		var content = "";
 		for (var j = 0, l = data[i].Thesaurus.CSTM_T.record.length; j<l; j++) {
@@ -979,9 +976,6 @@ function Onimm(id, met_id, data_uri, historic) {
 			d3.selectAll(".other-jobs-container").transition().duration(400)
 				.style("opacity", 1);
 
-			d3.selectAll(".coordination").attr("marker-end", "");
-			d3.selectAll(".coordinated").attr("marker-end", "");
-
 			d3.select(".bubble-info-icon").on("click", function(d,i) {
 				onimm.display_info_job(d, i, onimm.vars.data);
 			});
@@ -1031,10 +1025,10 @@ function Onimm(id, met_id, data_uri, historic) {
 	 * an arc.
 	 */
 	onimm.x_coordinates_other_jobs = function(d,i) {
-		return (20*onimm.vars.radius)*Math.cos((i+4)*(2*Math.PI/3)/(onimm.vars.unused_data.length));
+		return (20*onimm.vars.radius_other_job)*Math.cos((i+4)*(2*Math.PI/3)/(onimm.vars.unused_data.length));
 	};
 	onimm.y_coordinates_other_jobs = function(d,i) {
-		return (14*onimm.vars.radius)*Math.sin((i+4)*(2*Math.PI/3)/(onimm.vars.unused_data.length));
+		return (14*onimm.vars.radius_other_job)*Math.sin((i+4)*(2*Math.PI/3)/(onimm.vars.unused_data.length));
 	};
 
 	/** 
@@ -1069,7 +1063,7 @@ function Onimm(id, met_id, data_uri, historic) {
 				onimm.vars.collaboration = data[a].Liens_metiers_collabore;
 
 				// The circle must be a little bit larger
-				d3.select(".jobs-circle").attr("r", onimm.vars.radius+10);
+				d3.select(".jobs-circle").attr("r", onimm.vars.radius_job+10);
 				onimm.jobs.attr("class", function(d,i) { 
 					if (i==0) {
 						return "is-active-jobs is-draggable jobs";
@@ -1080,22 +1074,22 @@ function Onimm(id, met_id, data_uri, historic) {
 				d3.select(".bubble-foreignObject")
 					.attr('width', function(d,i) {
 						if (i==0) {
-							return 2*onimm.vars.radius+20;
+							return 2*onimm.vars.radius_job+20;
 						}
 					})
 					.attr('height', function(d,i) {
 						if (i==0) {
-							return 2*onimm.vars.radius+20;
+							return 2*onimm.vars.radius_job+20;
 						}
 					})
 					.attr('x', function(d,i) {
 						if (i==0) {
-							return -onimm.vars.radius-10;
+							return -onimm.vars.radius_job-10;
 						}
 					})
 					.attr('y', function(d,i) {
 						if (i==0) {
-							return -onimm.vars.radius-10;
+							return -onimm.vars.radius_job-10;
 						}
 					});
 			}
@@ -1110,7 +1104,8 @@ function Onimm(id, met_id, data_uri, historic) {
 						for (var j = 0, l = onimm.vars.coordinated.METIER.record.length; j<l ; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.coordinated.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
-									.attr("stroke-dasharray", "5,17");
+									.attr("stroke-dasharray", "5,17")
+									.attr("marker-end", "url(#coordination)");
 
 								onimm.bonds[b].attr("class","is-active-bond coordination");
 							}
@@ -1119,7 +1114,8 @@ function Onimm(id, met_id, data_uri, historic) {
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.coordinated.METIER.record.MET_MET_ID['#text']) {
 							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
-								.attr("stroke-dasharray", "5,17");
+								.attr("stroke-dasharray", "5,17")
+								.attr("marker-end", "url(#coordination)");
 
 							onimm.bonds[b].attr("class","is-active-bond coordination");
 						}
@@ -1131,7 +1127,8 @@ function Onimm(id, met_id, data_uri, historic) {
 						for (var j = 0, l = onimm.vars.is_coordinated.METIER.record.length; j<l; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
-									.attr("stroke-dasharray", "5,17");
+									.attr("stroke-dasharray", "5,17")
+									.attr("marker-end", "url(#coordinated)");
 
 								onimm.bonds[b].attr("class","is-active-bond coordinated");
 							}
@@ -1140,7 +1137,8 @@ function Onimm(id, met_id, data_uri, historic) {
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.is_coordinated.METIER.record.MET_MET_ID['#text']) {
 							onimm.bonds[b].attr("stroke", onimm.vars.coordination_color)
-								.attr("stroke-dasharray", "5,17");
+								.attr("stroke-dasharray", "5,17")
+								.attr("marker-end", "url(#coordinated)");
 
 							onimm.bonds[b].attr("class","is-active-bond coordinated");
 						}
@@ -1152,16 +1150,14 @@ function Onimm(id, met_id, data_uri, historic) {
 						for (var j = 0, l = onimm.vars.collaboration.METIER.record.length; j<l; j++) {
 							if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record[j].MET_MET_ID['#text']) {
 								onimm.bonds[b].attr("stroke", onimm.vars.collaboration_color)
-								.attr("stroke-dasharray", "5,17")
-								.attr("marker-end", "url(#handshake)");
+								.attr("stroke-dasharray", "5,17");
 							}
 						}
 					}
 					else {
 						if (data[b].MET_ID["#text"] == onimm.vars.collaboration.METIER.record.MET_MET_ID['#text']) {
 							onimm.bonds[b].attr("stroke", onimm.vars.collaboration_color)
-							.attr("stroke-dasharray", "5,17")
-							.attr("marker-end", "url(#handshake)");
+							.attr("stroke-dasharray", "5,17");
 						}
 					}
 				}
@@ -1203,86 +1199,76 @@ function Onimm(id, met_id, data_uri, historic) {
 			// Change node with historic
 			$(".onimm-svg").fadeOut(1000, function() {
 				$(".onimm-svg").remove();
-				Onimm("onimm", e.MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic);
+				Onimm("onimm", e.MET_ID["#text"], "./data/carte_heuristique.xml", onimm.vars.historic, onimm.vars.is_mind_map_embed);
 			});
 		}
 	};
 
 	onimm.other_jobs = function(data) {
 
-		onimm.container_other_jobs = onimm.svg.append("svg:g")
-			.attr("transform", "translate(" + onimm.vars.half_width + "," + onimm.vars.half_height + ")")
-			.attr("class", "other-jobs-container");
+		if (onimm.vars.is_mind_map_embed == false) {
+			onimm.container_other_jobs = onimm.svg.append("svg:g")
+				.attr("transform", "translate(" + onimm.vars.half_width + "," + onimm.vars.half_height + ")")
+				.attr("class", "other-jobs-container");
 
-		onimm.other_jobs = onimm.container_other_jobs.selectAll(".other-jobs")
-			.data(data);
+			onimm.other_jobs = onimm.container_other_jobs.selectAll(".other-jobs")
+				.data(data);
 
-		onimm.other_jobs = onimm.other_jobs.enter().append("svg:g")
-			.classed("other-jobs", function(d) {return d;})
-			.attr("other_jobs", function(d,i) {return i;});
+			onimm.other_jobs = onimm.other_jobs.enter().append("svg:g")
+				.classed("other-jobs", function(d) {return d;})
+				.attr("other_jobs", function(d,i) {return i;});
 
-		onimm.other_jobs.append("svg:circle")
-			.attr("class", "other-jobs-circle")
-			.attr("r", 0.50*onimm.vars.radius)
-			.attr("cx", function(d,i) {
-				return onimm.x_coordinates_other_jobs(d,i);
-			})
-			.attr("cy", function(d,i) {
-				return onimm.y_coordinates_other_jobs(d,i);
-			})
-			.style("stroke", function(d,i) {
-				return "rgba(0,0,0,0.6)";
-			});
-
-			onimm.text_other_jobs = onimm.other_jobs.append("svg:foreignObject").data(data);
-			onimm.text_other_jobs
-				.attr("class", "other-jobs-text-foreignObject")
-				.attr("width", 0.2*onimm.vars.width)
-				.attr("height", 0.13333*onimm.vars.height)
-				.attr("x", function(d,i) {
-					return -0.05*onimm.vars.width + onimm.x_coordinates_other_jobs(d,i);
+			onimm.circle_other_jobs = onimm.other_jobs.append("svg:circle")
+				.attr("class", "other-jobs-circle")
+				.attr("r", 0.50*onimm.vars.radius_other_job)
+				.attr("cx", function(d,i) {
+					return onimm.x_coordinates_other_jobs(d,i);
 				})
-				.attr("y", function(d,i) {
+				.attr("cy", function(d,i) {
 					return onimm.y_coordinates_other_jobs(d,i);
 				})
-				.append("xhtml:body").attr("class", "other-jobs-text-body")
-					.html(function(d,i) {
-						return "<p class='other-jobs-text'>"+d.CSLABELFLD["#text"]+"</p>";
-					});
-
-			onimm.bubble_other_jobs = onimm.other_jobs.append("svg:foreignObject")
-				.attr("class", "other-jobs-bubble-foreignObject")
-				.attr("width", onimm.vars.radius)
-				.attr("height", onimm.vars.radius)
-				.attr("x", function(d,i) {
-					return -0.0125*onimm.vars.width + onimm.x_coordinates_other_jobs(d,i);
-				})
-				.attr("y", function(d,i) {
-					return -0.016666*onimm.vars.height + onimm.y_coordinates_other_jobs(d,i);
-				})
-				.append("xhtml:body").attr("class", "other-jobs-bubble-body")
-					.html("<img class='other-jobs-bubble' src='./img/bubble-hist-flat.png'>");
-
-			$(".other-jobs-bubble").on("click", function() {
-				$(".other-jobs-text").fadeIn(800, function() {
-					$(".other-jobs-text").fadeOut(2800, function() {
-					
-					});
+				.style("stroke", function(d,i) {
+					return "rgba(0,0,0,0.6)";
 				});
-			});
 
-			onimm.other_jobs.on("click", function(d,i) {
-					
-				d3.selectAll(".other-jobs-text")
-					.style("display", function(e,j) {
-						if (i==j) {
-							return "block";
-						}
-						else return "none";
-					});
-			});
+			onimm.circle_other_jobs.selectAll('.other-jobs-circle')
+				.data(data)
 
-		$('.other-jobs-container').insertBefore('.bonds-container');
+				onimm.text_other_jobs = onimm.other_jobs.append("svg:foreignObject").data(data);
+				onimm.text_other_jobs
+					.attr("class", "other-jobs-text-foreignObject")
+					.attr("width", 0.25*onimm.vars.width)
+					.attr("height", 0.13333*onimm.vars.height)
+					.attr("x", function(d,i) {
+						return -0.55*onimm.vars.width + onimm.x_coordinates_other_jobs(d,i);
+					})
+					.attr("y", function(d,i) {
+						return onimm.y_coordinates_other_jobs(d,i);
+					})
+					.append("xhtml:body").attr("class", "other-jobs-text-body")
+						.html(function(d,i) {
+							return "<p class='other-jobs-text'>"+d.CSLABELFLD["#text"]+"</p>";
+						});
+
+				onimm.bubble_other_jobs = onimm.other_jobs.append("svg:foreignObject")
+					.attr("class", "other-jobs-bubble-foreignObject")
+					.attr("width", onimm.vars.radius_other_job)
+					.attr("height", onimm.vars.radius_other_job)
+					.attr("x", function(d,i) {
+						return -0.0125*onimm.vars.width + onimm.x_coordinates_other_jobs(d,i);
+					})
+					.attr("y", function(d,i) {
+						return -0.016666*onimm.vars.height + onimm.y_coordinates_other_jobs(d,i);
+					})
+					.append("xhtml:body").attr("class", "other-jobs-bubble-body")
+						.html("<img class='other-jobs-bubble' src='./img/bubble-hist-flat.png'>");
+
+				onimm.other_jobs.on("click", function(d,i) {
+					onimm.move_to_node(d,i,onimm.vars.unused_data);
+				});
+
+			$('.other-jobs-container').insertBefore('.bonds-container');
+		}
 	};
 
 	onimm.randomInt = function(min, max) {
@@ -1345,6 +1331,8 @@ function Onimm(id, met_id, data_uri, historic) {
 
 	// Let it go, let it go !
 	onimm.init();
+
+	console.log(onimm.vars.is_mind_map_embed);
 
 	return onimm;
 };

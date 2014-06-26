@@ -8,6 +8,7 @@ $orange : #FF400D;
 $blue_text_shadow: #8B87FF;
 $background_color_jobs_circle : #AAA;
 $background_color_other_jobs : rgba(240,240,240,0.7);
+$stroke_color_jobs_circle : #111;
 $color_other_jobs_text: rgba(0,0,0,0.9);
 
 .onimm-container {
@@ -41,7 +42,8 @@ $color_other_jobs_text: rgba(0,0,0,0.9);
 
 				.jobs-circle {
 					fill: $background_color_jobs_circle;
-					stroke-width: 2.5px;
+					stroke: $stroke_color_jobs_circle;
+					stroke-width: 4.5px;
 				}
 
 				.jobs-text-foreignObject{
@@ -193,6 +195,7 @@ $color_other_jobs_text: rgba(0,0,0,0.9);
 				.hist-circle {
 					fill: $background_color_jobs_circle;
 					stroke-width: 2.5px;
+					stroke: $stroke_color_jobs_circle;
 				}
 
 				.hist-nodes-foreignObject {

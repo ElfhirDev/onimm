@@ -29,7 +29,8 @@
         cursor: pointer; }
       .onimm-container .onimm-svg .jobs-container .jobs .jobs-circle {
         fill: #aaaaaa;
-        stroke-width: 2.5px; }
+        stroke: #111111;
+        stroke-width: 4.5px; }
       .onimm-container .onimm-svg .jobs-container .jobs .jobs-text-foreignObject .jobs-text-body {
         background: transparent; }
         .onimm-container .onimm-svg .jobs-container .jobs .jobs-text-foreignObject .jobs-text-body .jobs-text {
@@ -85,7 +86,8 @@
       color: #9D0D15; }
     .onimm-container .onimm-svg .historic-container .hist-nodes .hist-circle {
       fill: #aaaaaa;
-      stroke-width: 2.5px; }
+      stroke-width: 2.5px;
+      stroke: #111111; }
     .onimm-container .onimm-svg .historic-container .hist-nodes .hist-nodes-foreignObject .hist-nodes-body .hist-nodes-div .hist-nodes-text {
       font-size: 0.9em;
       text-shadow: 0 1px 2px #8b87ff; }
