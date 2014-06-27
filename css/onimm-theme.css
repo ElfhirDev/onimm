@@ -78,6 +78,12 @@
       font-size: 0.9em; }
     .onimm-container .onimm-svg .legend-container .legend-close-foreignObject .legend-close-body .legend-close-icon {
       cursor: default; }
+    .onimm-container .onimm-svg .get-historic-container .get-historic-image-foreignObject .get-historic-image-body .get-historic-image {
+      cursor: help; }
+    .onimm-container .onimm-svg .get-historic-container .get-historic-title-foreignObject .get-historic-title-body .get-historic-title {
+      font-weight: bold;
+      font-size: 1.3em;
+      color: #9D0D15; }
     .onimm-container .onimm-svg .historic-container .historic-image-foreignObject .historic-image-body .historic-image {
       cursor: help; }
     .onimm-container .onimm-svg .historic-container .historic-title-foreignObject .historic-title-body .historic-title {

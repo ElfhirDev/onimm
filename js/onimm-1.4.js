@@ -720,7 +720,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 
 	onimm.set_historic = function() {
 		onimm.container_historic = onimm.svg.append("svg:g")
-			.attr("transform", "translate("+-0.25*onimm.vars.width+",0)")
+			.attr("transform", "translate("+-0.5*onimm.vars.width+",0)")
 			.attr("class", "historic-container");
 
 		onimm.historic_image = onimm.createForeignObject(onimm.container_historic, "historic-image", 0.05*onimm.vars.width, 0.05*onimm.vars.width, 0.28*onimm.vars.width, 0.0175*onimm.vars.height);
@@ -737,6 +737,42 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 					return "<p class='historic-title'>Historique</p>";
 				});
 
+		// helper
+		onimm.get_historic = onimm.svg.append("svg:g")
+			.attr("transform", "translate("+-0.25*onimm.vars.width+",0)")
+			.attr("class", "get-historic-container");
+
+		onimm.historic_image = onimm.createForeignObject(onimm.get_historic, "get-historic-image", 0.05*onimm.vars.width, 0.05*onimm.vars.width, 0.28*onimm.vars.width, 0.0175*onimm.vars.height);
+		onimm.createImg(onimm.historic_image, "get-historic-image", "./img/historic-icon.png");
+
+		onimm.get_historic_title = onimm.get_historic.append("svg:foreignObject")
+			.attr("class", "get-historic-title-foreignObject")
+			.attr("width", 0.15*onimm.vars.width)
+			.attr("height", 0.15*onimm.vars.height)
+			.attr("x", 0.33*onimm.vars.width)
+			.attr("y", -0.02*onimm.vars.half_height)
+			.append("xhtml:body").attr("class", "get-historic-title-body")
+				.html(function(d,i) {
+					return "<p class='get-historic-title'>Historique</p>";
+				});
+
+		onimm.get_helper_historic = function() {
+			onimm.container_historic.transition().duration(500).attr("transform", "translate("+-0.25*onimm.vars.width+",0)");
+			onimm.get_historic.transition().duration(500).attr("transform", "translate("+-0.5*onimm.vars.width+",0)");
+
+			onimm.historic_title.on("click", function() {
+				onimm.remove_helper_historic();
+			});
+		};
+
+		onimm.remove_helper_historic = function() {
+			onimm.container_historic.transition().duration(500).attr("transform", "translate("+-0.5*onimm.vars.width+",0)");
+			onimm.get_historic.transition().duration(500).attr("transform", "translate("+-0.25*onimm.vars.width+",0)");
+		};
+
+		onimm.get_historic.on("click", function() {
+			onimm.get_helper_historic();
+		});
 
 	};
 
@@ -748,6 +784,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 		onimm.container_historic.remove();
 	};
 
+	// OLD
 	onimm.set_legend_helper = function() {
 		onimm.help_legend_container = onimm.svg.append("svg:g").attr("class", "help");
 		onimm.help_legend = onimm.help_legend_container.append("svg:foreignObject")
@@ -768,6 +805,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 		});
 	};
 
+	// OLD
 	onimm.set_historic_helper = function() {
 		onimm.historic_helper_container = onimm.svg.append("svg:g").attr("id", "g-historic-text");
 		onimm.historic_helper = onimm.historic_helper_container.append("svg:foreignObject")

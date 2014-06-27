@@ -168,6 +168,30 @@ $color_other_jobs_text: rgba(0,0,0,0.9);
 			}
 		}
 
+		.get-historic-container {
+
+			.get-historic-image-foreignObject {
+
+				.get-historic-image-body {
+					.get-historic-image {
+						cursor:help;
+					}
+
+				}
+
+			}
+
+			.get-historic-title-foreignObject {
+				.get-historic-title-body {
+					.get-historic-title {
+						font-weight: bold;
+						font-size: 1.3em;
+						color: #9D0D15;
+					}
+				}
+			}
+		}
+
 		.historic-container {
 
 			.historic-image-foreignObject {
