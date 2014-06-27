@@ -569,15 +569,14 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 			.attr("class","legend-container");
 
 		onimm.rect_legend = onimm.container_legend.append("svg:foreignObject").attr("class","legend-foreignObject")
-			.attr("x", 0.80*onimm.vars.width)
+			.attr("x", 0.795*onimm.vars.width)
 			.attr("y", 0.05*onimm.vars.half_height)
-			.attr("width", 0.17*onimm.vars.width)
-			.attr("height", 0.37*onimm.vars.height)
+			.attr("width", 0.185*onimm.vars.width)
+			.attr("height", 0.20*onimm.vars.height)
 			.append("xhtml:body").attr("class", "legend-body")
 				.html(function(d,i) {
 					return "<div class='legend-div'></div>";
 				});
-
 
 		$(".legend-body, .legend-div").width(1*d3.select(".legend-foreignObject").attr("width"));
 		$(".legend-body, .legend-div").height(1*d3.select(".legend-foreignObject").attr("height"));
@@ -598,7 +597,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 			.attr("class", "legend-text-foreignObject")
 			.attr("width", 0.15*onimm.vars.width)
 			.attr("height", 0.15*onimm.vars.height)
-			.attr("x", 0.83*onimm.vars.width)
+			.attr("x", 0.825*onimm.vars.width)
 			.attr("y", 0.17*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "legend-text-body")
 				.html(function(d,i) {
@@ -623,7 +622,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 			.attr("class", "legend-text-foreignObject")
 			.attr("width", 0.15*onimm.vars.width)
 			.attr("height", 0.15*onimm.vars.height)
-			.attr("x", 0.83*onimm.vars.width)
+			.attr("x", 0.825*onimm.vars.width)
 			.attr("y", 0.325*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "legend-text-body")
 				.html(function(d,i) {
@@ -633,7 +632,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 		onimm.legend_3_text = onimm.container_legend.append("svg:foreignObject")
 			.attr("class", "legend-instructions-foreignObject")
 			.attr("width", 0.15*onimm.vars.width)
-			.attr("height", 0.21*onimm.vars.height)
+			//.attr("height", 0.21*onimm.vars.height)
 			.attr("x", 0.81*onimm.vars.width)
 			.attr("y", 0.40*onimm.vars.half_height)
 			.append("xhtml:body").attr("class", "legend-instructions-body")
@@ -643,7 +642,72 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 						+"<p class='legend-instructions'>Cliquez sur les autres noeuds pour naviguer vers eux.</p>";
 				});
 
-		onimm.legend_leave = onimm.createForeignObject(onimm.container_legend, "legend-close", 0.05*onimm.vars.width, 0.05*onimm.vars.width, onimm.vars.width-40, 0);
+		onimm.more_legend = onimm.createForeignObject(onimm.container_legend, "legend-more", 0.5*onimm.vars.width, 0.055*onimm.vars.width, 0.795*onimm.vars.width, 0.40*onimm.vars.half_height);
+		onimm.createImg(onimm.more_legend, "legend-more-icon", "./img/legend-more.png");
+
+		d3.select(".legend-more-icon").style("width", 0.15*onimm.vars.width+"px");
+
+		onimm.get_more_legend = function() {
+
+			d3.select(".legend-foreignObject").transition().duration(400).attr("height", 0.5*onimm.vars.height);
+			d3.select(".legend-foreignObject").style("height", 0.5*onimm.vars.height+"px");
+
+			d3.select(".legend-div").transition().duration(400).attr("height", 0.5*onimm.vars.height);
+			d3.select(".legend-div").style("height", 0.5*onimm.vars.height+"px");
+
+			d3.select(".legend-body").transition().duration(500).attr("height", 0.5*onimm.vars.height);
+			d3.select(".legend-body").style("height", 0.5*onimm.vars.height+"px");
+
+			d3.select(".legend-instructions-foreignObject").transition().duration(700).attr("height", 0.28*onimm.vars.height);
+			d3.select(".legend-more-foreignObject").remove();
+
+			window.setTimeout(function() {
+				onimm.less_legend = onimm.createForeignObject(onimm.container_legend, "legend-less", 0.5*onimm.vars.width, 0.055*onimm.vars.width, 0.795*onimm.vars.width, onimm.vars.half_height);
+				onimm.createImg(onimm.less_legend, "legend-less-icon", "./img/legend-less.png");
+
+				d3.select(".legend-less-icon").style("width", 0.15*onimm.vars.width+"px");
+
+				onimm.less_legend.on("click", function(d,i) {
+					onimm.get_less_legend();
+				});
+			}, 500);
+
+		};
+
+		onimm.get_less_legend = function() {
+
+			d3.select(".legend-instructions-foreignObject").transition().duration(400).attr("height", 0*onimm.vars.height);
+			
+
+			d3.select(".legend-foreignObject").transition().duration(800).attr("height", 0.2*onimm.vars.height);
+			d3.select(".legend-foreignObject").style("height", 0.2*onimm.vars.height+"px");
+
+			d3.select(".legend-div").transition().duration(800).attr("height", 0.4*onimm.vars.half_height);
+			d3.select(".legend-div").style("height", 0.4*onimm.vars.half_height+"px");
+
+			d3.select(".legend-body").transition().duration(900).attr("height", 0.4*onimm.vars.half_height);
+			d3.select(".legend-body").style("height", 0.4*onimm.vars.half_height+"px");
+
+			d3.select(".legend-less-foreignObject").remove();
+			window.setTimeout(function() {
+				onimm.more_legend = onimm.createForeignObject(onimm.container_legend, "legend-more", 0.5*onimm.vars.width, 0.055*onimm.vars.width, 0.795*onimm.vars.width, 0.40*onimm.vars.half_height);
+				onimm.createImg(onimm.more_legend, "legend-more-icon", "./img/legend-more.png");
+
+				d3.select(".legend-more-icon").style("width", 0.15*onimm.vars.width+"px");
+
+				onimm.more_legend.on("click", function(d,i) {
+					onimm.get_more_legend();
+				});
+
+			}, 600);
+
+		};
+
+		onimm.more_legend.on("click", function(d,i) {
+			onimm.get_more_legend();
+		});
+
+		onimm.legend_leave = onimm.createForeignObject(onimm.container_legend, "legend-close", 0.05*onimm.vars.width, 0.05*onimm.vars.width, 0.95*onimm.vars.width, 0);
 		onimm.createImg(onimm.legend_leave, "legend-close-icon", "./img/close-icon.png");
 
 		d3.selectAll(".legend-text, .legend-instructions").style("font-size", 0.018*onimm.vars.width+"px");
