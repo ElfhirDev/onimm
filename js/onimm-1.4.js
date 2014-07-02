@@ -63,6 +63,13 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 	onimm.vars.half_height = 0.5*onimm.vars.height;
 	onimm.vars.half_width = 0.5*onimm.vars.width;
 
+	if (onimm.vars.is_mind_map_embed === false) {
+		onimm.vars.height = $(window).height();
+		onimm.vars.width = $(document).width();
+		onimm.vars.half_height = 0.5*onimm.vars.height;
+		onimm.vars.half_width = 0.5*onimm.vars.width;
+	}
+
 	/**
 	 * create svg elements, load data from xml, start all listener
 	 */
@@ -112,6 +119,14 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 		onimm.container = onimm.svg.append("g")
 			.attr("transform", "translate(" + onimm.vars.half_width + "," + onimm.vars.half_height + ")")
 			.attr("class", "jobs-container");
+
+		// TODO : Cross-Origin Request http://www-dev.onisep.fr/webtv/video_metier_diplome.xml
+		d3.xml("./data/video_metier_diplome.xml", "application/xml", function(error, xml) {
+			// DEBUG of D3 when import data
+			if (error) return console.warn(error);
+			
+			onimm.vars.video_data = xml.activeElement.children;
+		});
 
 		// Load our resources
 		d3.xml(data_uri, "application/xml", function(error, xml) {
@@ -259,7 +274,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 						return "<p class='jobs-text'>"+d.CSLABELFLD["#text"]+"</p>";
 					});
 
-				d3.selectAll(".jobs-text").style("font-size", 0.018*onimm.vars.width+"px");
+				d3.selectAll(".jobs-text").style("font-size", 0.014*onimm.vars.width+"px");
 
 			// Set jobs-text-foreignObject height to be what we need, not more nor less
 			var jobs_text_height = [];
@@ -269,7 +284,6 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 			d3.selectAll(".jobs-text-foreignObject").attr("height", function(d,i) {
 				return jobs_text_height[i];
 			});
-
 
 			onimm.bubble = onimm.jobs.append("svg:foreignObject")
 				.attr("class", "bubble-foreignObject")
@@ -302,6 +316,56 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 				onimm.display_info_job(d, i, onimm.vars.data);
 			});
 
+			// INDEPENDANT
+			if (onimm.vars.is_mind_map_embed === false) {
+				// Play button for displaying video
+				onimm.play_video_button = onimm.createForeignObject(onimm.container, "play-video-button", 0.01875*onimm.vars.width, 0.01875*onimm.vars.width, -2*onimm.vars.radius_info_job, -1.3*onimm.vars.radius_info_job);
+				onimm.createImg(onimm.play_video_button, "play-video-button-image", "./img/play-icon.png");
+
+				// Button for text content
+				onimm.text_content_button = onimm.createForeignObject(onimm.container, "text-content-button", 0.01875*onimm.vars.width, 0.01875*onimm.vars.width, 1.5*onimm.vars.radius_info_job, -1.3*onimm.vars.radius_info_job);
+				onimm.createImg(onimm.text_content_button, "text-content-button-image", "./img/text-icon.png");
+
+				// Button displaying icon for "special statut" as Indépendant, Intermittent, Libéral, Artisan ...
+				onimm.special_statut_button = onimm.createForeignObject(onimm.container, "special-statut", 0.01875*onimm.vars.width, 0.01875*onimm.vars.width, -0.4*onimm.vars.radius_info_job, -2*onimm.vars.radius_info_job);
+				onimm.createImg(onimm.special_statut_button, "special-statut-button-image", "./img/special-statut-icon.png");
+
+
+				for (var i = 0, l = onimm.vars.data[0].Thesaurus.CSTM_T.record.length; i<l; i++) {
+
+					if ("100215" != onimm.vars.data[0].MET_CATEGORIE_SOCIO_PRO["#text"]) {
+						d3.select(".special-statut-button-image").style("display", "block");
+						break;
+					}
+				}
+
+				for (var i = 0, l = onimm.vars.video_data.length; i<l; i++) {
+
+					// If a video exist for the central job
+					if (onimm.vars.video_data[i].attributes[0].value == onimm.vars.data[0].MET_ID["#text"]) {
+						d3.select(".play-video-button-image").style("display", "block");
+						break;
+					}
+					else {
+						d3.select(".play-video-button-image").style("display", "none");
+					}
+				}
+
+				onimm.play_video_button.on("click", function() {
+					onimm.display_video(0, onimm.vars.data);
+				});
+
+				onimm.text_content_button.on("click", function(d) {
+					onimm.display_info_job(d, 0, onimm.vars.data);
+				});
+
+				onimm.special_statut_button.on("click", function() {
+					//onimm.display_statut(0, onimm.vars.data);
+					onimm.display_info_job(1, 0, onimm.vars.data);
+				});
+
+			}
+
 			// Prevent dblclick event
 			// onimm.jobs.on("dblclick", function(d,i) {});
 			// onimm.jobs.on("click", function(d,i) {
@@ -310,7 +374,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 
 			onimm.bubble.on("dblclick", function(d,i) {});
 			onimm.bubble.on("click", function(d,i) {
-				console.log(d);
+				//console.log(d);
 				onimm.move_to_node(d,i,onimm.vars.data);
 			});
 
@@ -904,19 +968,6 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 				});
 		});
 
-		// onimm.bubble_hist_nodes = onimm.hist_nodes.append("svg:foreignObject")
-		// 	.attr("class", "hist-bubble-foreignObject")
-		// 	.attr("width", 1*onimm.vars.radius_hist_job)
-		// 	.attr("height", 1*onimm.vars.radius_hist_job)
-		// 	.attr("x", function(d,i) {
-		// 		return 0.3333*onimm.vars.width;
-		// 	})
-		// 	.attr("y", function(d,i) {
-		// 		return 0.0322*onimm.vars.height + 1.5*onimm.vars.historic[i]["y"];
-		// 	})
-		// 	.append("xhtml:body").attr("class", "hist-bubble-body")
-		// 		.html("<img class='hist-bubble' src='./img/bubble-hist-flat.png'>");
-
 		// Set bold style for the current jobs/nodes we are displaying at the center
 		d3.selectAll(".hist-nodes-body").each(function(d,i) {
 			if (d.met_id == met_id) {
@@ -957,14 +1008,6 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 
 		d3.select(".bubble-info-icon").on("click", function() {});
 
-		// onimm.container.transition()
-		// 	.duration(750)
-		// 	.attr("transform","translate(80,300)");
-
-		// onimm.bond_container.transition()
-		// 	.duration(750)
-		// 	.attr("transform","translate(80,300)");
-
 		d3.selectAll(".historic-container").transition().duration(200)
 			.style("opacity", 0);
 
@@ -987,7 +1030,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 				onimm.info_job.transition()
 					.duration(1000).ease('linear')
 					.attr("class","info-job-foreignObject")
-					.attr("width", 500).attr("height", 280)
+					.attr("width", 500).attr("height", 480)
 					.attr("x", 0.0625*onimm.vars.width)
 					.attr("y", -0,25*onimm.vars.height);
 
@@ -1001,12 +1044,96 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 			}
 		}
 
+		if (onimm.vars.is_mind_map_embed == false) {
+			content = d3.select(".info-job").html();
+			d3.select(".info-job").html(content
+					+"<p class='info-job-text'><em>Résumé</em> : ");
+
+			if ($.isArray(data[0].Formats_courts.METIER_FORMAT_COURT.record)) {
+				for (var j = 0, m = data[i].Formats_courts.METIER_FORMAT_COURT.record.length; j<m; j++) {
+					if ($.isArray(data[0].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record)) {
+						for (var k = 0, n = data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.length; k<n; k++) {
+							if ($.isArray(data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record[k].XC_XML.METFOR_DESCRIPTIF.synth.p)) {
+								for (var e = 0, f = data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record[k].XC_XML.METFOR_DESCRIPTIF.synth.p.length; e<f; e++) {
+									content = d3.select(".info-job").html();
+									d3.select(".info-job").html(content
+									+data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record[k].XC_XML.METFOR_DESCRIPTIF.synth.p[e]["#text"] + "  ");
+								}
+							}
+							else {
+								content = d3.select(".info-job").html();
+								d3.select(".info-job").html(content
+								+data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record[k].XC_XML.METFOR_DESCRIPTIF.synth.p["#text"] + "  ");
+							}
+						}
+					}
+					else {
+						
+						if (data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF != undefined) {
+							console.log(j)
+							if ($.isArray(data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p)) {
+								for (var e = 0, f = data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p.length; e<f; e++) {
+									content = d3.select(".info-job").html();
+									d3.select(".info-job").html(content
+									+data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p[e]["#text"] + "  ");
+									
+									console.log("array " + data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p[e]["#text"]);
+								}
+							}
+							else {
+								content = d3.select(".info-job").html();
+								d3.select(".info-job").html(content
+								+data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p["#text"] + "  ");
+								
+								console.log("not array " + data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p["#text"]);
+							}
+						}
+					}
+				}
+			}
+			else {
+				if ($.isArray(data[0].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record)) {
+					for (var k = 0, n = data[i].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record.length; k<n; k++) {
+						if ($.isArray(data[i].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record[k].XC_XML.METFOR_DESCRIPTIF.synth.p)) {
+							for (var e = 0, f = data[i].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record[k].XC_XML.METFOR_DESCRIPTIF.synth.p.length; e<f; e++) {
+								content = d3.select(".info-job").html();
+								d3.select(".info-job").html(content
+								+data[i].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record[k].XC_XML.METFOR_DESCRIPTIF.synth.p[e]["#text"] + "  ");
+							}
+						}
+						else {
+							content = d3.select(".info-job").html();
+							d3.select(".info-job").html(content
+							+data[i].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record[k].XC_XML.METFOR_DESCRIPTIF.synth.p["#text"] + "  ");
+						}
+					}
+				}
+				else {
+					if ($.isArray(data[i].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p)) {
+						for (var e = 0, f = data[i].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p.length; e<f; e++) {
+							content = d3.select(".info-job").html();
+							d3.select(".info-job").html(content
+							+data[i].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p[e]["#text"] + "  ");
+						}
+					}
+					else {
+						content = d3.select(".info-job").html();
+						d3.select(".info-job").html(content
+						+data[i].Formats_courts.METIER_FORMAT_COURT.record.XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p["#text"] + "  ");
+					}
+				}
+			}
+		}
+
+		content = d3.select(".info-job").html();
+			d3.select(".info-job").html(content
+				+"<p class='info-job-text'><em>Statut</em> : ");
 
 		for (var k = 0, m = data[i].Thesaurus.CSTM_T.record.length; k<m; k++) {
-			if (data[i].MET_CATEGORIE_SOCIO_PRO["#text"] === data[i].Thesaurus.CSTM_T.record[k].DKEY["#text"]) {
+			if (data[i].Thesaurus.CSTM_T.record[k].MFR["#text"] == "Statut") {
 				content = d3.select(".info-job").html();
 				d3.select(".info-job").html(content
-					+"<p class='info-job-text'><em>Statut</em> : "+data[i].Thesaurus.CSTM_T.record[k].CSLABELFLD["#text"]+"</p>");
+					+data[i].Thesaurus.CSTM_T.record[k].CSLABELFLD["#text"] + "  ");
 			}
 		}
 
@@ -1025,7 +1152,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 				if (centre_interets[u] == data[i].Thesaurus.CSTM_T.record[v].DKEY["#text"]) {
 					content = d3.select(".info-job-text-interet").html();
 					d3.select(".info-job-text-interet").html(content
-						+data[i].Thesaurus.CSTM_T.record[v].CSLABELFLD["#text"]+" - ");
+						+data[i].Thesaurus.CSTM_T.record[v].CSLABELFLD["#text"]+"  ");
 				}
 			}
 		}
@@ -1081,6 +1208,128 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 			d3.select(".bubble-info-icon").on("click", function(d,i) {
 				onimm.display_info_job(d, i, onimm.vars.data);
 			});
+
+	};
+
+	onimm.display_video = function(i, data) {
+
+		for (var i = 0, l = onimm.vars.video_data.length; i<l; i++) {
+			if (onimm.vars.video_data[i].attributes[0].value == onimm.vars.data[0].MET_ID["#text"]) {
+
+				d3.select(".bubble-info-icon").on("click", function() {});
+
+				d3.selectAll(".historic-container").transition().duration(200)
+					.style("opacity", 0);
+
+				d3.selectAll(".other-jobs-container").transition().duration(200)
+					.style("opacity", 0);
+
+				d3.selectAll(".jobs-container").transition().duration(200)
+					.style("opacity", 0.5);
+
+				d3.selectAll(".bonds-container").transition().duration(200)
+					.style("opacity", 0.5);
+
+				var content = "";
+				
+				onimm.info_job = onimm.svg.append("svg:g").attr("class","info-job-container").append("svg:foreignObject");
+
+				d3.select(".info-job-container").attr("transform", "translate("+0+","+0.5*onimm.vars.half_height+")");
+
+				onimm.info_job.transition()
+					.duration(1000).ease('linear')
+					.attr("class","info-job-foreignObject")
+					.attr("width", 500).attr("height", 500)
+					.attr("x", 0.0625*onimm.vars.width)
+					.attr("y", -0,25*onimm.vars.height);
+
+				onimm.info_job
+					.append("xhtml:body").attr("class", "info-job-body")
+					.append("div")
+					.attr("class", "info-job")
+					.html("<div class='info-close'><img class='info-close-icon' src='./img/close-icon.png'></div>"
+						+onimm.vars.video_data[i].children[0].textContent);
+
+				d3.select(".info-close").on("dblclick", function() {});
+
+				d3.select(".info-close").on("click", function() {
+					onimm.close_modale_window();
+				});
+
+				d3.select(".bubble-info-icon").on("dblclick", function() {});
+
+				d3.select(".bubble-info-icon").on("click", function() {
+					onimm.close_modale_window();
+				});
+
+				onimm.vars.drag_modale = d3.behavior.drag()
+					.on("dragstart", onimm.dragstarted)
+					.on("drag", onimm.dragged_modale)
+					.on("dragend", onimm.dragended);
+
+				d3.select(".info-job-container").call(onimm.vars.drag_modale);
+
+			}
+
+		}
+
+			// code video
+			//console.log(xml.activeElement.children[i].attributes[0].value);
+		
+
+			// For iframe
+			//console.log(xml.activeElement.children[i].children[0].textContent);
+	};
+
+
+	onimm.display_statut = function(i, data) {
+		var content = "";
+
+		onimm.info_job = onimm.svg.append("svg:g").attr("class","info-job-container").append("svg:foreignObject");
+
+		d3.select(".info-job-container").attr("transform", "translate("+0+","+0.5*onimm.vars.half_height+")");
+
+		onimm.info_job.transition()
+			.duration(1000).ease('linear')
+			.attr("class","info-job-foreignObject")
+			.attr("width", 500).attr("height", 280)
+			.attr("x", 0.0625*onimm.vars.width)
+			.attr("y", -0,25*onimm.vars.height);
+
+		onimm.info_job
+			.append("xhtml:body").attr("class", "info-job-body")
+			.append("div")
+			.attr("class", "info-job")
+			.html("<div class='info-close'><img class='info-close-icon' src='./img/close-icon.png'></div>");
+
+
+		for (var k = 0, m = data[i].Thesaurus.CSTM_T.record.length; k<m; k++) {
+			if (data[i].Thesaurus.CSTM_T.record[k].MFR["#text"] == "Statut") {
+
+				content = d3.select(".info-job").html();
+				d3.select(".info-job").html(content
+					+"<p class='info-job-text'><em>Statut</em> : "+data[i].Thesaurus.CSTM_T.record[k].CSLABELFLD["#text"]+"</p>");
+			}
+		}
+
+		d3.select(".info-close").on("dblclick", function() {});
+
+		d3.select(".info-close").on("click", function() {
+			onimm.close_modale_window();
+		});
+
+		d3.select(".bubble-info-icon").on("dblclick", function() {});
+
+		d3.select(".bubble-info-icon").on("click", function() {
+			onimm.close_modale_window();
+		});
+
+		onimm.vars.drag_modale = d3.behavior.drag()
+			.on("dragstart", onimm.dragstarted)
+			.on("drag", onimm.dragged_modale)
+			.on("dragend", onimm.dragended);
+
+		d3.select(".info-job-container").call(onimm.vars.drag_modale);
 
 	};
 
@@ -1433,8 +1682,6 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 
 	// Let it go, let it go !
 	onimm.init();
-
-	console.log(onimm.vars.is_mind_map_embed);
 
 	return onimm;
 };

@@ -2,7 +2,6 @@
 /* Common and useful mixins - last update 18/06/2014 by <jta@onisep.fr> */
 .onimm-container {
   position: relative;
-  margin: auto;
   min-width: 800px;
   width: 800px; }
   .onimm-container .onimm-svg .bonds-container .is-active-node {
