@@ -2,7 +2,7 @@
  * 2014 © Onisep - tous droits réservés - version 1.4
  * 
  * Created by <jta@onisep.fr> 2014-04-14 (2014-06-25 for version 1.4)
- * Last update on 2014-06-26 by <jta@onisep.fr>
+ * Last update on 2014-07-02 by <jta@onisep.fr>
  *
  * Script aiming to render the mind map for a job
  *
@@ -366,15 +366,8 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 
 			}
 
-			// Prevent dblclick event
-			// onimm.jobs.on("dblclick", function(d,i) {});
-			// onimm.jobs.on("click", function(d,i) {
-			// 	onimm.move_to_node(d,i,onimm.vars.data);
-			// });
-
 			onimm.bubble.on("dblclick", function(d,i) {});
 			onimm.bubble.on("click", function(d,i) {
-				//console.log(d);
 				onimm.move_to_node(d,i,onimm.vars.data);
 			});
 
@@ -904,8 +897,6 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 			.classed("hist-nodes", function(d) {return d;})
 			.attr("hist", function(d,i) {return i;});
 
-		//console.dir(onimm.vars.historic);
-
 		onimm.hist_nodes.append("svg:circle")
 			.attr("class", "hist-circle")
 			.attr("r", 0.5*onimm.vars.radius_hist_job)
@@ -977,9 +968,6 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 
 		// Click on historic node will change the central node
 		onimm.hist_nodes.on("click", function(d,i) {
-			
-			//console.dir(d);
-			//console.dir(onimm.vars.data);
 
 			d3.selectAll(".bonds-container").transition().duration(200)
 				.style("opacity", 0);
@@ -1070,22 +1058,17 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 					else {
 						
 						if (data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF != undefined) {
-							console.log(j)
 							if ($.isArray(data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p)) {
 								for (var e = 0, f = data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p.length; e<f; e++) {
 									content = d3.select(".info-job").html();
 									d3.select(".info-job").html(content
 									+data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p[e]["#text"] + "  ");
-									
-									console.log("array " + data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p[e]["#text"]);
 								}
 							}
 							else {
 								content = d3.select(".info-job").html();
 								d3.select(".info-job").html(content
 								+data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p["#text"] + "  ");
-								
-								console.log("not array " + data[i].Formats_courts.METIER_FORMAT_COURT.record[j].XMLCONTENT.record.XC_XML.METFOR_DESCRIPTIF.synth.p["#text"]);
 							}
 						}
 					}
@@ -1270,15 +1253,7 @@ function Onimm(id, met_id, data_uri, historic, is_mind_map_embed) {
 				d3.select(".info-job-container").call(onimm.vars.drag_modale);
 
 			}
-
 		}
-
-			// code video
-			//console.log(xml.activeElement.children[i].attributes[0].value);
-		
-
-			// For iframe
-			//console.log(xml.activeElement.children[i].children[0].textContent);
 	};
 
 
