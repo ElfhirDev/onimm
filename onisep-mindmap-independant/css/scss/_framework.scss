@@ -1,0 +1,39 @@
+/* Common and useful mixins - last update 18/06/2014 by <jta@onisep.fr> */
+
+@mixin font_face($family,$src,$weight: normal,$style: normal) {
+	@font-face {
+		font-family: $family;
+		src: url('#{$src}.eot');
+		src: url('#{$src}.eot?#iefix') format('embedded-opentype'),
+		url('#{$src}.woff') format('woff'),
+		url('#{$src}.ttf') format('truetype'),
+		url('#{$src}.svg##{$family}') format('svg');
+		font-style: $style;
+		font-weight: $weight;
+	}
+}
+
+@mixin onimm_gradient() {
+	background: #ffffff;
+	background: -moz-radial-gradient(center, ellipse cover,  #ffffff 0%, #b8e2f6 88%, #d9edfc 100%);
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#ffffff), color-stop(88%,#b8e2f6), color-stop(100%,#d9edfc));
+	background: -webkit-radial-gradient(center, ellipse cover,  #ffffff 0%,#b8e2f6 88%,#d9edfc 100%);
+	background: -o-radial-gradient(center, ellipse cover,  #ffffff 0%,#b8e2f6 88%,#d9edfc 100%);
+	background: -ms-radial-gradient(center, ellipse cover,  #ffffff 0%,#b8e2f6 88%,#d9edfc 100%);
+	background: radial-gradient(ellipse at center,  #ffffff 0%,#b8e2f6 88%,#d9edfc 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d9edfc',GradientType=1 );
+}
+
+
+
+@mixin rotate( $degrees ) {
+  -webkit-transform: rotate(#{$degrees}deg);
+  -moz-transform: rotate(#{$degrees}deg);
+  -ms-transform: rotate(#{$degrees}deg);
+  -o-transform: rotate(#{$degrees}deg);
+  transform: rotate(#{$degrees}deg);
+
+  filter:  progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=#{cos($degrees)}, M12=-#{sin($degrees)}, M21=#{sin($degrees)}, M22=#{cos($degrees)});
+  -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=#{cos($degrees)}, M12=-#{sin($degrees)}, M21=#{sin($degrees)}, M22=#{cos($degrees)})";
+  zoom: 1;
+ }

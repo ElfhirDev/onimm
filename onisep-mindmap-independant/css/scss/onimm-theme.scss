@@ -1,0 +1,320 @@
+/* theme of onisep mind map - last update 18/06/2014 by <jta@onisep.fr> */
+
+@import "framework";
+
+@include font_face('exoregular','../fonts/exo/exoregular');
+
+$orange : #FF400D;
+$blue_text_shadow: #8B87FF;
+$background_color_jobs_circle : #AAA;
+$background_color_other_jobs : rgb(240,240,240);
+$stroke_color_jobs_circle : #111;
+$color_other_jobs_text: rgba(0,0,0,0.9);
+$color_jobs_text : #000;
+
+.onimm-container {
+	font-family: 'exoregular', Verdana, sans-serif;
+	font-size: 12px;
+
+	.onimm-svg {
+		@include onimm_gradient();
+
+		.bonds-container {
+			.is-active-node {
+				display: none;
+			}
+
+			.bond {
+				fill: none;
+				stroke-linecap: butt;
+			}
+		}
+
+		.jobs-container {
+			.jobs {
+				cursor: move;
+
+				.is-draggable {
+					cursor: pointer;
+				}
+
+				.is-dragging {
+				}
+
+				.jobs-circle {
+					fill: $background_color_jobs_circle;
+					stroke: $stroke_color_jobs_circle;
+					stroke-width: 4.5px;
+				}
+
+				.jobs-text-foreignObject{
+					.jobs-text-body {
+						background: transparent;
+
+						.jobs-text {
+							color: $color_jobs_text;
+							font-size: 1.2em;
+							text-shadow: 0 1px 2px $blue_text_shadow;
+							&::first-letter {
+								text-transform: uppercase;
+							}
+						}
+					}
+				}
+				.bubble-foreignObject {
+
+					.bubble-body {
+						.bubble {
+						}
+						.bubble-info-icon {
+						}
+					}
+				}
+			}
+
+			.is-active-jobs {
+				font-weight: bold;
+				cursor:help;
+			}
+		}
+
+		.info-job-foreignObject {
+			.info-job-body {
+				.info-job {
+
+					cursor: text;
+
+
+					background-color: rgba(255,255,255,0.97);
+
+					-webkit-box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
+				     		box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
+
+					-webkit-border-radius: 10px 10px 10px 10px;
+				    		border-radius: 10px 10px 10px 10px;
+
+					.info-job-title {
+						font-family: Verdana, sans-serif;
+						font-size: 1.2em;
+						color: #0D7B92;
+					}
+					.info-job-text {
+						font-family: Verdana, sans-serif;
+						font-size: 1.1em;
+					}
+					.info-job-text-interet {
+						font-family: Verdana, sans-serif;
+						font-size: 1.1em;
+					}
+					.info-job-more {
+						font-family: Verdana, sans-serif;
+						font-weight: bolder;
+						font-size: 0.9em;
+					}
+					.info-close {
+						.info-close-icon {
+							cursor: default;
+							&:hover {
+								width:3em;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		.legend-container {
+
+			.legend-foreignObject {
+				.legend-body {
+					.legend-div {
+						background-color: rgba(255,255,255,0.7);
+						-webkit-box-shadow: inset 0 0 5px 5px #FFF;
+								box-shadow: inset 0 0 5px 5px #FFF;
+						-webkit-border-radius: 1.2em 1.2em 1.2em 1.2em;
+								border-radius: 1.2em 1.2em 1.2em 1.2em;
+					}
+				}
+			}
+
+			.legend-image-foreignObject {
+				.legend-image-body {
+					.legend-image {
+
+					}
+				}
+			}
+
+			.legend-text-foreignObject {
+				.legend-text-body {
+					.legend-text {
+						font-size: 1.2em;
+					}
+				}
+			}
+
+			.legend-instructions-foreignObject {
+				.legend-instructions-body {
+					.legend-instructions {
+						font-size: 0.9em;
+					}
+				}
+			}
+
+			.legend-close-foreignObject {
+				.legend-close-body {
+					.legend-close-icon {
+						cursor: default;
+					}
+				}
+			}
+		}
+
+		.get-historic-container {
+
+			.get-historic-image-foreignObject {
+
+				.get-historic-image-body {
+					.get-historic-image {
+						cursor:help;
+					}
+
+				}
+
+			}
+
+			.get-historic-title-foreignObject {
+				.get-historic-title-body {
+					.get-historic-title {
+						font-weight: bold;
+						font-size: 1.3em;
+						color: #9D0D15;
+					}
+				}
+			}
+		}
+
+		.historic-container {
+
+			.historic-image-foreignObject {
+
+				.historic-image-body {
+					.historic-image {
+						cursor:help;
+					}
+
+				}
+
+			}
+
+			.historic-title-foreignObject {
+				.historic-title-body {
+					.historic-title {
+						font-weight: bold;
+						font-size: 1.3em;
+						color: #9D0D15;
+					}
+				}
+			}
+
+			.hist-nodes {
+				.hist-circle {
+					fill: $background_color_jobs_circle;
+					stroke-width: 2.5px;
+					stroke: $stroke_color_jobs_circle;
+				}
+
+				.hist-nodes-foreignObject {
+					.hist-nodes-body {
+						.hist-nodes-div {
+							.hist-nodes-text {
+								font-size: 0.9em;
+								text-shadow: 0 1px 2px $blue_text_shadow;
+								&::first-letter {
+									text-transform: uppercase;
+								}
+							}
+						}
+					}
+				}
+
+				.hist-bubble-foreignObject {
+					.hist-bubble-body {
+						.hist-bubble {
+
+						}
+					}
+				}
+
+			}
+		}
+
+		.help {
+			.help-text-foreignObject {
+				.help-text-body {
+					.help-text-legend {
+						cursor:help;
+						color: $orange;
+						&:hover {
+							font-weight: bold;
+						}
+					}
+				}
+			}
+		}
+
+		.other-jobs-container {
+
+			.other-jobs {
+
+				.other-jobs-circle {
+					fill: $background_color_other_jobs;
+					stroke-width: 1.5px;
+				}
+
+				.other-jobs-text-foreignObject {
+					.other-jobs-text-body {
+						.other-jobs-text {
+							color: $color_other_jobs_text;
+							font-size: 0.85em;
+						}
+					}
+				}
+
+				.other-jobs-bubble-foreignObject {
+					.other-jobs-bubble-body {
+						.other-jobs-bubble {
+
+						}
+					}
+				}
+				
+			}
+		}
+
+		.info-job-container {
+
+			.info-job-foreignObject {
+
+				.info-job-body {
+
+					.info-job {
+						cursor:move;
+
+						.info-job-title {
+
+						}
+
+						.info-job-text {
+
+						}
+
+						.info-close-icon {
+
+						}
+					}
+				}
+			}
+		}
+	}
+}

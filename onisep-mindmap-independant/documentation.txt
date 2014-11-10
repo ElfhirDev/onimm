@@ -1,0 +1,79 @@
+Aide pour l'installation
+
+### Script ###
+
+La carte heuristique des métiers independent est prévue pour être insérée dans une fiche métier, d'où son petit format.
+
+Elle s'affiche en plein écran et en version paysage forcée sur tablette.
+La légende est placée en bas.
+Les métiers liés au métier central ont certains de leurs métiers liés affichés.
+
+Elle utilise d3.js :
+
+https://www.dashingd3js.com/table-of-contents
+https://github.com/mbostock/d3/wiki/API-Reference
+
+Les textes proviennent : 
+	- soit du fichier xml fourni par le pôle documentaire : carte_heuristique.xml
+
+	- soit est écrit en dur dans le javascript. J'ai tâché d'utiliser des noms de variables explicites, en anglais,
+	le plus sémantiquement correct possible.
+
+historic, legend, pour l'historique et la légende :
+more_legend pour le bouton plus, hist_nodes pour les noeuds dans l'historique
+
+jobs, pour les noeuds métiers ; circle, bubble pour la décoration
+
+info_job pour la fenêtre modale ...
+
+
+
+### Style ###
+
+J'ai utilisé Sass pour le css : 
+Pour l'installer : http://sass-lang.com/install
+Je me mets dans le terminal au niveau à la racine du dossier css/
+et je démarre le programme sass qui va watcher les changements dans css/scss/ et les mettres dans css/
+Il y a deux fichiers, un de positionnement général, et un de thème.
+La commande pour lancer le programme :
+
+sudo sass --watch css/scss/:css/
+
+
+
+Sinon, on peut toujours éditer directement les fichiers css qui ont été généré, sans passer par Sass (
+ils sont du coup un peu compact, quasi minifier)
+
+
+
+### Hypertext ###
+
+Le fichier index.html a besoin d'appeler les fichiers de style :
+
+<link href="css/onimm-main.css" rel="stylesheet">
+<link href="css/onimm-theme.css" rel="stylesheet">
+
+D'une div sur qui appeler le script : 
+<div id="onimm" class="onimm-container"></div>
+
+
+et des scripts suivants : 
+
+<script src="js/libs/jquery-1.8.2.min.js"></script>
+<script src="js/libs/d3.min.js"></script>
+<script src="js/embed-onimm-1.5.js"></script>
+
+<script>
+
+    // Onisep Mind Mapping
+
+    // Onimm a pour argument : l'id de la div, l'id du métier (voir MET_ID dans carte_heuristique.xml), le fichier xml carte_heuristique.xml
+    // TODO : paramétrer le serveur pour fournir via http le fichier xml
+	var onimm = onimm || {};
+
+	onimm = Onimm("onimm", "100554", "./data/carte_heuristique.xml", []);
+
+</script>
+
+
+Le reste est moins utile et optionnel, indicatif.

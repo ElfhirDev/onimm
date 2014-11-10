@@ -1,0 +1,72 @@
+/* main layout and display of onisep mind map - last update 18/06/2014 by <jta@onisep.fr> */
+/* Common and useful mixins - last update 18/06/2014 by <jta@onisep.fr> */
+.onimm-container {
+  position: relative;
+  width: inherit; }
+  .onimm-container .onimm-svg .bonds-container .is-active-node {
+    display: none; }
+  .onimm-container .onimm-svg .jobs-container .jobs {
+    z-index: 60; }
+    .onimm-container .onimm-svg .jobs-container .jobs .jobs-text-foreignObject .jobs-text-body .jobs-text {
+      margin: 0 10px 0 0;
+      padding: 2px;
+      width: 120px;
+      text-align: center; }
+    .onimm-container .onimm-svg .jobs-container .jobs .bubble-foreignObject .bubble-body {
+      margin: 0; }
+      .onimm-container .onimm-svg .jobs-container .jobs .bubble-foreignObject .bubble-body .bubble {
+        width: 100%; }
+      .onimm-container .onimm-svg .jobs-container .jobs .bubble-foreignObject .bubble-body .bubble-info-icon {
+        width: 100%; }
+  .onimm-container .onimm-svg .info-job-foreignObject {
+    padding: 15px 0 0; }
+    .onimm-container .onimm-svg .info-job-foreignObject .info-job-body {
+      margin: 25px; }
+      .onimm-container .onimm-svg .info-job-foreignObject .info-job-body .info-job {
+        margin: 20px 0 5px 30px;
+        padding: 5px; }
+        .onimm-container .onimm-svg .info-job-foreignObject .info-job-body .info-job .info-job-title {
+          margin: -15px 0 10px;
+          text-align: left; }
+        .onimm-container .onimm-svg .info-job-foreignObject .info-job-body .info-job .info-close {
+          margin: -30px 0 0 96%;
+          padding: 2px;
+          width: 50px;
+          height: 50px; }
+          .onimm-container .onimm-svg .info-job-foreignObject .info-job-body .info-job .info-close .info-close-icon {
+            margin: 5px; }
+  .onimm-container .onimm-svg .legend-container .legend-foreignObject {
+    position: relative;
+    right: 100%; }
+    .onimm-container .onimm-svg .legend-container .legend-foreignObject .legend-body .legend-div {
+      margin: -10px; }
+  .onimm-container .onimm-svg .legend-container .legend-image-foreignObject .legend-image-body {
+    margin: 0; }
+  .onimm-container .onimm-svg .legend-container .legend-text-foreignObject .legend-text-body .legend-text {
+    margin: 0 0 0 12px; }
+  .onimm-container .onimm-svg .legend-container .legend-instructions-foreignObject .legend-instructions-body .legend-instructions {
+    margin: 0 0 0 0; }
+  .onimm-container .onimm-svg .legend-container .legend-close-foreignObject .legend-close-body {
+    margin: 0; }
+  .onimm-container .onimm-svg .get-historic-container .get-historic-image-foreignObject .get-historic-image-body {
+    margin: 0; }
+  .onimm-container .onimm-svg .get-historic-container .get-historic-title-foreignObject .get-historic-title-body .get-historic-title {
+    margin: 15px 0 0; }
+  .onimm-container .onimm-svg .historic-container .historic-image-foreignObject .historic-image-body {
+    margin: 0; }
+  .onimm-container .onimm-svg .historic-container .hist-nodes .hist-nodes-foreignObject .hist-nodes-body .hist-nodes-div {
+    margin: -10px 0 0 25px; }
+  .onimm-container .onimm-svg .historic-container .hist-nodes .hist-bubble-foreignObject .hist-bubble-body {
+    margin: 0; }
+    .onimm-container .onimm-svg .historic-container .hist-nodes .hist-bubble-foreignObject .hist-bubble-body .hist-bubble {
+      position: relative; }
+  .onimm-container .onimm-svg .other-jobs-container .other-jobs {
+    z-index: 50; }
+    .onimm-container .onimm-svg .other-jobs-container .other-jobs .other-jobs-circle {
+      z-index: 40; }
+    .onimm-container .onimm-svg .other-jobs-container .other-jobs .other-jobs-bubble-foreignObject .other-jobs-bubble-body {
+      margin: 0; }
+      .onimm-container .onimm-svg .other-jobs-container .other-jobs .other-jobs-bubble-foreignObject .other-jobs-bubble-body .other-jobs-bubble {
+        margin: 0.8px 0 0 1.5px;
+        width: 18px;
+        height: 18px; }

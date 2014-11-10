@@ -1,0 +1,241 @@
+/* main layout and display of onisep mind map - last update 18/06/2014 by <jta@onisep.fr> */
+
+@import "framework";
+
+.onimm-container {
+	position: relative;
+	width: inherit;
+
+	.onimm-svg {
+
+		.bonds-container {
+			.is-active-node {
+				display: none;
+			}
+		}
+
+		.jobs-container {
+			.jobs {
+				z-index: 60;
+				.jobs-text-foreignObject {
+					.jobs-text-body {
+						.jobs-text {
+							margin: 0 10px 0 0;
+							padding: 2px;
+							width: 120px;
+							text-align: center;
+						}
+					}
+				}
+				.bubble-foreignObject {
+					.bubble-body {
+						margin: 0;
+						.bubble {
+							width: 100%;
+						}
+
+						.bubble-info-icon {
+							width: 100%;
+						}
+					}
+				}
+			}
+
+			.is-active-jobs {
+
+			}
+		}
+
+		.info-job-foreignObject {
+			padding: 15px 0 0;
+			.info-job-body {
+				margin: 25px;
+				.info-job {
+					margin: 20px 0 5px 30px;
+					padding: 5px;
+					.info-job-title {
+						margin: -15px 0 10px;
+						text-align: left;	
+					}
+					.info-job-text {
+
+					}
+					.info-job-text-interet {
+
+					}
+					.info-job-more {
+
+					}
+					.info-close {
+						margin: -30px 0 0 96%;
+						padding: 2px;
+						width: 50px;
+						height: 50px;
+						.info-close-icon {
+							margin: 5px;
+						}
+					}
+				}
+			}
+		}
+
+		.legend-container {
+			.legend-foreignObject {
+				position: relative;
+				right: 100%;
+				.legend-body {
+					.legend-div {
+						margin: -10px;
+					}
+				}
+			}
+
+			.legend-image-foreignObject {
+				.legend-image-body {
+					margin: 0;
+					.legend-image {
+
+					}
+				}
+			}
+
+			.legend-text-foreignObject {
+				.legend-text-body {
+					.legend-text {
+						margin: 0 0 0 12px;
+					}
+				}
+			}
+
+			.legend-instructions-foreignObject {
+				.legend-instructions-body {
+					.legend-instructions{
+						margin: 0 0 0 0;
+					}
+				}
+			}
+
+			.legend-close-foreignObject {
+				.legend-close-body {
+					margin: 0;
+					.legend-close-icon {
+
+					}
+				}
+			}
+		}
+
+		.get-historic-container {
+
+			.get-historic-image-foreignObject {
+				.get-historic-image-body {
+					margin: 0;
+					.get-historic-image {
+
+					}
+
+				}
+
+			}
+
+			.get-historic-title-foreignObject {
+				.get-historic-title-body {
+					.get-historic-title {
+						margin: 15px 0 0;
+					}
+				}
+			}
+		}
+
+		.historic-container {
+
+			.historic-image-foreignObject {
+
+				.historic-image-body {
+					margin: 0;
+					.historic-image {
+
+					}
+
+				}
+
+			}
+
+			.historic-title-foreignObject {
+				.historic-title-body {
+					.historic-title {
+
+					}
+				}
+			}
+
+			.hist-nodes {
+				.hist-circle {
+
+				}
+
+				.hist-nodes-foreignObject {
+					.hist-nodes-body {
+						.hist-nodes-div {
+							margin: -10px 0 0 25px;
+							.hist-nodes-text {
+							}
+						}
+					}
+				}
+
+				.hist-bubble-foreignObject {
+					.hist-bubble-body {
+						margin:0;
+						.hist-bubble {
+							position: relative;
+						}
+					}
+				}
+			}
+		}
+
+		.help {
+			.help-text-foreignObject {
+				.help-text-body {
+					.help-text-legend {
+					
+					}
+				}
+			}
+		}
+
+		.other-jobs-container {
+
+			.other-jobs {
+				z-index: 50;
+				.other-jobs-circle {
+					z-index: 40;
+				}
+
+				.other-jobs-text-foreignObject {
+					.other-jobs-text-body {
+						.other-jobs-text {
+
+						}
+					}
+				}
+
+				.other-jobs-bubble-foreignObject {
+					.other-jobs-bubble-body {
+							margin:0;
+						.other-jobs-bubble {
+							margin: 0.8px 0 0 1.5px;
+							width:18px;
+							height:18px;
+						}
+					}
+				}
+
+			}
+		}
+
+	}
+
+}
+
